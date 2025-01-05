@@ -107,9 +107,6 @@ public final class Constants {
     public static final Angle turningEncoderPositionFactor = Rotations.of(1.0);
     public static final AngularVelocity turningEncoderVelocityFactor = RotationsPerSecond.of(1.0);
 
-    public static final Angle turningEncoderPositionPIDMinInput = Radians.of(0.0);
-    public static final Angle turningEncoderPositionPIDMaxInput = turningEncoderPositionFactor;
-
     public static final Current drivingCurrentLimit = Amps.of(50);
     public static final Current turningCurrentLimit = Amps.of(20);
 
@@ -122,9 +119,6 @@ public final class Constants {
     public static final double turningI = 0;
     public static final double turningD = 0;
     public static final double turningFF = 0;
-
-    public static final Current drivingMotorCurrentLimit = Amps.of(50);
-    public static final Current turningMotorCurrentLimit = Amps.of(20);
 
     public static final SparkMaxConfig drivingConfig = new SparkMaxConfig();
     public static final SparkMaxConfig turningConfig = new SparkMaxConfig();
@@ -163,7 +157,6 @@ public final class Constants {
 
   public static final class OIConstants {
     public static final int driverControllerPort = 1;
-    public static final double driveDeadband = 1;
     public static final int leftJoystickPort = 2;
     public static final int rightJoystickPort = 3;
   }
