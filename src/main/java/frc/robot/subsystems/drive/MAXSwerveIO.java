@@ -15,6 +15,7 @@ import static frc.robot.Constants.DriveConstants.rearRightTurningCanId;
 
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.subsystems.drive.swerve.MAXSwerveModuleIO;
 import frc.robot.subsystems.drive.swerve.SwerveModule;
@@ -23,6 +24,7 @@ import frc.robot.subsystems.drive.swerve.SwerveModule;
  * IO for a swerve drive using REV MAXSwerve modules driven by a NEO motor and turned by a NEO 550
  * motor.
  */
+@Logged
 public class MAXSwerveIO implements SwerveIO {
   private final SwerveModule frontLeft =
       new SwerveModule(

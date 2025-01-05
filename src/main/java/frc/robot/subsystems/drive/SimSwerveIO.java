@@ -6,12 +6,14 @@ import static frc.robot.Constants.DriveConstants.frontRightChassisAngularOffset;
 import static frc.robot.Constants.DriveConstants.rearLeftChassisAngularOffset;
 import static frc.robot.Constants.DriveConstants.rearRightChassisAngularOffset;
 
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.sim.Simulation;
 import frc.robot.sim.SimulationContext;
 import frc.robot.subsystems.drive.swerve.SimModuleIO;
 import frc.robot.subsystems.drive.swerve.SwerveModule;
 
+@Logged
 public class SimSwerveIO implements SwerveIO {
   private final SwerveModule frontLeft;
   private final SwerveModule frontRight;
