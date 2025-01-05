@@ -57,9 +57,9 @@ public class Robot extends TimedRobot {
 
     Epilogue.configure(
         config -> {
-          // TODO: Set up the epilogue data logging configuration
-          //       By default, data will only be logged to network tables. We should log to disk if
-          // there's a USB drive plugged in
+          // TODO: Set up the epilogue data logging configuration.
+          //       By default, data will only be logged to network tables.
+          //       We should log to disk if there's a USB drive plugged in
         });
 
     Epilogue.bind(this);
