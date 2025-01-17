@@ -44,9 +44,9 @@ public final class Constants {
     public static final AngularVelocity maxAngularSpeed = RotationsPerSecond.of(2.0);
 
     // Chassis configuration
-    public static final Distance trackWidth = Inches.of(26.5);
+    public static final Distance trackWidth = Inches.of(24.5);
     // Distance between centers of right and left wheels on robot
-    public static final Distance wheelBase = Inches.of(26.5);
+    public static final Distance wheelBase = Inches.of(24.5);
     // Distance between front and back wheels on robot
     public static final SwerveDriveKinematics driveKinematics =
         new SwerveDriveKinematics(
@@ -64,15 +64,15 @@ public final class Constants {
     public static final Rotation2d rearRightChassisAngularOffset = Rotation2d.fromDegrees(90);
 
     // SPARK MAX CAN IDs
-    public static final int frontLeftDrivingCanId = 7;
+    public static final int frontLeftDrivingCanId = 2;
     public static final int rearLeftDrivingCanId = 4;
-    public static final int frontRightDrivingCanId = 12;
-    public static final int rearRightDrivingCanId = 8;
+    public static final int frontRightDrivingCanId = 8;
+    public static final int rearRightDrivingCanId = 6;
 
-    public static final int frontLeftTurningCanId = 14;
+    public static final int frontLeftTurningCanId = 1;
     public static final int rearLeftTurningCanId = 3;
-    public static final int frontRightTurningCanId = 10;
-    public static final int rearRightTurningCanId = 25;
+    public static final int frontRightTurningCanId = 5;
+    public static final int rearRightTurningCanId = 7;
   }
 
   public static final class ModuleConstants {
