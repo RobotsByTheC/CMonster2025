@@ -6,6 +6,11 @@ package frc.robot;
 
 import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.epilogue.logging.EpilogueBackend;
+import edu.wpi.first.epilogue.logging.FileBackend;
+import edu.wpi.first.epilogue.logging.NTEpilogueBackend;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -57,9 +62,10 @@ public class Robot extends TimedRobot {
 
     Epilogue.configure(
         config -> {
-          // TODO: Set up the epilogue data logging configuration.
-          //       By default, data will only be logged to network tables.
-          //       We should log to disk if there's a USB drive plugged in
+          config.backend = EpilogueBackend.multi(
+            new FileBackend(DataLogManager.getLog()),
+            new NTEpilogueBackend(NetworkTableInstance.getDefault())
+          );
         });
 
     Epilogue.bind(this);
