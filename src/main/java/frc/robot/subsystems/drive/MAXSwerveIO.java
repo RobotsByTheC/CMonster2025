@@ -15,8 +15,10 @@ import static frc.robot.Constants.DriveConstants.rearRightTurningCanId;
 
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
+import com.studica.frc.AHRS;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.SPI;
 import frc.robot.subsystems.drive.swerve.MAXSwerveModuleIO;
 import frc.robot.subsystems.drive.swerve.SwerveModule;
 
@@ -52,8 +54,7 @@ public class MAXSwerveIO implements SwerveIO {
           rearRightChassisAngularOffset);
 
   // The gyro sensor
-  // TODO: Need to wait for the 2025 navx vendor library release
-  // AHRS gyro = new AHRS(SPI.Port.kMXP);
+  private final AHRS gyro = new AHRS(AHRS.NavXComType.kMXP_SPI);
 
   @Override
   public SwerveModule frontLeft() {
@@ -77,17 +78,16 @@ public class MAXSwerveIO implements SwerveIO {
 
   @Override
   public Rotation2d getHeading() {
-    // return gyro.getRotation2d();
-    return Rotation2d.kZero; // TODO: Replace with gyro reading
+    return gyro.getRotation2d();
   }
 
   @Override
   public void resetHeading(Rotation2d heading) {
-    // gyro.setAngleAdjustment(heading.getDegrees());
+    gyro.setAngleAdjustment(heading.getDegrees());
   }
 
   @Override
   public void zeroHeading() {
-    // gyro.reset();
+    gyro.reset();
   }
 }
