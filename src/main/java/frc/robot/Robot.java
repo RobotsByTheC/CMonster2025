@@ -56,7 +56,7 @@ public class Robot extends TimedRobot {
     configureAutomaticBindings();
 
     // Configure default commands
-    drive.setDefaultCommand(drive.driveWithJoysticks(rStick::getY, rStick::getX, lStick::getTwist));
+    drive.setDefaultCommand(driveWithFlightSticks());
 
     // Start data logging
 
@@ -69,6 +69,14 @@ public class Robot extends TimedRobot {
         });
 
     Epilogue.bind(this);
+  }
+
+  private Command driveWithXbox() {
+    return drive.driveWithJoysticks(driverController::getLeftY, driverController::getLeftX, driverController::getRightX);
+  }
+
+  private Command driveWithFlightSticks() {
+    return drive.driveWithJoysticks(rStick::getY, rStick::getX, lStick::getTwist);
   }
 
   private void configureButtonBindings() {
