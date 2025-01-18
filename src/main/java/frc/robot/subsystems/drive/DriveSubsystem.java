@@ -219,7 +219,7 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
               MathUtil.applyDeadband(y.getAsDouble(), 0.01)
                   * DriveConstants.maxSpeed.in(MetersPerSecond));
           omegaSpeed.mut_setMagnitude(
-              MathUtil.applyDeadband(-omega.getAsDouble(), 0.08)
+              MathUtil.applyDeadband(omega.getAsDouble(), 0.1)
                   * DriveConstants.maxAngularSpeed.in(RadiansPerSecond));
 
           drive(xSpeed, ySpeed, omegaSpeed, ReferenceFrame.FIELD);

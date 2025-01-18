@@ -62,10 +62,10 @@ public class Robot extends TimedRobot {
 
     Epilogue.configure(
         config -> {
-          config.backend = EpilogueBackend.multi(
-            new FileBackend(DataLogManager.getLog()),
-            new NTEpilogueBackend(NetworkTableInstance.getDefault())
-          );
+          config.backend =
+              EpilogueBackend.multi(
+                  new FileBackend(DataLogManager.getLog()),
+                  new NTEpilogueBackend(NetworkTableInstance.getDefault()));
         });
 
     Epilogue.bind(this);

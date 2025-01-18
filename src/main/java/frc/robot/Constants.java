@@ -58,10 +58,10 @@ public final class Constants {
     // Angular offsets here describe how the swerve modules are physically rotated with respect to
     // to the chassis. There should be offsets at 0, 90, 180, and 270 degrees for a rectangular
     // chassis.
-    public static final Rotation2d frontLeftChassisAngularOffset = Rotation2d.fromDegrees(-90);
-    public static final Rotation2d frontRightChassisAngularOffset = Rotation2d.fromDegrees(180);
-    public static final Rotation2d rearLeftChassisAngularOffset = Rotation2d.fromDegrees(180);
-    public static final Rotation2d rearRightChassisAngularOffset = Rotation2d.fromDegrees(90);
+    public static final Rotation2d frontLeftChassisAngularOffset = Rotation2d.fromDegrees(0);
+    public static final Rotation2d frontRightChassisAngularOffset = Rotation2d.fromDegrees(0);
+    public static final Rotation2d rearLeftChassisAngularOffset = Rotation2d.fromDegrees(0);
+    public static final Rotation2d rearRightChassisAngularOffset = Rotation2d.fromDegrees(0);
 
     // SPARK MAX CAN IDs
     public static final int frontLeftDrivingCanId = 2;
@@ -71,8 +71,8 @@ public final class Constants {
 
     public static final int frontLeftTurningCanId = 1;
     public static final int rearLeftTurningCanId = 3;
-    public static final int frontRightTurningCanId = 5;
-    public static final int rearRightTurningCanId = 7;
+    public static final int frontRightTurningCanId = 7;
+    public static final int rearRightTurningCanId = 5;
   }
 
   public static final class ModuleConstants {
