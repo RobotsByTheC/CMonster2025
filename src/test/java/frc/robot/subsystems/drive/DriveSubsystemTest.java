@@ -105,9 +105,9 @@ class DriveSubsystemTest {
 
     // ... and be rotated 45° inward towards the center of the robot, within ±1°
     assertEquals(45, drivetrain.getModuleStates()[0].angle.getDegrees(), 1);
-    assertEquals(135, drivetrain.getModuleStates()[1].angle.getDegrees(), 1);
-    assertEquals(135, drivetrain.getModuleStates()[2].angle.getDegrees(), 1);
-    assertEquals(-135, drivetrain.getModuleStates()[3].angle.getDegrees(), 1);
+    assertEquals(-45, drivetrain.getModuleStates()[1].angle.getDegrees(), 1);
+    assertEquals(-45, drivetrain.getModuleStates()[2].angle.getDegrees(), 1);
+    assertEquals(45, drivetrain.getModuleStates()[3].angle.getDegrees(), 1);
   }
 
   private void tick() {

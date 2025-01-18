@@ -75,11 +75,6 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
             // Use default standard deviations of ±35" and ±52° for vision-derived position data
             VecBuilder.fill(
                 Inches.of(35).in(Meters), Inches.of(35).in(Meters), Degrees.of(52).in(Radians)));
-
-    Shuffleboard.getTab("Drive")
-        .add("Zero Heading", runOnce(this::zeroHeading).ignoringDisable(true));
-
-    Shuffleboard.getTab("Drive").add("Field", field);
   }
 
   @Override
