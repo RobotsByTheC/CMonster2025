@@ -56,6 +56,13 @@ public class Robot extends TimedRobot {
     configureAutomaticBindings();
 
     // Configure default commands
+    /*
+     * Use driveWithFlightSticks() to use flight stick driving
+     * Use driveWithXbox() to drive solely with the xbox controller
+     * Note: Right joystick drives, left joystick turns for both
+     * xbox and flight sticks. Refer to Constants.java (OIConstants)
+     * for the correct Driver Station inputs.
+     */
     drive.setDefaultCommand(driveWithFlightSticks());
 
     // Start data logging
@@ -72,7 +79,8 @@ public class Robot extends TimedRobot {
   }
 
   private Command driveWithXbox() {
-    return drive.driveWithJoysticks(driverController::getLeftY, driverController::getLeftX, driverController::getRightX);
+    return drive.driveWithJoysticks(
+        driverController::getLeftY, driverController::getLeftX, driverController::getRightX);
   }
 
   private Command driveWithFlightSticks() {
