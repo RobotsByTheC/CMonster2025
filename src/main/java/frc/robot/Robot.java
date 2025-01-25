@@ -14,24 +14,30 @@ import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.sim.SimulationContext;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.drive.MAXSwerveIO;
 import frc.robot.subsystems.drive.SimSwerveIO;
+import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.elevator.RealElevatorIO;
+import frc.robot.subsystems.elevator.SimElevatorIO;
 
 @Logged
 public class Robot extends TimedRobot {
   private Command autonomousCommand;
+  @Logged private final CommandScheduler scheduler = CommandScheduler.getInstance();
 
   // The robot's subsystems
   private final DriveSubsystem drive;
+  private final Elevator elevator;
 
   // Driver and operator controls
-  private final XboxController driverController; // NOPMD
+  private final CommandXboxController driverController; // NOPMD
   private final Joystick lStick; // NOPMD
   private final Joystick rStick; // NOPMD
 
@@ -42,12 +48,14 @@ public class Robot extends TimedRobot {
 
     if (Robot.isSimulation()) {
       drive = new DriveSubsystem(new SimSwerveIO());
+      elevator = new Elevator(new SimElevatorIO());
     } else {
       // Running on real hardware
       drive = new DriveSubsystem(new MAXSwerveIO());
+      elevator = new Elevator(new RealElevatorIO());
     }
 
-    driverController = new XboxController(Constants.OIConstants.driverControllerPort);
+    driverController = new CommandXboxController(Constants.OIConstants.driverControllerPort);
     lStick = new Joystick(Constants.OIConstants.leftJoystickPort);
     rStick = new Joystick(Constants.OIConstants.rightJoystickPort);
 
@@ -64,6 +72,7 @@ public class Robot extends TimedRobot {
      * for the correct Driver Station inputs.
      */
     drive.setDefaultCommand(driveWithFlightSticks());
+    elevator.setDefaultCommand(elevator.stop());
 
     // Start data logging
 
@@ -88,11 +97,20 @@ public class Robot extends TimedRobot {
   }
 
   private void configureButtonBindings() {
-    // TODO: Bind commands to joystick buttons for the driver and operator
+    driverController.a().whileTrue(elevator.goToL1Height());
+    driverController.b().whileTrue(elevator.goToL2Height());
+    driverController.x().whileTrue(elevator.goToL3Height());
+    driverController.y().whileTrue(elevator.goToL4Height());
+    driverController
+        .leftBumper()
+        .and(RobotModeTriggers.test())
+        .whileTrue(elevator.runSysIdRoutine());
   }
 
   private void configureAutomaticBindings() {
-    // TODO: Bind commands to automatic triggers
+    //    elevator.atMaxHeight.onTrue(elevator.holdCurrentPosition());
+    //    elevator.atMinHeight.onTrue(elevator.holdCurrentPosition());
+    elevator.isStalling.whileTrue(elevator.stop());
   }
 
   /**
