@@ -52,7 +52,7 @@ public class RealElevatorIO implements ElevatorIO {
 
   @Override
   public Current getCurrentDraw() {
-    return Amps.of((left.getOutputCurrent() + right.getOutputCurrent()) / 2);
+    return Amps.of(left.getOutputCurrent() + right.getOutputCurrent());
   }
 
   @Override
