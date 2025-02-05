@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Volts;
+
 import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.logging.EpilogueBackend;
@@ -105,6 +107,14 @@ public class Robot extends TimedRobot {
         .leftBumper()
         .and(RobotModeTriggers.test())
         .whileTrue(elevator.runSysIdRoutine());
+    driverController
+        .rightTrigger()
+        .and(RobotModeTriggers.test())
+        .whileTrue(elevator.applyVoltage(Volts.of(3)));
+    driverController
+        .leftTrigger()
+        .and(RobotModeTriggers.test())
+        .whileTrue(elevator.applyVoltage(Volts.of(-3)));
   }
 
   private void configureAutomaticBindings() {

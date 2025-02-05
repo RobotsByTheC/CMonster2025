@@ -66,6 +66,10 @@ public class Elevator extends SubsystemBase {
     return run(() -> io.setVoltage(Volts.of(0))).withName("Stop");
   }
 
+  public Command applyVoltage(Voltage voltage) {
+    return run(() -> io.setVoltage(voltage)).withName("Set Voltage: " + voltage);
+  }
+
   public Command home() {
     return run(() -> io.setVoltage(Volts.of(-2)))
         .until(() -> io.getCurrentDraw().gte(Amps.of(15)))
