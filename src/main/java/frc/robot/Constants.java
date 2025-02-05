@@ -156,8 +156,8 @@ public final class Constants {
     // Slightly less than max elevator extension
     public static final Distance maxHeight = Inches.of(67.5);
 
-    public static final int leftCanID = 9;
-    public static final int rightCanID = 10;
+    public static final int leftCanID = 10;
+    public static final int rightCanID = 9;
 
     public static final double positionConversionFactor = .866 * Math.PI * 2 / 5.5;
     public static final double velocityConversionFactor = positionConversionFactor / 60;
