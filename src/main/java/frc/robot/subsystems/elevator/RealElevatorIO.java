@@ -32,6 +32,7 @@ public class RealElevatorIO implements ElevatorIO {
     sparkConfig.encoder.positionConversionFactor(positionConversionFactor);
     sparkConfig.encoder.velocityConversionFactor(velocityConversionFactor);
     sparkConfig.secondaryCurrentLimit(currentLimit);
+    sparkConfig.inverted(true);
 
     left.configure(
         sparkConfig,
