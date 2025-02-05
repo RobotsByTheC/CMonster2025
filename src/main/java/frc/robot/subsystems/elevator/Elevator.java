@@ -32,16 +32,16 @@ public class Elevator extends SubsystemBase {
 
   public Elevator(ElevatorIO io) {
     this.io = io;
-    feedforward = new ElevatorFeedforward(0.018138, 1.9669, 4.9506, 0.19706);
+    feedforward = new ElevatorFeedforward(0.92435, 1.2623, 1.1023, 0.28148);
     profiledPIDController =
         new ProfiledPIDController(
-            27.539,
+            20,
             0,
-            1.6606,
+            1,
             new TrapezoidProfile.Constraints(feedforward.maxAchievableVelocity(12.5, 20), 20));
     sysIdRoutine =
         new SysIdRoutine(
-            new SysIdRoutine.Config(),
+            new SysIdRoutine.Config(Volts.per(Second).of(0.5), Volts.of(4), null),
             new SysIdRoutine.Mechanism(
                 io::setVoltage,
                 log -> {
