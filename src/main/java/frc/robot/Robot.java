@@ -103,6 +103,9 @@ public class Robot extends TimedRobot {
     driverController.b().whileTrue(elevator.goToL2Height());
     driverController.x().whileTrue(elevator.goToL3Height());
     driverController.y().whileTrue(elevator.goToL4Height());
+
+    driverController.rightBumper().whileTrue(elevator.home());
+
     driverController
         .leftBumper()
         .and(RobotModeTriggers.test())
