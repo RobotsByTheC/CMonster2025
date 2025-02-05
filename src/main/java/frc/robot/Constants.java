@@ -159,7 +159,12 @@ public final class Constants {
     public static final int leftCanID = 10;
     public static final int rightCanID = 9;
 
-    public static final double positionConversionFactor = .866 * Math.PI * 2 / 5.5;
+    public static final double gearboxReduction = 4.86; // 4.86:1
+
+    // Raw: 21.3689 rotations from bottom to top
+    // Actual extension = 67.5"
+    // 67.5 / 21.3689 = 3.1588
+    public static final double positionConversionFactor = 3.344;
     public static final double velocityConversionFactor = positionConversionFactor / 60;
 
     public static final int currentLimit = 40;
