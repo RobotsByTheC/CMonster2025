@@ -149,8 +149,8 @@ public final class Constants {
     public static final Distance l3 = Inches.of(52).minus(zeroOffset);
     public static final Distance l4 = Inches.of(76).minus(zeroOffset);
 
-    public static final Current stallThreshold = Amps.of(40);
-    public static final Time stallDuration = Milliseconds.of(5000);
+    public static final Current stallThreshold = Amps.of(70);
+    public static final Time stallDuration = Milliseconds.of(500);
 
     public static final Distance minHeight = Inches.of(0);
     // Slightly less than max elevator extension
