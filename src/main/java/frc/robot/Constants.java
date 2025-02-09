@@ -168,6 +168,14 @@ public final class Constants {
     public static final double velocityConversionFactor = positionConversionFactor / 60;
 
     public static final int currentLimit = 40;
+
+    public static final double KS = 0.92435;
+    public static final double KG = 1.2623;
+    public static final double KV = 1.1023;
+    public static final double KA = 0.28148;
+    public static final int KP = 20;
+    public static final int KI = 0;
+    public static final int KD = 1;
   }
 
   public static final class OIConstants {

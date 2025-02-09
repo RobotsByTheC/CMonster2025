@@ -32,12 +32,12 @@ public class Elevator extends SubsystemBase {
 
   public Elevator(ElevatorIO io) {
     this.io = io;
-    feedforward = new ElevatorFeedforward(0.92435, 1.2623, 1.1023, 0.28148);
+    feedforward = new ElevatorFeedforward(KS, KG, KV, KA);
     profiledPIDController =
         new ProfiledPIDController(
-            20,
-            0,
-            1,
+            KP,
+            KI,
+            KD,
             new TrapezoidProfile.Constraints(feedforward.maxAchievableVelocity(12.5, 20), 20));
     sysIdRoutine =
         new SysIdRoutine(
