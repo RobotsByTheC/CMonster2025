@@ -125,7 +125,8 @@ public class Elevator extends SubsystemBase {
         .until(atMaxHeight)
         .andThen(sysIdRoutine.dynamic(SysIdRoutine.Direction.kReverse).until(atMinHeight))
         .andThen(sysIdRoutine.quasistatic(SysIdRoutine.Direction.kForward).until(atMaxHeight))
-        .andThen(sysIdRoutine.quasistatic(SysIdRoutine.Direction.kReverse).until(atMinHeight));
+        .andThen(sysIdRoutine.quasistatic(SysIdRoutine.Direction.kReverse).until(atMinHeight))
+        .withName("Elevator Sysid Routine");
   }
 
   private Voltage calculatePIDVoltage(Distance targetHeight) {
