@@ -88,6 +88,7 @@ public class Elevator extends SubsystemBase {
                 profiledPIDController.reset(
                     io.getHeight().in(Meters), io.getVelocity().in(MetersPerSecond)),
             () -> io.setVoltage(calculatePIDVoltage(targetHeight)))
+        .until(profiledPIDController::atGoal)
         .withName("Go To Height " + targetHeight.toLongString());
   }
 
