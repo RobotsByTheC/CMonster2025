@@ -4,8 +4,6 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.Volts;
-
 import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.logging.EpilogueBackend;
@@ -22,6 +20,9 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.sim.SimulationContext;
+import frc.robot.subsystems.coral.Coral;
+import frc.robot.subsystems.coral.RealCoralIO;
+import frc.robot.subsystems.coral.SimCoralIO;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.drive.MAXSwerveIO;
 import frc.robot.subsystems.drive.SimSwerveIO;
@@ -37,6 +38,7 @@ public class Robot extends TimedRobot {
   // The robot's subsystems
   private final DriveSubsystem drive;
   private final Elevator elevator;
+  private final Coral coral;
 
   // Driver and operator controls
   private final CommandXboxController driverController; // NOPMD
@@ -51,10 +53,12 @@ public class Robot extends TimedRobot {
     if (Robot.isSimulation()) {
       drive = new DriveSubsystem(new SimSwerveIO());
       elevator = new Elevator(new SimElevatorIO());
+      coral = new Coral(new SimCoralIO());
     } else {
       // Running on real hardware
       drive = new DriveSubsystem(new MAXSwerveIO());
       elevator = new Elevator(new RealElevatorIO());
+      coral = new Coral(new RealCoralIO());
     }
 
     driverController = new CommandXboxController(Constants.OIConstants.driverControllerPort);
@@ -99,25 +103,46 @@ public class Robot extends TimedRobot {
   }
 
   private void configureButtonBindings() {
-    driverController.a().whileTrue(elevator.goToL1Height());
-    driverController.b().whileTrue(elevator.goToL2Height());
-    driverController.x().whileTrue(elevator.goToL3Height());
-    driverController.y().whileTrue(elevator.goToL4Height());
+    driverController
+        .a()
+        .whileTrue(
+            elevator
+                .goToL1Height()
+                .andThen(coral.scoreL1().alongWith(elevator.holdCurrentPosition()))
+                .andThen(elevator.home().alongWith(coral.stow()))
+                .withName("Score L1"));
+    driverController
+        .b()
+        .whileTrue(
+            elevator
+                .goToL2Height()
+                .andThen(coral.scoreL2().alongWith(elevator.holdCurrentPosition()))
+                .andThen(elevator.home().alongWith(coral.stow()))
+                .withName("Score L2"));
+    driverController
+        .x()
+        .whileTrue(
+            elevator
+                .goToL3Height()
+                .andThen(coral.scoreL3().alongWith(elevator.holdCurrentPosition()))
+                .andThen(elevator.home().alongWith(coral.stow()))
+                .withName("Score L3"));
+    driverController
+        .y()
+        .whileTrue(
+            elevator
+                .goToL4Height()
+                .andThen(coral.scoreL4().alongWith(elevator.holdCurrentPosition()))
+                .andThen(elevator.home().alongWith(coral.stow()))
+                .withName("Score L4"));
 
-    driverController.rightBumper().whileTrue(elevator.home());
+    //    driverController.rightBumper().whileTrue(elevator.home());
 
     driverController
         .leftBumper()
         .and(RobotModeTriggers.test())
         .whileTrue(elevator.runSysIdRoutine());
-    driverController
-        .rightTrigger()
-        .and(RobotModeTriggers.test())
-        .whileTrue(elevator.applyVoltage(Volts.of(3)));
-    driverController
-        .leftTrigger()
-        .and(RobotModeTriggers.test())
-        .whileTrue(elevator.applyVoltage(Volts.of(-3)));
+    driverController.rightBumper().and(RobotModeTriggers.test()).whileTrue(coral.runSysIdRoutine());
   }
 
   private void configureAutomaticBindings() {
