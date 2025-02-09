@@ -173,9 +173,39 @@ public final class Constants {
     public static final double KG = 1.2623;
     public static final double KV = 1.1023;
     public static final double KA = 0.28148;
-    public static final int KP = 20;
-    public static final int KI = 0;
-    public static final int KD = 1;
+    public static final double KP = 20;
+    public static final double KI = 0;
+    public static final double KD = 1;
+  }
+
+  public static final class CoralConstants {
+    public static final int leftCanID = 11;
+    public static final int rightCanID = 12;
+    public static final int wristCanID = 13;
+
+    public static final Current grabCurrentLimit = Amps.of(15);
+    public static final Current wristCurrentLimit = Amps.of(40);
+
+    public static final Voltage grabIntakeVoltage = Volts.of(6);
+    public static final Voltage grabScoreVoltage = Volts.of(6);
+
+    public static final Angle intakeAngle = Degrees.of(0);
+    public static final Angle troughScoreAngle = Degrees.of(0);
+    public static final Angle branchScoreAngle = Degrees.of(0);
+    public static final Angle tipScoreAngle = Degrees.of(0);
+    public static final Angle stowAngle = Degrees.of(0);
+
+    public static final Angle minWristAngle = Degrees.of(-90);
+    public static final Angle maxWristAngle = Degrees.of(57.5);
+    public static final Angle wristTolerance = Degrees.of(2);
+
+    public static final double KS = 0;
+    public static final double KG = 0.32976;
+    public static final double KV = 1.6084;
+    public static final double KA = 0;
+    public static final double KP = 3.596;
+    public static final double KI = 0;
+    public static final double KD = 0;
   }
 
   public static final class OIConstants {
