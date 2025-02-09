@@ -132,7 +132,7 @@ public class Elevator extends SubsystemBase {
   private Voltage calculatePIDVoltage(Distance targetHeight) {
     double pidVoltage =
         profiledPIDController.calculate(io.getHeight().in(Meters), targetHeight.in(Meters));
-    double feetForwardVoltage = feedforward.calculate(0);
-    return Volts.of(pidVoltage + feetForwardVoltage);
+    double feedForwardVoltage = feedforward.calculate(0);
+    return Volts.of(pidVoltage + feedForwardVoltage);
   }
 }
