@@ -4,17 +4,7 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.Amps;
-import static edu.wpi.first.units.Units.Inches;
-import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.Minute;
-import static edu.wpi.first.units.Units.RPM;
-import static edu.wpi.first.units.Units.Radians;
-import static edu.wpi.first.units.Units.RadiansPerSecond;
-import static edu.wpi.first.units.Units.Rotations;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
-import static edu.wpi.first.units.Units.Second;
+import static edu.wpi.first.units.Units.*;
 
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
@@ -22,11 +12,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.Current;
-import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.units.measure.LinearVelocity;
+import edu.wpi.first.units.measure.*;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -153,6 +139,43 @@ public final class Constants {
           .positionWrappingEnabled(true)
           .positionWrappingInputRange(0, Rotations.one().in(Radians));
     }
+  }
+
+  public static final class ElevatorConstants {
+    // Top face of the carriage rail to the carpet
+    public static final Distance zeroOffset = Inches.of(7.5);
+    public static final Distance l1 = Inches.of(22).minus(zeroOffset);
+    public static final Distance l2 = Inches.of(36).minus(zeroOffset);
+    public static final Distance l3 = Inches.of(52).minus(zeroOffset);
+    public static final Distance l4 = Inches.of(76).minus(zeroOffset);
+
+    public static final Current stallThreshold = Amps.of(70);
+    public static final Time stallDuration = Milliseconds.of(500);
+
+    public static final Distance minHeight = Inches.of(0);
+    // Slightly less than max elevator extension
+    public static final Distance maxHeight = Inches.of(67.5);
+
+    public static final int leftCanID = 10;
+    public static final int rightCanID = 9;
+
+    public static final double gearboxReduction = 4.86; // 4.86:1
+
+    // Raw: 21.3689 rotations from bottom to top
+    // Actual extension = 67.5"
+    // 67.5 / 21.3689 = 3.1588
+    public static final double positionConversionFactor = 3.344;
+    public static final double velocityConversionFactor = positionConversionFactor / 60;
+
+    public static final int currentLimit = 40;
+
+    public static final double KS = 0.92435;
+    public static final double KG = 1.2623;
+    public static final double KV = 1.1023;
+    public static final double KA = 0.28148;
+    public static final int KP = 20;
+    public static final int KI = 0;
+    public static final int KD = 1;
   }
 
   public static final class OIConstants {
