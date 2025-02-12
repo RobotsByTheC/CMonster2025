@@ -160,19 +160,25 @@ public class Robot extends TimedRobot {
                 .andThen(coral.scoreL4().deadlineFor(elevator.holdCurrentPosition()))
                 .andThen(elevator.home().alongWith(coral.stow()))
                 .withName("Score L4"));
-
-    //    driverController.rightBumper().whileTrue(elevator.home());
-
+    driverController.rightBumper().whileTrue(elevator.home().withName("Home Elevator"));
+    driverController.leftBumper().whileTrue(coral.intake().withName("Intake Coral"));
+  }
+  /**
+   * Configures additional controls that are only active in test mode.
+   * Primarily used for sysid routines.
+   */
+  private void configureTestBindings() {
     driverController
-        .leftBumper()
+        .leftTrigger()
         .and(RobotModeTriggers.test())
-        .whileTrue(elevator.runSysIdRoutine());
-    driverController.rightBumper().and(RobotModeTriggers.test()).whileTrue(coral.runSysIdRoutine());
+        .whileTrue(elevator.runSysIdRoutine().withName("Run Elevator Sysid Routine"));
+    driverController
+        .rightTrigger()
+        .and(RobotModeTriggers.test())
+        .whileTrue(coral.runSysIdRoutine().withName("Run Coral Sysid Routine"));
   }
 
   private void configureAutomaticBindings() {
-    //    elevator.atMaxHeight.onTrue(elevator.holdCurrentPosition());
-    //    elevator.atMinHeight.onTrue(elevator.holdCurrentPosition());
     elevator.isStalling.whileTrue(elevator.stop());
   }
 
@@ -224,7 +230,7 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledPeriodic() {}
 
-  /** This autonomous runs the autonomous command selected by the {@link #autoChooser}. */
+  /** This autonomous runs the autonomous command selected by the autoChooser. */
   @Override
   public void autonomousInit() {
     autonomousCommand = getAutonomousCommand();
