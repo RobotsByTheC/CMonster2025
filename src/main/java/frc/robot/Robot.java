@@ -133,7 +133,7 @@ public class Robot extends TimedRobot {
         .whileTrue(
             elevator
                 .goToL1Height()
-                .andThen(coral.scoreL1().alongWith(elevator.holdCurrentPosition()))
+                .andThen(coral.scoreL1().deadlineFor(elevator.holdCurrentPosition()))
                 .andThen(elevator.home().alongWith(coral.stow()))
                 .withName("Score L1"));
     driverController
@@ -141,7 +141,7 @@ public class Robot extends TimedRobot {
         .whileTrue(
             elevator
                 .goToL2Height()
-                .andThen(coral.scoreL2().alongWith(elevator.holdCurrentPosition()))
+                .andThen(coral.scoreL2().deadlineFor(elevator.holdCurrentPosition()))
                 .andThen(elevator.home().alongWith(coral.stow()))
                 .withName("Score L2"));
     driverController
@@ -149,7 +149,7 @@ public class Robot extends TimedRobot {
         .whileTrue(
             elevator
                 .goToL3Height()
-                .andThen(coral.scoreL3().alongWith(elevator.holdCurrentPosition()))
+                .andThen(coral.scoreL3().deadlineFor(elevator.holdCurrentPosition()))
                 .andThen(elevator.home().alongWith(coral.stow()))
                 .withName("Score L3"));
     driverController
@@ -157,7 +157,7 @@ public class Robot extends TimedRobot {
         .whileTrue(
             elevator
                 .goToL4Height()
-                .andThen(coral.scoreL4().alongWith(elevator.holdCurrentPosition()))
+                .andThen(coral.scoreL4().deadlineFor(elevator.holdCurrentPosition()))
                 .andThen(elevator.home().alongWith(coral.stow()))
                 .withName("Score L4"));
 
