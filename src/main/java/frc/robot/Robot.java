@@ -161,20 +161,23 @@ public class Robot extends TimedRobot {
                 .andThen(coral.scoreL4().deadlineFor(elevator.holdCurrentPosition()))
                 .andThen(elevator.home().alongWith(coral.stow()))
                 .withName("Score L4"));
-    driverController.rightBumper().whileTrue(elevator.home().withName("Home Elevator"));
-    driverController.leftBumper().whileTrue(coral.intake().withName("Intake Coral"));
+    //    driverController.rightBumper().whileTrue(elevator.home().withName("Home Elevator"));
+    //    driverController.leftBumper().whileTrue(coral.intake().withName("Intake Coral"));
+    driverController.povDown().whileTrue(coral.scoreL1());
+    driverController.povUp().whileTrue(coral.stow());
   }
+
   /**
-   * Configures additional controls that are only active in test mode.
-   * Primarily used for sysid routines.
+   * Configures additional controls that are only active in test mode. Primarily used for sysid
+   * routines.
    */
   private void configureTestBindings() {
     driverController
-        .leftTrigger()
+        .leftBumper()
         .and(RobotModeTriggers.test())
         .whileTrue(elevator.runSysIdRoutine().withName("Run Elevator Sysid Routine"));
     driverController
-        .rightTrigger()
+        .rightBumper()
         .and(RobotModeTriggers.test())
         .whileTrue(coral.runSysIdRoutine().withName("Run Coral Sysid Routine"));
   }
