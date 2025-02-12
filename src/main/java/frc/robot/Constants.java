@@ -199,11 +199,11 @@ public final class Constants {
     public static final Angle maxWristAngle = Degrees.of(50);
     public static final Angle wristTolerance = Degrees.of(2);
 
-    public static final double KS = 0;
-    public static final double KG = 0.32976;
-    public static final double KV = 1.6084;
-    public static final double KA = 0;
-    public static final double KP = 3.596;
+    public static final double KS = 0.34646;
+    public static final double KG = 0.13; //0.1159
+    public static final double KV = 52.183;
+    public static final double KA = 4.3241;
+    public static final double KP = 12/1.6;
     public static final double KI = 0;
     public static final double KD = 0;
   }
