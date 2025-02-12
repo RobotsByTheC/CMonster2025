@@ -79,7 +79,7 @@ public class Robot extends TimedRobot {
      */
     drive.setDefaultCommand(driveWithFlightSticks());
     elevator.setDefaultCommand(elevator.stop());
-    //TODO add coral stow default command
+    // TODO add coral stow default command
 
     // Start data logging
 
