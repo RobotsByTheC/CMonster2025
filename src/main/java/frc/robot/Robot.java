@@ -123,9 +123,10 @@ public class Robot extends TimedRobot {
     configureTeleopBindings();
     configureTestBindings();
   }
+
   /**
-   * Configures controls that will be used in teleop mode in the main competition.
-   * Primarily used for controlling subsystems.
+   * Configures controls that will be used in teleop mode in the main competition. Primarily used
+   * for controlling subsystems.
    */
   private void configureTeleopBindings() {
     driverController
