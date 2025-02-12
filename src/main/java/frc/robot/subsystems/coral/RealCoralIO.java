@@ -93,7 +93,12 @@ public class RealCoralIO implements CoralIO {
 
   @Override
   public Angle getWristAngle() {
-    return Rotations.of(wristEncoder.getPosition());
+    Angle r = Rotations.of(wristEncoder.getPosition());
+    if (r.gt(Degrees.of(180))) {
+      return r.minus(Degrees.of(360));
+    } else {
+      return r;
+    }
   }
 
   @Override
