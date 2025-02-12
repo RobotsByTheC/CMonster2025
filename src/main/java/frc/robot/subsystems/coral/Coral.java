@@ -36,7 +36,7 @@ public class Coral extends SubsystemBase {
             KD,
             new TrapezoidProfile.Constraints(feedforward.maxAchievableVelocity(12.5, 0, 20), 20));
     profiledPIDController.setTolerance(wristTolerance.in(Radians));
-    profiledPIDController.enableContinuousInput(0, 2*Math.PI);
+    profiledPIDController.enableContinuousInput(0, 2 * Math.PI);
     sysIdRoutine =
         new SysIdRoutine(
             new SysIdRoutine.Config(), new SysIdRoutine.Mechanism(io::setWristVoltage, null, this));
