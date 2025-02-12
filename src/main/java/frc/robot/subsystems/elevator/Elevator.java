@@ -44,13 +44,12 @@ public class Elevator extends SubsystemBase {
             new SysIdRoutine.Config(Volts.per(Second).of(0.5), Volts.of(4), null),
             new SysIdRoutine.Mechanism(
                 io::setVoltage,
-                log -> {
-                  log.motor("Elevator Motor")
-                      .current(io.getCurrentDraw())
-                      .voltage(io.getAppliedVoltage())
-                      .linearPosition(io.getHeight())
-                      .linearVelocity(io.getVelocity());
-                },
+                log ->
+                    log.motor("Elevator Motor")
+                        .current(io.getCurrentDraw())
+                        .voltage(io.getAppliedVoltage())
+                        .linearPosition(io.getHeight())
+                        .linearVelocity(io.getVelocity()),
                 this));
   }
 
