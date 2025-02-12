@@ -106,6 +106,28 @@ public class Robot extends TimedRobot {
   }
 
   private void configureButtonBindings() {
+    /*
+    A: Score L1
+    B: Score L2
+    X: Score L3
+    Y: Score L4
+    LB: Coral Intake
+    RB: Elevator Home
+    LT: Elevator Sysid Routine (Test)
+    RT: Coral Sysid Routine (Test)
+    UA:
+    RA:
+    DA:
+    LA:
+    */
+    configureTeleopBindings();
+    configureTestBindings();
+  }
+  /**
+   * Configures controls that will be used in teleop mode in the main competition.
+   * Primarily used for controlling subsystems.
+   */
+  private void configureTeleopBindings() {
     driverController
         .a()
         .whileTrue(
