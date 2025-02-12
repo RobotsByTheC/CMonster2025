@@ -39,6 +39,7 @@ public class RealCoralIO implements CoralIO {
     grabConfig.secondaryCurrentLimit(grabCurrentLimit.in(Amps));
     wristConfig = new SparkMaxConfig();
     wristConfig.secondaryCurrentLimit(wristCurrentLimit.in(Amps));
+    wristConfig.absoluteEncoder.inverted(true);
 
     grabLeft.configure(
         grabConfig,
