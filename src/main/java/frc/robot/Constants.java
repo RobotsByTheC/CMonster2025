@@ -189,11 +189,11 @@ public final class Constants {
     public static final Voltage grabIntakeVoltage = Volts.of(6);
     public static final Voltage grabScoreVoltage = Volts.of(6);
 
-    public static final Angle intakeAngle = Degrees.of(0);
-    public static final Angle troughScoreAngle = Degrees.of(0);
-    public static final Angle branchScoreAngle = Degrees.of(0);
-    public static final Angle tipScoreAngle = Degrees.of(0);
-    public static final Angle stowAngle = Degrees.of(0);
+    public static final Angle intakeAngle = Degrees.of(30);
+    public static final Angle troughScoreAngle = Degrees.of(-15);
+    public static final Angle branchScoreAngle = Degrees.of(-35);
+    public static final Angle tipScoreAngle = Degrees.of(-60);
+    public static final Angle stowAngle = Degrees.of(55);
 
     public static final Angle minWristAngle = Degrees.of(-90);
     public static final Angle maxWristAngle = Degrees.of(57.5);
