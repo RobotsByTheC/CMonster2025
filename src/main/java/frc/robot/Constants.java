@@ -193,10 +193,10 @@ public final class Constants {
     public static final Angle troughScoreAngle = Degrees.of(-15);
     public static final Angle branchScoreAngle = Degrees.of(-35);
     public static final Angle tipScoreAngle = Degrees.of(-60);
-    public static final Angle stowAngle = Degrees.of(55);
+    public static final Angle stowAngle = Degrees.of(48);
 
-    public static final Angle minWristAngle = Degrees.of(-90);
-    public static final Angle maxWristAngle = Degrees.of(57.5);
+    public static final Angle minWristAngle = Degrees.of(-75);
+    public static final Angle maxWristAngle = Degrees.of(50);
     public static final Angle wristTolerance = Degrees.of(2);
 
     public static final double KS = 0;
