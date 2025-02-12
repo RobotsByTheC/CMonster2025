@@ -93,12 +93,15 @@ public class Robot extends TimedRobot {
     Epilogue.bind(this);
   }
 
+  @SuppressWarnings("unused")
   private Command driveWithXbox() {
+    //noinspection SuspiciousNameCombination
     return drive.driveWithJoysticks(
         driverController::getLeftY, driverController::getLeftX, driverController::getRightX);
   }
 
   private Command driveWithFlightSticks() {
+    //noinspection SuspiciousNameCombination
     return drive.driveWithJoysticks(rStick::getY, rStick::getX, lStick::getTwist);
   }
 
