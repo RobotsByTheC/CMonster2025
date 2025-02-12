@@ -179,7 +179,7 @@ public final class Constants {
   }
 
   public static final class CoralConstants {
-    public static final int leftCanID = 11;
+    public static final int leftCanID = 14;
     public static final int rightCanID = 12;
     public static final int wristCanID = 13;
 
