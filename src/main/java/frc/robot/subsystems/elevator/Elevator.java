@@ -66,6 +66,7 @@ public class Elevator extends SubsystemBase {
     return run(() -> io.setVoltage(Volts.of(0))).withName("Stop");
   }
 
+  @SuppressWarnings("unused")
   public Command applyVoltage(Voltage voltage) {
     return run(() -> io.setVoltage(voltage)).withName("Set Voltage: " + voltage);
   }
