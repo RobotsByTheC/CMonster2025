@@ -197,23 +197,23 @@ public final class Constants {
 
     public static final double wristGearing = 60;
 
-    public static final Angle minWristAngle = Degrees.of(-75);
-    public static final Angle maxWristAngle = Degrees.of(50);
+    public static final Angle minWristAngle = Degrees.of(-65); // -75
+    public static final Angle maxWristAngle = Degrees.of(50); // 50
     public static final Angle wristTolerance = Degrees.of(2);
 
-    public static final double KS = 0.34646;
-    public static final double KG = 0.13; // 0.1159
-    public static final double KV = 52.183;
-    public static final double KA = 4.3241;
-    public static final double KP = 12 / 1.6;
+    public static final double KS = 0; // 0.34646
+    public static final double KG = 0; // 0.1159 or 0.13
+    public static final double KV = 0; // 52.183
+    public static final double KA = 0; // 4.3241
+    public static final double KP = 0; // 12 / 1.6
     public static final double KI = 0;
     public static final double KD = 0;
   }
 
   public static final class AlgaeConstants {
-    public static final int leftCanID = 0;
-    public static final int rightCanID = 0;
-    public static final int wristCanID = 0;
+    public static final int leftCanID = 16;
+    public static final int rightCanID = 15;
+    public static final int wristCanID = 17;
 
     public static final Current grabCurrentLimit = Amps.of(15);
     public static final Current wristCurrentLimit = Amps.of(40);
@@ -228,8 +228,8 @@ public final class Constants {
 
     public static final double wristGearing = 60;
 
-    public static final Angle minWristAngle = Degrees.of(-35);
-    public static final Angle maxWristAngle = Degrees.of(130);
+    public static final Angle minWristAngle = Degrees.of(0); // -35
+    public static final Angle maxWristAngle = Degrees.of(70);
     public static final Angle wristTolerance = Degrees.of(2);
 
     public static final double KS = 0.41008;
