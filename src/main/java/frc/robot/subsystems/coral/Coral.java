@@ -63,7 +63,7 @@ public class Coral extends SubsystemBase {
   }
 
   public Command stow() {
-    return coordinatedControl(stowAngle, Volts.zero(), () -> false).withName("Stow arm");
+    return coordinatedControl(stowAngle, Volts.zero(), () -> false).withName("Stow Coral Arm");
   }
 
   public Command intake() {
