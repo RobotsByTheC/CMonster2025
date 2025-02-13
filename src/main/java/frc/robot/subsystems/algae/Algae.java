@@ -2,8 +2,6 @@ package frc.robot.subsystems.algae;
 
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.Constants.AlgaeConstants.*;
-import static frc.robot.Constants.CoralConstants.maxWristAngle;
-import static frc.robot.Constants.CoralConstants.minWristAngle;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.controller.ArmFeedforward;
