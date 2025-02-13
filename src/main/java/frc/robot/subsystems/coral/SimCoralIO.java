@@ -1,12 +1,25 @@
 package frc.robot.subsystems.coral;
 
-import static edu.wpi.first.units.Units.*;
-import static frc.robot.Constants.CoralConstants.*;
+import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Milliseconds;
+import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.Volts;
+import static frc.robot.Constants.CoralConstants.maxWristAngle;
+import static frc.robot.Constants.CoralConstants.minWristAngle;
+import static frc.robot.Constants.CoralConstants.stowAngle;
+import static frc.robot.Constants.CoralConstants.wristGearing;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.units.measure.*;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.units.measure.Time;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import frc.robot.sim.MechanismSim;
 import frc.robot.sim.SimulationContext;

@@ -1,7 +1,15 @@
 package frc.robot.subsystems.coral;
 
-import static edu.wpi.first.units.Units.*;
-import static frc.robot.Constants.CoralConstants.*;
+import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.RPM;
+import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.Volts;
+import static frc.robot.Constants.CoralConstants.grabCurrentLimit;
+import static frc.robot.Constants.CoralConstants.leftCanID;
+import static frc.robot.Constants.CoralConstants.rightCanID;
+import static frc.robot.Constants.CoralConstants.wristCanID;
+import static frc.robot.Constants.CoralConstants.wristCurrentLimit;
 
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.spark.SparkBase;

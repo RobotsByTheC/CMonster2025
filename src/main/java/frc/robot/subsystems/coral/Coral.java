@@ -1,7 +1,26 @@
 package frc.robot.subsystems.coral;
 
-import static edu.wpi.first.units.Units.*;
-import static frc.robot.Constants.CoralConstants.*;
+import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.Second;
+import static edu.wpi.first.units.Units.Volts;
+import static frc.robot.Constants.CoralConstants.KA;
+import static frc.robot.Constants.CoralConstants.KD;
+import static frc.robot.Constants.CoralConstants.KG;
+import static frc.robot.Constants.CoralConstants.KI;
+import static frc.robot.Constants.CoralConstants.KP;
+import static frc.robot.Constants.CoralConstants.KS;
+import static frc.robot.Constants.CoralConstants.KV;
+import static frc.robot.Constants.CoralConstants.branchScoreAngle;
+import static frc.robot.Constants.CoralConstants.grabIntakeVoltage;
+import static frc.robot.Constants.CoralConstants.grabScoreVoltage;
+import static frc.robot.Constants.CoralConstants.intakeAngle;
+import static frc.robot.Constants.CoralConstants.maxWristAngle;
+import static frc.robot.Constants.CoralConstants.minWristAngle;
+import static frc.robot.Constants.CoralConstants.stowAngle;
+import static frc.robot.Constants.CoralConstants.tipScoreAngle;
+import static frc.robot.Constants.CoralConstants.troughScoreAngle;
+import static frc.robot.Constants.CoralConstants.wristTolerance;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;

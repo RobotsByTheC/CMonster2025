@@ -1,7 +1,15 @@
 package frc.robot.subsystems.algae;
 
-import static edu.wpi.first.units.Units.*;
-import static frc.robot.Constants.AlgaeConstants.*;
+import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Milliseconds;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.Volts;
+import static frc.robot.Constants.AlgaeConstants.grabCurrentLimit;
+import static frc.robot.Constants.AlgaeConstants.leftCanID;
+import static frc.robot.Constants.AlgaeConstants.rightCanID;
+import static frc.robot.Constants.AlgaeConstants.wristCanID;
+import static frc.robot.Constants.AlgaeConstants.wristCurrentLimit;
 
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.spark.SparkBase;
@@ -9,8 +17,12 @@ import com.revrobotics.spark.SparkLowLevel;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.epilogue.Logged;
-import edu.wpi.first.units.measure.*;
 import edu.wpi.first.epilogue.NotLogged;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.units.measure.Time;
+import edu.wpi.first.units.measure.Voltage;
 
 @Logged
 public class RealAlgaeIO implements AlgaeIO {

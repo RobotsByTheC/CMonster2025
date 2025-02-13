@@ -1,13 +1,25 @@
 package frc.robot.subsystems.algae;
 
-import static edu.wpi.first.units.Units.*;
+import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Milliseconds;
 import static edu.wpi.first.units.Units.Radians;
-import static frc.robot.Constants.AlgaeConstants.*;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.Volts;
+import static frc.robot.Constants.AlgaeConstants.maxWristAngle;
+import static frc.robot.Constants.AlgaeConstants.minWristAngle;
+import static frc.robot.Constants.AlgaeConstants.stowAngle;
+import static frc.robot.Constants.AlgaeConstants.wristGearing;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.units.measure.*;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.units.measure.Time;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import frc.robot.sim.MechanismSim;
 import frc.robot.sim.SimulationContext;

@@ -1,7 +1,25 @@
 package frc.robot.subsystems.algae;
 
-import static edu.wpi.first.units.Units.*;
-import static frc.robot.Constants.AlgaeConstants.*;
+import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.Second;
+import static edu.wpi.first.units.Units.Volts;
+import static frc.robot.Constants.AlgaeConstants.KA;
+import static frc.robot.Constants.AlgaeConstants.KD;
+import static frc.robot.Constants.AlgaeConstants.KG;
+import static frc.robot.Constants.AlgaeConstants.KI;
+import static frc.robot.Constants.AlgaeConstants.KP;
+import static frc.robot.Constants.AlgaeConstants.KS;
+import static frc.robot.Constants.AlgaeConstants.KV;
+import static frc.robot.Constants.AlgaeConstants.grabIntakeVoltage;
+import static frc.robot.Constants.AlgaeConstants.grabScoreVoltage;
+import static frc.robot.Constants.AlgaeConstants.groundIntakeAngle;
+import static frc.robot.Constants.AlgaeConstants.maxWristAngle;
+import static frc.robot.Constants.AlgaeConstants.minWristAngle;
+import static frc.robot.Constants.AlgaeConstants.processorScoreAngle;
+import static frc.robot.Constants.AlgaeConstants.reefIntakeAngle;
+import static frc.robot.Constants.AlgaeConstants.stowAngle;
+import static frc.robot.Constants.AlgaeConstants.wristTolerance;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
