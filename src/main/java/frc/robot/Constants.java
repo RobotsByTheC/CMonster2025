@@ -195,6 +195,8 @@ public final class Constants {
     public static final Angle tipScoreAngle = Degrees.of(-60);
     public static final Angle stowAngle = Degrees.of(48);
 
+    public static final double wristGearing = 60;
+
     public static final Angle minWristAngle = Degrees.of(-75);
     public static final Angle maxWristAngle = Degrees.of(50);
     public static final Angle wristTolerance = Degrees.of(2);
@@ -223,6 +225,8 @@ public final class Constants {
     public static final Angle reefIntakeAngle = Degrees.of(-35);
     public static final Angle processorScoreAngle = Degrees.of(0);
     public static final Angle stowAngle = Degrees.of(125);
+
+    public static final double wristGearing = 60;
 
     public static final Angle minWristAngle = Degrees.of(-35);
     public static final Angle maxWristAngle = Degrees.of(130);
