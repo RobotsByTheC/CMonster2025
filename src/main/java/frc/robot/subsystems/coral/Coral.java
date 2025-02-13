@@ -59,7 +59,8 @@ public class Coral extends SubsystemBase {
     profiledPIDController.enableContinuousInput(0, 2 * Math.PI);
     sysIdRoutine =
         new SysIdRoutine(
-            new SysIdRoutine.Config(), new SysIdRoutine.Mechanism(io::setWristVoltage, null, this));
+            new SysIdRoutine.Config(Volts.per(Second).of(0.5), Volts.of(4), null),
+            new SysIdRoutine.Mechanism(io::setWristVoltage, null, this));
   }
 
   public Command scoreL1() {
