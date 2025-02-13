@@ -4,8 +4,6 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.Volts;
-
 import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.logging.EpilogueBackend;
@@ -22,6 +20,9 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.sim.SimulationContext;
+import frc.robot.subsystems.coral.Coral;
+import frc.robot.subsystems.coral.RealCoralIO;
+import frc.robot.subsystems.coral.SimCoralIO;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.drive.MAXSwerveIO;
 import frc.robot.subsystems.drive.SimSwerveIO;
@@ -37,6 +38,7 @@ public class Robot extends TimedRobot {
   // The robot's subsystems
   private final DriveSubsystem drive;
   private final Elevator elevator;
+  private final Coral coral;
 
   // Driver and operator controls
   private final CommandXboxController driverController; // NOPMD
@@ -51,10 +53,12 @@ public class Robot extends TimedRobot {
     if (Robot.isSimulation()) {
       drive = new DriveSubsystem(new SimSwerveIO());
       elevator = new Elevator(new SimElevatorIO());
+      coral = new Coral(new SimCoralIO());
     } else {
       // Running on real hardware
       drive = new DriveSubsystem(new MAXSwerveIO());
       elevator = new Elevator(new RealElevatorIO());
+      coral = new Coral(new RealCoralIO());
     }
 
     driverController = new CommandXboxController(Constants.OIConstants.driverControllerPort);
@@ -75,54 +79,109 @@ public class Robot extends TimedRobot {
      */
     drive.setDefaultCommand(driveWithFlightSticks());
     elevator.setDefaultCommand(elevator.stop());
+    // TODO add coral stow default command
 
     // Start data logging
 
     Epilogue.configure(
-        config -> {
-          config.backend =
-              EpilogueBackend.multi(
-                  new FileBackend(DataLogManager.getLog()),
-                  new NTEpilogueBackend(NetworkTableInstance.getDefault()));
-        });
+        config ->
+            config.backend =
+                EpilogueBackend.multi(
+                    new FileBackend(DataLogManager.getLog()),
+                    new NTEpilogueBackend(NetworkTableInstance.getDefault())));
 
-    Epilogue.bind(this);
   }
 
+  @SuppressWarnings("unused")
   private Command driveWithXbox() {
+    //noinspection SuspiciousNameCombination
     return drive.driveWithJoysticks(
         driverController::getLeftY, driverController::getLeftX, driverController::getRightX);
   }
 
   private Command driveWithFlightSticks() {
+    //noinspection SuspiciousNameCombination
     return drive.driveWithJoysticks(rStick::getY, rStick::getX, lStick::getTwist);
   }
 
   private void configureButtonBindings() {
-    driverController.a().whileTrue(elevator.goToL1Height());
-    driverController.b().whileTrue(elevator.goToL2Height());
-    driverController.x().whileTrue(elevator.goToL3Height());
-    driverController.y().whileTrue(elevator.goToL4Height());
+    /*
+    A: Score L1
+    B: Score L2
+    X: Score L3
+    Y: Score L4
+    LB: Coral Intake
+    RB: Elevator Home
+    LT: Elevator Sysid Routine (Test)
+    RT: Coral Sysid Routine (Test)
+    UA:
+    RA:
+    DA:
+    LA:
+    */
+    configureTeleopBindings();
+    configureTestBindings();
+  }
 
-    driverController.rightBumper().whileTrue(elevator.home());
+  /**
+   * Configures controls that will be used in teleop mode in the main competition. Primarily used
+   * for controlling subsystems.
+   */
+  private void configureTeleopBindings() {
+    driverController
+        .a()
+        .whileTrue(
+            elevator
+                .goToL1Height()
+                .andThen(coral.scoreL1().deadlineFor(elevator.holdCurrentPosition()))
+                .andThen(elevator.home().alongWith(coral.stow()))
+                .withName("Score L1"));
+    driverController
+        .b()
+        .whileTrue(
+            elevator
+                .goToL2Height()
+                .andThen(coral.scoreL2().deadlineFor(elevator.holdCurrentPosition()))
+                .andThen(elevator.home().alongWith(coral.stow()))
+                .withName("Score L2"));
+    driverController
+        .x()
+        .whileTrue(
+            elevator
+                .goToL3Height()
+                .andThen(coral.scoreL3().deadlineFor(elevator.holdCurrentPosition()))
+                .andThen(elevator.home().alongWith(coral.stow()))
+                .withName("Score L3"));
+    driverController
+        .y()
+        .whileTrue(
+            elevator
+                .goToL4Height()
+                .andThen(coral.scoreL4().deadlineFor(elevator.holdCurrentPosition()))
+                .andThen(elevator.home().alongWith(coral.stow()))
+                .withName("Score L4"));
+    //    driverController.rightBumper().whileTrue(elevator.home().withName("Home Elevator"));
+    //    driverController.leftBumper().whileTrue(coral.intake().withName("Intake Coral"));
+    driverController.povDown().whileTrue(coral.scoreL1());
+    driverController.povUp().whileTrue(coral.stow());
+  }
 
+  /**
+   * Configures additional controls that are only active in test mode. Primarily used for sysid
+   * routines.
+   */
+  private void configureTestBindings() {
     driverController
         .leftBumper()
         .and(RobotModeTriggers.test())
-        .whileTrue(elevator.runSysIdRoutine());
+        .whileTrue(elevator.runSysIdRoutine().withName("Run Elevator Sysid Routine"));
     driverController
-        .rightTrigger()
+        .rightBumper()
         .and(RobotModeTriggers.test())
-        .whileTrue(elevator.applyVoltage(Volts.of(3)));
-    driverController
-        .leftTrigger()
-        .and(RobotModeTriggers.test())
-        .whileTrue(elevator.applyVoltage(Volts.of(-3)));
+        .whileTrue(coral.runSysIdRoutine().withName("Run Coral Sysid Routine"));
   }
 
   private void configureAutomaticBindings() {
-    //    elevator.atMaxHeight.onTrue(elevator.holdCurrentPosition());
-    //    elevator.atMinHeight.onTrue(elevator.holdCurrentPosition());
     elevator.isStalling.whileTrue(elevator.stop());
   }
 
@@ -160,6 +219,8 @@ public class Robot extends TimedRobot {
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
+
+    Epilogue.update(this);
   }
 
   @Override
@@ -174,7 +235,7 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledPeriodic() {}
 
-  /** This autonomous runs the autonomous command selected by the {@link #autoChooser}. */
+  /** This autonomous runs the autonomous command selected by the autoChooser. */
   @Override
   public void autonomousInit() {
     autonomousCommand = getAutonomousCommand();

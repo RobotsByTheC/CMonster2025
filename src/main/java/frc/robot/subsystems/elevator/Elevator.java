@@ -44,13 +44,12 @@ public class Elevator extends SubsystemBase {
             new SysIdRoutine.Config(Volts.per(Second).of(0.5), Volts.of(4), null),
             new SysIdRoutine.Mechanism(
                 io::setVoltage,
-                log -> {
-                  log.motor("Elevator Motor")
-                      .current(io.getCurrentDraw())
-                      .voltage(io.getAppliedVoltage())
-                      .linearPosition(io.getHeight())
-                      .linearVelocity(io.getVelocity());
-                },
+                log ->
+                    log.motor("Elevator Motor")
+                        .current(io.getCurrentDraw())
+                        .voltage(io.getAppliedVoltage())
+                        .linearPosition(io.getHeight())
+                        .linearVelocity(io.getVelocity()),
                 this));
   }
 
@@ -66,6 +65,7 @@ public class Elevator extends SubsystemBase {
     return run(() -> io.setVoltage(Volts.of(0))).withName("Stop");
   }
 
+  @SuppressWarnings("unused")
   public Command applyVoltage(Voltage voltage) {
     return run(() -> io.setVoltage(voltage)).withName("Set Voltage: " + voltage);
   }
@@ -88,6 +88,7 @@ public class Elevator extends SubsystemBase {
                 profiledPIDController.reset(
                     io.getHeight().in(Meters), io.getVelocity().in(MetersPerSecond)),
             () -> io.setVoltage(calculatePIDVoltage(targetHeight)))
+        .until(profiledPIDController::atGoal)
         .withName("Go To Height " + targetHeight.toLongString());
   }
 
@@ -124,13 +125,14 @@ public class Elevator extends SubsystemBase {
         .until(atMaxHeight)
         .andThen(sysIdRoutine.dynamic(SysIdRoutine.Direction.kReverse).until(atMinHeight))
         .andThen(sysIdRoutine.quasistatic(SysIdRoutine.Direction.kForward).until(atMaxHeight))
-        .andThen(sysIdRoutine.quasistatic(SysIdRoutine.Direction.kReverse).until(atMinHeight));
+        .andThen(sysIdRoutine.quasistatic(SysIdRoutine.Direction.kReverse).until(atMinHeight))
+        .withName("Elevator Sysid Routine");
   }
 
   private Voltage calculatePIDVoltage(Distance targetHeight) {
     double pidVoltage =
         profiledPIDController.calculate(io.getHeight().in(Meters), targetHeight.in(Meters));
-    double feetForwardVoltage = feedforward.calculate(0);
-    return Volts.of(pidVoltage + feetForwardVoltage);
+    double feedForwardVoltage = feedforward.calculate(0);
+    return Volts.of(pidVoltage + feedForwardVoltage);
   }
 }
