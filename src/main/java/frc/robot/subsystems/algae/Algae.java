@@ -50,7 +50,9 @@ public class Algae extends SubsystemBase {
   }
 
   public Command scoreProcessor() {
-    return coordinatedControl(processorScoreAngle, grabScoreVoltage, () -> !io.hasAlgae());
+    return coordinatedControl(processorScoreAngle, grabScoreVoltage, () -> !io.hasAlgae())
+        .withName("Algae Score Processor");
+  }
   }
 
   public Command runSysIdRoutine() {
