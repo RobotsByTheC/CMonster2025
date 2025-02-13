@@ -23,7 +23,7 @@ public class SimCoralIO implements CoralIO {
     wristSim =
         new SingleJointedArmSim(
             DCMotor.getNEO(1),
-            60,
+            wristGearing,
             0.1,
             Meters.convertFrom(10, Inches),
             minWristAngle.in(Radians),
