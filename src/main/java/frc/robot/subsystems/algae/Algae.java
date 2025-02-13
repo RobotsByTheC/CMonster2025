@@ -75,6 +75,7 @@ public class Algae extends SubsystemBase {
     return coordinatedControl(processorScoreAngle, grabScoreVoltage, () -> !io.hasAlgae())
         .withName("Algae Score Processor");
   }
+
   public Command stow() {
     return coordinatedControl(stowAngle, Volts.zero(), () -> false).withName("Stow Algae Arm");
   }
