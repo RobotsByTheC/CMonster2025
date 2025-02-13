@@ -1,10 +1,12 @@
 package frc.robot.subsystems.algae;
 
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 
+@Logged
 public interface AlgaeIO {
   /**
    * Up is positive voltage, down is negative voltage.

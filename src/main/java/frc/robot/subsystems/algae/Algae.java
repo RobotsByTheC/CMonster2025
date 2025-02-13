@@ -5,6 +5,7 @@ import static frc.robot.Constants.AlgaeConstants.*;
 import static frc.robot.Constants.CoralConstants.maxWristAngle;
 import static frc.robot.Constants.CoralConstants.minWristAngle;
 
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -17,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import java.util.function.BooleanSupplier;
 
+@Logged
 public class Algae extends SubsystemBase {
   private AlgaeIO io;
   private final ProfiledPIDController profiledPIDController;
