@@ -208,6 +208,35 @@ public final class Constants {
     public static final double KD = 0;
   }
 
+  public static final class AlgaeConstants {
+    public static final int leftCanID = 0;
+    public static final int rightCanID = 0;
+    public static final int wristCanID = 0;
+
+    public static final Current grabCurrentLimit = Amps.of(15);
+    public static final Current wristCurrentLimit = Amps.of(40);
+
+    public static final Voltage grabIntakeVoltage = Volts.of(6);
+    public static final Voltage grabScoreVoltage = Volts.of(6);
+
+    public static final Angle groundIntakeAngle = Degrees.of(30);
+    public static final Angle reefIntakeAngle = Degrees.of(-35);
+    public static final Angle processorScoreAngle = Degrees.of(0);
+    public static final Angle stowAngle = Degrees.of(125);
+
+    public static final Angle minWristAngle = Degrees.of(-35);
+    public static final Angle maxWristAngle = Degrees.of(130);
+    public static final Angle wristTolerance = Degrees.of(2);
+
+    public static final double KS = 0;
+    public static final double KG = 0;
+    public static final double KV = 0;
+    public static final double KA = 0;
+    public static final double KP = 0;
+    public static final double KI = 0;
+    public static final double KD = 0;
+  }
+
   public static final class OIConstants {
     public static final int driverControllerPort = 1;
     public static final int leftJoystickPort = 2;
