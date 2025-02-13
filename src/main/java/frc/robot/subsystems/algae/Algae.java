@@ -55,12 +55,12 @@ public class Algae extends SubsystemBase {
 
   public Command runSysIdRoutine() {
     return sysIdRoutine
-        .dynamic(SysIdRoutine.Direction.kForward)
-        .until(atMaxAngle)
-        .andThen(sysIdRoutine.dynamic(SysIdRoutine.Direction.kReverse).until(atMinAngle))
-        .andThen(sysIdRoutine.quasistatic(SysIdRoutine.Direction.kForward).until(atMaxAngle))
+        .dynamic(SysIdRoutine.Direction.kReverse)
+        .until(atMinAngle)
+        .andThen(sysIdRoutine.dynamic(SysIdRoutine.Direction.kForward).until(atMaxAngle))
         .andThen(sysIdRoutine.quasistatic(SysIdRoutine.Direction.kReverse).until(atMinAngle))
-        .withName("Coral Sysid Routine");
+        .andThen(sysIdRoutine.quasistatic(SysIdRoutine.Direction.kForward).until(atMaxAngle))
+        .withName("Algae Sysid Routine");
   }
 
   private Command coordinatedControl(
