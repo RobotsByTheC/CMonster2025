@@ -20,6 +20,9 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.sim.SimulationContext;
+import frc.robot.subsystems.algae.Algae;
+import frc.robot.subsystems.algae.RealAlgaeIO;
+import frc.robot.subsystems.algae.SimAlgaeIO;
 import frc.robot.subsystems.coral.Coral;
 import frc.robot.subsystems.coral.RealCoralIO;
 import frc.robot.subsystems.coral.SimCoralIO;
@@ -39,6 +42,7 @@ public class Robot extends TimedRobot {
   private final DriveSubsystem drive;
   private final Elevator elevator;
   private final Coral coral;
+  private final Algae algae;
 
   // Driver and operator controls
   private final CommandXboxController driverController; // NOPMD
@@ -54,11 +58,14 @@ public class Robot extends TimedRobot {
       drive = new DriveSubsystem(new SimSwerveIO());
       elevator = new Elevator(new SimElevatorIO());
       coral = new Coral(new SimCoralIO());
+      algae = new Algae(new SimAlgaeIO());
+
     } else {
       // Running on real hardware
       drive = new DriveSubsystem(new MAXSwerveIO());
       elevator = new Elevator(new RealElevatorIO());
       coral = new Coral(new RealCoralIO());
+      algae = new Algae(new RealAlgaeIO());
     }
 
     driverController = new CommandXboxController(Constants.OIConstants.driverControllerPort);
@@ -79,6 +86,7 @@ public class Robot extends TimedRobot {
      */
     drive.setDefaultCommand(driveWithFlightSticks());
     elevator.setDefaultCommand(elevator.stop());
+    algae.setDefaultCommand(algae.stow());
     // TODO add coral stow default command
 
     // Start data logging
@@ -177,7 +185,7 @@ public class Robot extends TimedRobot {
     driverController
         .rightBumper()
         .and(RobotModeTriggers.test())
-        .whileTrue(coral.runSysIdRoutine().withName("Run Coral Sysid Routine"));
+        .whileTrue(algae.runSysIdRoutine().withName("Run Algae Sysid Routine"));
   }
 
   private void configureAutomaticBindings() {
