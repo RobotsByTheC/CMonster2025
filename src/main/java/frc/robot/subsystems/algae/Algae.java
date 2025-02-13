@@ -46,7 +46,8 @@ public class Algae extends SubsystemBase {
   }
 
   public Command intakeReef() {
-    return coordinatedControl(reefIntakeAngle, grabIntakeVoltage, () -> io.hasAlgae());
+    return coordinatedControl(reefIntakeAngle, grabIntakeVoltage, () -> io.hasAlgae())
+        .withName("Algae Reef Intake");
   }
 
   public Command scoreProcessor() {
