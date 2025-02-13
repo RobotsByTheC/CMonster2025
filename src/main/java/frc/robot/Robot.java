@@ -89,7 +89,6 @@ public class Robot extends TimedRobot {
                 EpilogueBackend.multi(
                     new FileBackend(DataLogManager.getLog()),
                     new NTEpilogueBackend(NetworkTableInstance.getDefault())));
-
   }
 
   @SuppressWarnings("unused")
