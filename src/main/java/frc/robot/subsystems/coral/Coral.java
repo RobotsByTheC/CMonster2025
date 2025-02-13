@@ -41,7 +41,6 @@ public class Coral extends SubsystemBase {
   private CoralIO io;
   private final ProfiledPIDController profiledPIDController;
   private final ArmFeedforward feedforward;
-  private final SysIdRoutine sysIdRoutine;
   @NotLogged private final SysIdRoutine sysIdRoutine;
 
   public final Trigger atMaxAngle = new Trigger(() -> io.getWristAngle().gte(maxWristAngle));
