@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.*;
 import static frc.robot.Constants.CoralConstants.*;
 
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.*;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
@@ -16,8 +17,8 @@ public class SimCoralIO implements CoralIO {
   private Time grabberActionStart = Milliseconds.of(System.currentTimeMillis());
 
   private Voltage grabberVoltage = Volts.zero();
-  private final SingleJointedArmSim wristSim;
-  private final MechanismSim mechanismSim;
+  @NotLogged private final SingleJointedArmSim wristSim;
+  @NotLogged private final MechanismSim mechanismSim;
 
   public SimCoralIO() {
     wristSim =

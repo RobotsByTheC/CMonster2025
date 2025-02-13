@@ -3,6 +3,7 @@ package frc.robot.subsystems.elevator;
 import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Distance;
@@ -15,8 +16,8 @@ import frc.robot.sim.SimulationContext;
 
 @Logged
 public class SimElevatorIO implements ElevatorIO {
-  private final ElevatorSim elevatorSim;
-  private final MechanismSim mechanismSim;
+  @NotLogged private final ElevatorSim elevatorSim;
+  @NotLogged private final MechanismSim mechanismSim;
 
   public SimElevatorIO() {
     elevatorSim =

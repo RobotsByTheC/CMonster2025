@@ -5,6 +5,7 @@ import static edu.wpi.first.units.Units.Radians;
 import static frc.robot.Constants.AlgaeConstants.*;
 
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.*;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
@@ -13,8 +14,8 @@ import frc.robot.sim.SimulationContext;
 
 @Logged
 public class SimAlgaeIO implements AlgaeIO {
-  private final SingleJointedArmSim wristSim;
-  private final MechanismSim mechanismSim;
+  @NotLogged private final SingleJointedArmSim wristSim;
+  @NotLogged private final MechanismSim mechanismSim;
 
   private Time grabberActionStart = Milliseconds.of(System.currentTimeMillis());
   private boolean hasAlgae = false;

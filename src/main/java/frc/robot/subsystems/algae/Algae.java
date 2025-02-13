@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.*;
 import static frc.robot.Constants.AlgaeConstants.*;
 
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -21,7 +22,7 @@ public class Algae extends SubsystemBase {
   private AlgaeIO io;
   private final ProfiledPIDController profiledPIDController;
   private final ArmFeedforward feedForward;
-  private final SysIdRoutine sysIdRoutine;
+  @NotLogged private final SysIdRoutine sysIdRoutine;
   public final Trigger atMaxAngle = new Trigger(() -> io.getWristAngle().gte(maxWristAngle));
   public final Trigger atMinAngle = new Trigger(() -> io.getWristAngle().lte(minWristAngle));
 

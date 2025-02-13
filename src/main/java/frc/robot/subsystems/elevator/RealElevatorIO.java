@@ -9,6 +9,7 @@ import com.revrobotics.spark.SparkLowLevel;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
@@ -16,11 +17,11 @@ import edu.wpi.first.units.measure.Voltage;
 
 @Logged
 public class RealElevatorIO implements ElevatorIO {
-  private final SparkMax left;
-  private final SparkMax right;
-  private final SparkMaxConfig sparkConfig;
-  private final RelativeEncoder rightEncoder;
-  private final RelativeEncoder leftEncoder;
+  @NotLogged private final SparkMax left;
+  @NotLogged private final SparkMax right;
+  @NotLogged private final SparkMaxConfig sparkConfig;
+  @NotLogged private final RelativeEncoder rightEncoder;
+  @NotLogged private final RelativeEncoder leftEncoder;
 
   public RealElevatorIO() {
     left = new SparkMax(leftCanID, SparkLowLevel.MotorType.kBrushless);

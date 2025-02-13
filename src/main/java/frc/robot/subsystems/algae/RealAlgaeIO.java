@@ -10,15 +10,16 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.units.measure.*;
+import edu.wpi.first.epilogue.NotLogged;
 
 @Logged
 public class RealAlgaeIO implements AlgaeIO {
-  private final SparkMax grabLeft;
-  private final SparkMax grabRight;
-  private final SparkMax wrist;
-  private final SparkMaxConfig grabConfig;
-  private final SparkMaxConfig wristConfig;
-  private final AbsoluteEncoder wristEncoder;
+  @NotLogged private final SparkMax grabLeft;
+  @NotLogged private final SparkMax grabRight;
+  @NotLogged private final SparkMax wrist;
+  @NotLogged private final SparkMaxConfig grabConfig;
+  @NotLogged private final SparkMaxConfig wristConfig;
+  @NotLogged private final AbsoluteEncoder wristEncoder;
 
   private Time grabberActionStart = Milliseconds.of(System.currentTimeMillis());
   private boolean hasAlgae = false;

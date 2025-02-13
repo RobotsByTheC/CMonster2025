@@ -10,6 +10,7 @@ import com.revrobotics.spark.SparkLowLevel;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
@@ -17,14 +18,14 @@ import edu.wpi.first.units.measure.Voltage;
 
 @Logged
 public class RealCoralIO implements CoralIO {
-  private final SparkMax grabLeft;
-  private final SparkMax grabRight;
-  private final SparkMax wrist;
-  private final SparkMaxConfig grabConfig;
-  private final SparkMaxConfig wristConfig;
-  private final SparkLimitSwitch leftLimitSwitch;
-  private final SparkLimitSwitch rightLimitSwitch;
-  private final AbsoluteEncoder wristEncoder;
+  @NotLogged private final SparkMax grabLeft;
+  @NotLogged private final SparkMax grabRight;
+  @NotLogged private final SparkMax wrist;
+  @NotLogged private final SparkMaxConfig grabConfig;
+  @NotLogged private final SparkMaxConfig wristConfig;
+  @NotLogged private final SparkLimitSwitch leftLimitSwitch;
+  @NotLogged private final SparkLimitSwitch rightLimitSwitch;
+  @NotLogged private final AbsoluteEncoder wristEncoder;
 
   public RealCoralIO() {
     grabLeft = new SparkMax(leftCanID, SparkLowLevel.MotorType.kBrushless);

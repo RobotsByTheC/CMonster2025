@@ -8,6 +8,7 @@ import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.Constants.ModuleConstants.wheelCircumference;
 
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -31,7 +32,7 @@ public class SimModuleIO implements ModuleIO {
   private final PIDController turnPID = new PIDController(10, 0, 0);
 
   private final SwerveModulePosition currentPosition = new SwerveModulePosition();
-  private final Simulation update = this::update;
+  @NotLogged private final Simulation update = this::update;
 
   private Voltage lastVoltage = Volts.zero();
 

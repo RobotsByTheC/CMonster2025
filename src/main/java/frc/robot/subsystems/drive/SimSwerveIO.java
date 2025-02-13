@@ -7,6 +7,7 @@ import static frc.robot.Constants.DriveConstants.rearLeftChassisAngularOffset;
 import static frc.robot.Constants.DriveConstants.rearRightChassisAngularOffset;
 
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.sim.Simulation;
 import frc.robot.sim.SimulationContext;
@@ -20,7 +21,7 @@ public class SimSwerveIO implements SwerveIO {
   private final SwerveModule rearLeft;
   private final SwerveModule rearRight;
 
-  private final Simulation update = this::update;
+  @NotLogged private final Simulation update = this::update;
 
   // Assume a 0° starting heading
   private Rotation2d heading = Rotation2d.fromDegrees(0);

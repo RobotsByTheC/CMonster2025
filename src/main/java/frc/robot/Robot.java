@@ -6,6 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.epilogue.logging.EpilogueBackend;
 import edu.wpi.first.epilogue.logging.FileBackend;
 import edu.wpi.first.epilogue.logging.NTEpilogueBackend;
@@ -45,9 +46,9 @@ public class Robot extends TimedRobot {
   private final Algae algae;
 
   // Driver and operator controls
-  private final CommandXboxController driverController; // NOPMD
-  private final Joystick lStick; // NOPMD
-  private final Joystick rStick; // NOPMD
+  @NotLogged private final CommandXboxController driverController; // NOPMD
+  @NotLogged private final Joystick lStick; // NOPMD
+  @NotLogged private final Joystick rStick; // NOPMD
 
   public Robot() {
     // Initialize our subsystems. If our program is running in simulation mode (either from the

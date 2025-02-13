@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.*;
 import static frc.robot.Constants.ElevatorConstants.*;
 
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.Debouncer;
@@ -25,10 +26,13 @@ public class Elevator extends SubsystemBase {
 
   public final Trigger atMinHeight = new Trigger(() -> getHeight().lte(minHeight));
   public final Trigger atMaxHeight = new Trigger(() -> getHeight().gte(maxHeight));
-  private final Debouncer stallingDebouncer = new Debouncer(stallDuration.in(Seconds));
+  @NotLogged private final Debouncer stallingDebouncer = new Debouncer(stallDuration.in(Seconds));
+
+  @NotLogged
   public final Trigger isStalling =
       new Trigger(() -> stallingDebouncer.calculate(getCurrentDraw().gte(stallThreshold)));
-  private final SysIdRoutine sysIdRoutine;
+
+  @NotLogged private final SysIdRoutine sysIdRoutine;
 
   public Elevator(ElevatorIO io) {
     this.io = io;
