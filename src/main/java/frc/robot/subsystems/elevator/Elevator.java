@@ -64,7 +64,7 @@ public class Elevator extends SubsystemBase {
             new TrapezoidProfile.Constraints(feedforward.maxAchievableVelocity(12.5, 20), 20));
     sysIdRoutine =
         new SysIdRoutine(
-            new SysIdRoutine.Config(Volts.per(Second).of(0.5), Volts.of(4), null),
+            new SysIdRoutine.Config(Volts.per(Second).of(0.5), Volts.of(6), null),
             new SysIdRoutine.Mechanism(
                 io::setVoltage,
                 log ->
