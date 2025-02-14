@@ -1,7 +1,14 @@
 package frc.robot.subsystems.elevator;
 
-import static edu.wpi.first.units.Units.*;
-import static frc.robot.Constants.ElevatorConstants.*;
+import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.InchesPerSecond;
+import static edu.wpi.first.units.Units.Volts;
+import static frc.robot.Constants.ElevatorConstants.currentLimit;
+import static frc.robot.Constants.ElevatorConstants.leftCanID;
+import static frc.robot.Constants.ElevatorConstants.positionConversionFactor;
+import static frc.robot.Constants.ElevatorConstants.rightCanID;
+import static frc.robot.Constants.ElevatorConstants.velocityConversionFactor;
 
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase;

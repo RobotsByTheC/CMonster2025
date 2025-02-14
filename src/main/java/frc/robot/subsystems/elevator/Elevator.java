@@ -1,7 +1,26 @@
 package frc.robot.subsystems.elevator;
 
-import static edu.wpi.first.units.Units.*;
-import static frc.robot.Constants.ElevatorConstants.*;
+import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.Second;
+import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.units.Units.Volts;
+import static frc.robot.Constants.ElevatorConstants.KA;
+import static frc.robot.Constants.ElevatorConstants.KD;
+import static frc.robot.Constants.ElevatorConstants.KG;
+import static frc.robot.Constants.ElevatorConstants.KI;
+import static frc.robot.Constants.ElevatorConstants.KP;
+import static frc.robot.Constants.ElevatorConstants.KS;
+import static frc.robot.Constants.ElevatorConstants.KV;
+import static frc.robot.Constants.ElevatorConstants.l1;
+import static frc.robot.Constants.ElevatorConstants.l2;
+import static frc.robot.Constants.ElevatorConstants.l3;
+import static frc.robot.Constants.ElevatorConstants.l4;
+import static frc.robot.Constants.ElevatorConstants.maxHeight;
+import static frc.robot.Constants.ElevatorConstants.minHeight;
+import static frc.robot.Constants.ElevatorConstants.stallDuration;
+import static frc.robot.Constants.ElevatorConstants.stallThreshold;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
