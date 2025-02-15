@@ -174,9 +174,9 @@ public final class Constants {
     public static final Current stallThreshold = Amps.of(70);
     public static final Time stallDuration = Milliseconds.of(500);
 
-    public static final Distance minHeight = Inches.of(0);
+    public static final Distance minHeight = Inches.of(24.5);
     // Slightly less than max elevator extension
-    public static final Distance maxHeight = Inches.of(67.5);
+    public static final Distance maxHeight = Inches.of(86);
 
     public static final int leftCanID = 10;
     public static final int rightCanID = 9;
@@ -191,8 +191,8 @@ public final class Constants {
 
     public static final int currentLimit = 40;
 
-    public static final double KS = 1.9;
-    public static final double KG = 2.6;
+    public static final double KS = 2.5;
+    public static final double KG = 3;
     public static final double KV = 1.1023;
     public static final double KA = 0.28148;
     public static final double KP = 20;

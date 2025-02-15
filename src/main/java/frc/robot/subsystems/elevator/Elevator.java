@@ -119,20 +119,26 @@ public class Elevator extends SubsystemBase {
         .withName("Go To Height " + targetHeight.toLongString());
   }
 
+  public Command kickstart() {
+    return applyVoltage(Volts.of(12))
+      .withTimeout(Seconds.of(0.25))
+      .withName("Kickstart");
+  }
+
   public Command goToL1Height() {
     return goToHeight(l1).withName("Rising to L1");
   }
 
   public Command goToL2Height() {
-    return goToHeight(l2).withName("Rising to L2");
+    return kickstart().andThen(goToHeight(l2)).withName("Rising to L2");
   }
 
   public Command goToL3Height() {
-    return goToHeight(l3).withName("Rising to L3");
+    return kickstart().andThen(goToHeight(l3)).withName("Rising to L3");
   }
 
   public Command goToL4Height() {
-    return goToHeight(l4).withName("Rising to L4");
+    return kickstart().andThen(goToHeight(l4)).withName("Rising to L4");
   }
 
   public Command holdCurrentPosition() {
