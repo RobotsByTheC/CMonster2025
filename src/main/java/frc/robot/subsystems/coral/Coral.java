@@ -43,6 +43,9 @@ public class Coral extends SubsystemBase {
   private final ArmFeedforward feedforward;
   @NotLogged private final SysIdRoutine sysIdRoutine;
 
+  private double pidVoltage;
+  private double feedForwardVoltage;
+
   public final Trigger atMaxAngle = new Trigger(() -> io.getWristAngle().gte(maxWristAngle));
   public final Trigger atMinAngle = new Trigger(() -> io.getWristAngle().lte(minWristAngle));
 
@@ -83,6 +86,13 @@ public class Coral extends SubsystemBase {
         .withName("Score L4");
   }
 
+  public Command stop() {
+    return run(() -> {
+      io.setGrabVoltage(Volts.of(0));
+      io.setWristVoltage(Volts.of(0));
+    }).withName("Stop coral");
+  }
+
   public Command stow() {
     return coordinatedControl(stowAngle, Volts.zero(), () -> false).withName("Stow Coral Arm");
   }
@@ -118,16 +128,16 @@ public class Coral extends SubsystemBase {
       Angle angle, Voltage grabVoltage, BooleanSupplier endCondition) {
     Command command =
         moveWrist(angle)
-            .until(profiledPIDController::atGoal)
+            .until(profiledPIDController::atSetpoint)
             .andThen(moveWrist(angle).alongWith(controlGrabber(grabVoltage)).until(endCondition));
     command.addRequirements(this);
     return command;
   }
 
   private Voltage calculatePIDVoltage(Angle targetAngle) {
-    double pidVoltage =
+    pidVoltage =
         profiledPIDController.calculate(io.getWristAngle().in(Radians), targetAngle.in(Radians));
-    double feedForwardVoltage = feedforward.calculate(targetAngle.in(Radians), 0);
+    feedForwardVoltage = feedforward.calculate(io.getWristAngle().in(Radians), 0);
     return Volts.of(pidVoltage + feedForwardVoltage);
   }
 }

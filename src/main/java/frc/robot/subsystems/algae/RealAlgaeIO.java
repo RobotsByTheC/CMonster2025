@@ -26,12 +26,13 @@ import edu.wpi.first.units.measure.Voltage;
 
 @Logged
 public class RealAlgaeIO implements AlgaeIO {
-  @NotLogged private final SparkMax grabLeft;
-  @NotLogged private final SparkMax grabRight;
-  @NotLogged private final SparkMax wrist;
-  @NotLogged private final SparkMaxConfig grabConfig;
+  private final SparkMax grabLeft;
+  private final SparkMax grabRight;
+  private final SparkMax wrist;
+  @NotLogged private final SparkMaxConfig grabLeftConfig;
+  @NotLogged private final SparkMaxConfig grabRightConfig;
   @NotLogged private final SparkMaxConfig wristConfig;
-  @NotLogged private final AbsoluteEncoder wristEncoder;
+  private final AbsoluteEncoder wristEncoder;
 
   private Time grabberActionStart = Milliseconds.of(System.currentTimeMillis());
   private boolean hasAlgae = false;
@@ -44,18 +45,23 @@ public class RealAlgaeIO implements AlgaeIO {
     wrist = new SparkMax(wristCanID, SparkLowLevel.MotorType.kBrushless);
     wristEncoder = wrist.getAbsoluteEncoder();
 
-    grabConfig = new SparkMaxConfig();
-    grabConfig.secondaryCurrentLimit(grabCurrentLimit.in(Amps));
+    grabLeftConfig = new SparkMaxConfig();
+    grabLeftConfig.secondaryCurrentLimit(grabCurrentLimit.in(Amps));
+
+    grabRightConfig = new SparkMaxConfig();
+    grabRightConfig.secondaryCurrentLimit(grabCurrentLimit.in(Amps));
+    grabRightConfig.inverted(true);
+
     wristConfig = new SparkMaxConfig();
     wristConfig.secondaryCurrentLimit(wristCurrentLimit.in(Amps));
     wristConfig.absoluteEncoder.inverted(true);
 
     grabLeft.configure(
-        grabConfig,
+        grabLeftConfig,
         SparkBase.ResetMode.kResetSafeParameters,
         SparkBase.PersistMode.kPersistParameters);
     grabRight.configure(
-        grabConfig,
+        grabRightConfig,
         SparkBase.ResetMode.kResetSafeParameters,
         SparkBase.PersistMode.kPersistParameters);
     wrist.configure(

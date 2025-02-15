@@ -3,12 +3,14 @@ package frc.robot.subsystems.elevator;
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.InchesPerSecond;
+import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.Constants.ElevatorConstants.currentLimit;
 import static frc.robot.Constants.ElevatorConstants.leftCanID;
 import static frc.robot.Constants.ElevatorConstants.positionConversionFactor;
 import static frc.robot.Constants.ElevatorConstants.rightCanID;
 import static frc.robot.Constants.ElevatorConstants.velocityConversionFactor;
+import static frc.robot.Constants.ElevatorConstants.zeroOffset;
 
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase;
@@ -24,11 +26,11 @@ import edu.wpi.first.units.measure.Voltage;
 
 @Logged
 public class RealElevatorIO implements ElevatorIO {
-  @NotLogged private final SparkMax left;
-  @NotLogged private final SparkMax right;
+  private final SparkMax left;
+  private final SparkMax right;
   @NotLogged private final SparkMaxConfig sparkConfig;
-  @NotLogged private final RelativeEncoder rightEncoder;
-  @NotLogged private final RelativeEncoder leftEncoder;
+  private final RelativeEncoder rightEncoder;
+  private final RelativeEncoder leftEncoder;
 
   public RealElevatorIO() {
     left = new SparkMax(leftCanID, SparkLowLevel.MotorType.kBrushless);
@@ -80,7 +82,7 @@ public class RealElevatorIO implements ElevatorIO {
 
   @Override
   public void resetEncoders() {
-    leftEncoder.setPosition(0);
-    rightEncoder.setPosition(0);
+    leftEncoder.setPosition(zeroOffset.in(Inches));
+    rightEncoder.setPosition(zeroOffset.in(Inches));
   }
 }

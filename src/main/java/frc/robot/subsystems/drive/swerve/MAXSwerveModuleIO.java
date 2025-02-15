@@ -27,11 +27,11 @@ import edu.wpi.first.units.measure.Voltage;
  */
 @Logged
 public class MAXSwerveModuleIO implements ModuleIO {
-  @NotLogged private final SparkMax drivingSparkMax;
-  @NotLogged private final SparkMax turningSparkMax;
+  private final SparkMax drivingSparkMax;
+  private final SparkMax turningSparkMax;
 
-  @NotLogged private final RelativeEncoder drivingEncoder;
-  @NotLogged private final AbsoluteEncoder turningEncoder;
+  private final RelativeEncoder drivingEncoder;
+  private final AbsoluteEncoder turningEncoder;
 
   @NotLogged private final SparkClosedLoopController drivingPIDController;
   @NotLogged private final SparkClosedLoopController turningPIDController;

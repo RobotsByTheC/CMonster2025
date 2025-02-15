@@ -1,6 +1,7 @@
 package frc.robot.subsystems.elevator;
 
 import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.InchesPerSecond;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Second;
@@ -13,6 +14,7 @@ import static frc.robot.Constants.ElevatorConstants.KI;
 import static frc.robot.Constants.ElevatorConstants.KP;
 import static frc.robot.Constants.ElevatorConstants.KS;
 import static frc.robot.Constants.ElevatorConstants.KV;
+import static frc.robot.Constants.ElevatorConstants.currentLimit;
 import static frc.robot.Constants.ElevatorConstants.l1;
 import static frc.robot.Constants.ElevatorConstants.l2;
 import static frc.robot.Constants.ElevatorConstants.l3;
@@ -30,7 +32,9 @@ import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.MutDistance;
+import edu.wpi.first.units.measure.MutVoltage;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -47,7 +51,6 @@ public class Elevator extends SubsystemBase {
   public final Trigger atMaxHeight = new Trigger(() -> getHeight().gte(maxHeight));
   @NotLogged private final Debouncer stallingDebouncer = new Debouncer(stallDuration.in(Seconds));
 
-  @NotLogged
   public final Trigger isStalling =
       new Trigger(() -> stallingDebouncer.calculate(getCurrentDraw().gte(stallThreshold)));
 
@@ -74,6 +77,7 @@ public class Elevator extends SubsystemBase {
                         .linearPosition(io.getHeight())
                         .linearVelocity(io.getVelocity()),
                 this));
+    io.resetEncoders();
   }
 
   private Distance getHeight() {
@@ -150,6 +154,46 @@ public class Elevator extends SubsystemBase {
         .andThen(sysIdRoutine.quasistatic(SysIdRoutine.Direction.kForward).until(atMaxHeight))
         .andThen(sysIdRoutine.quasistatic(SysIdRoutine.Direction.kReverse).until(atMinHeight))
         .withName("Elevator Sysid Routine");
+  }
+
+  public Command findFeedforwardTerms() {
+    MutVoltage appliedVoltage = Volts.mutable(1);
+    MutVoltage riseVoltage = Volts.mutable(0);
+    MutVoltage fallVoltage = Volts.mutable(0);
+
+    Voltage increment = Volts.of(0.01);
+    LinearVelocity cutoffVelocity = InchesPerSecond.of(1);
+
+    Trigger triggerUp = new Trigger(() -> io.getVelocity().gte(cutoffVelocity)).debounce(0.5);
+    Trigger triggerDown  = new Trigger(() -> io.getVelocity().lte(cutoffVelocity.unaryMinus())).debounce(0.5);
+
+    Command up = startRun(
+        () -> appliedVoltage.mut_setBaseUnitMagnitude(1),
+        () -> {
+          appliedVoltage.mut_plus(increment);
+          io.setVoltage(appliedVoltage);
+        }
+    ).until(triggerUp)
+        .finallyDo(() -> riseVoltage.mut_replace(appliedVoltage));
+
+    Command down = run(
+        () -> {
+          appliedVoltage.mut_minus(increment);
+          io.setVoltage(appliedVoltage);
+        }
+    ).until(triggerDown)
+        .finallyDo(() -> fallVoltage.mut_replace(appliedVoltage));
+
+    return up.andThen(down).finallyDo(() -> {
+      double riseVolts = riseVoltage.in(Volts);
+      double fallVolts = fallVoltage.in(Volts);
+
+      double kg = (riseVolts + fallVolts) / 2;
+      double ks = (riseVolts - fallVolts) / 2;
+
+      System.out.printf("kG = %.3f%n", kg);
+      System.out.printf("kS = %.3f%n", ks);
+    }).withName("Find Elevator Feedforward Terms");
   }
 
   private Voltage calculatePIDVoltage(Distance targetHeight) {

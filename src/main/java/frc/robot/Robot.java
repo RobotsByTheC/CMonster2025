@@ -87,9 +87,8 @@ public class Robot extends TimedRobot {
      */
     drive.setDefaultCommand(driveWithFlightSticks());
     elevator.setDefaultCommand(elevator.stop());
+    coral.setDefaultCommand(coral.stow());
     //    algae.setDefaultCommand(algae.stow());
-    // TODO add coral stow default command
-
     // Start data logging
 
     Epilogue.configure(
@@ -128,7 +127,7 @@ public class Robot extends TimedRobot {
     LA:
     */
     configureTeleopBindings();
-    configureTestBindings();
+//    configureTestBindings();
   }
 
   /**
@@ -168,10 +167,8 @@ public class Robot extends TimedRobot {
                 .andThen(coral.scoreL4().deadlineFor(elevator.holdCurrentPosition()))
                 .andThen(elevator.home().alongWith(coral.stow()))
                 .withName("Score L4"));
-    //    driverController.rightBumper().whileTrue(elevator.home().withName("Home Elevator"));
-    //    driverController.leftBumper().whileTrue(coral.intake().withName("Intake Coral"));
-    driverController.povDown().whileTrue(coral.scoreL1());
-    driverController.povUp().whileTrue(coral.stow());
+//    driverController.leftBumper().whileTrue(elevator.home());
+    driverController.rightBumper().whileTrue(coral.intake());
   }
 
   /**
@@ -182,15 +179,15 @@ public class Robot extends TimedRobot {
     driverController
         .leftBumper()
         .and(RobotModeTriggers.test())
-        .whileTrue(elevator.runSysIdRoutine().withName("Run Elevator Sysid Routine"));
+        .whileTrue(elevator.findFeedforwardTerms());
     driverController
         .rightBumper()
         .and(RobotModeTriggers.test())
-        .whileTrue(algae.runSysIdRoutine().withName("Run Algae Sysid Routine"));
+        .whileTrue(coral.runSysIdRoutine().withName("Run Coral Sysid Routine"));
   }
 
   private void configureAutomaticBindings() {
-    elevator.isStalling.whileTrue(elevator.stop());
+//    elevator.isStalling.whileTrue(elevator.stop());
   }
 
   /**

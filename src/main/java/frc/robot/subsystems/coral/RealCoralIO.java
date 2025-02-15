@@ -13,7 +13,6 @@ import static frc.robot.Constants.CoralConstants.wristCurrentLimit;
 
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.spark.SparkBase;
-import com.revrobotics.spark.SparkLimitSwitch;
 import com.revrobotics.spark.SparkLowLevel;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
@@ -26,36 +25,36 @@ import edu.wpi.first.units.measure.Voltage;
 
 @Logged
 public class RealCoralIO implements CoralIO {
-  @NotLogged private final SparkMax grabLeft;
-  @NotLogged private final SparkMax grabRight;
-  @NotLogged private final SparkMax wrist;
-  @NotLogged private final SparkMaxConfig grabConfig;
+  private final SparkMax grabLeft;
+  private final SparkMax grabRight;
+  private final SparkMax wrist;
+  @NotLogged private final SparkMaxConfig grabLeftConfig;
+  @NotLogged private final SparkMaxConfig grabRightConfig;
   @NotLogged private final SparkMaxConfig wristConfig;
-  @NotLogged private final SparkLimitSwitch leftLimitSwitch;
-  @NotLogged private final SparkLimitSwitch rightLimitSwitch;
-  @NotLogged private final AbsoluteEncoder wristEncoder;
+  private final AbsoluteEncoder wristEncoder;
 
   public RealCoralIO() {
     grabLeft = new SparkMax(leftCanID, SparkLowLevel.MotorType.kBrushless);
     grabRight = new SparkMax(rightCanID, SparkLowLevel.MotorType.kBrushless);
-    leftLimitSwitch = grabLeft.getForwardLimitSwitch();
-    rightLimitSwitch = grabRight.getForwardLimitSwitch();
 
     wrist = new SparkMax(wristCanID, SparkLowLevel.MotorType.kBrushless);
     wristEncoder = wrist.getAbsoluteEncoder();
 
-    grabConfig = new SparkMaxConfig();
-    grabConfig.secondaryCurrentLimit(grabCurrentLimit.in(Amps));
+    grabLeftConfig = new SparkMaxConfig();
+    grabLeftConfig.secondaryCurrentLimit(grabCurrentLimit.in(Amps));
+    grabLeftConfig.inverted(true);
+    grabRightConfig = new SparkMaxConfig();
+    grabRightConfig.secondaryCurrentLimit(grabCurrentLimit.in(Amps));
     wristConfig = new SparkMaxConfig();
     wristConfig.secondaryCurrentLimit(wristCurrentLimit.in(Amps));
     wristConfig.absoluteEncoder.inverted(true);
 
     grabLeft.configure(
-        grabConfig,
+        grabLeftConfig,
         SparkBase.ResetMode.kResetSafeParameters,
         SparkBase.PersistMode.kPersistParameters);
     grabRight.configure(
-        grabConfig,
+        grabRightConfig,
         SparkBase.ResetMode.kResetSafeParameters,
         SparkBase.PersistMode.kPersistParameters);
     wrist.configure(
@@ -92,12 +91,12 @@ public class RealCoralIO implements CoralIO {
 
   @Override
   public boolean hasLeftCoral() {
-    return leftLimitSwitch.isPressed();
+    return true;
   }
 
   @Override
   public boolean hasRightCoral() {
-    return rightLimitSwitch.isPressed();
+    return true;
   }
 
   @Override

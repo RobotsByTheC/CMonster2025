@@ -161,12 +161,15 @@ public final class Constants {
   }
 
   public static final class ElevatorConstants {
+    //Elevator minimum rising voltage: 4.5 volts
+    //Elevator minimum falling voltage: 0.7 volts
+
     // Top face of the carriage rail to the carpet
-    public static final Distance zeroOffset = Inches.of(7.5);
-    public static final Distance l1 = Inches.of(22).minus(zeroOffset);
-    public static final Distance l2 = Inches.of(36).minus(zeroOffset);
-    public static final Distance l3 = Inches.of(52).minus(zeroOffset);
-    public static final Distance l4 = Inches.of(76).minus(zeroOffset);
+    public static final Distance zeroOffset = Inches.of(25);
+    public static final Distance l1 = Inches.of(25); //22
+    public static final Distance l2 = Inches.of(36); //36
+    public static final Distance l3 = Inches.of(52);
+    public static final Distance l4 = Inches.of(76);
 
     public static final Current stallThreshold = Amps.of(70);
     public static final Time stallDuration = Milliseconds.of(500);
@@ -183,13 +186,13 @@ public final class Constants {
     // Raw: 21.3689 rotations from bottom to top
     // Actual extension = 67.5"
     // 67.5 / 21.3689 = 3.1588
-    public static final double positionConversionFactor = 3.344;
+    public static final double positionConversionFactor = 2.871;
     public static final double velocityConversionFactor = positionConversionFactor / 60;
 
     public static final int currentLimit = 40;
 
-    public static final double KS = 0.92435;
-    public static final double KG = 1.2623;
+    public static final double KS = 1.9;
+    public static final double KG = 2.6;
     public static final double KV = 1.1023;
     public static final double KA = 0.28148;
     public static final double KP = 20;
@@ -205,7 +208,7 @@ public final class Constants {
     public static final Current grabCurrentLimit = Amps.of(15);
     public static final Current wristCurrentLimit = Amps.of(40);
 
-    public static final Voltage grabIntakeVoltage = Volts.of(6);
+    public static final Voltage grabIntakeVoltage = Volts.of(-6);
     public static final Voltage grabScoreVoltage = Volts.of(6);
 
     public static final Angle intakeAngle = Degrees.of(30);
@@ -220,11 +223,11 @@ public final class Constants {
     public static final Angle maxWristAngle = Degrees.of(50); // 50
     public static final Angle wristTolerance = Degrees.of(2);
 
-    public static final double KS = 0; // 0.34646
-    public static final double KG = 0; // 0.1159 or 0.13
-    public static final double KV = 0; // 52.183
-    public static final double KA = 0; // 4.3241
-    public static final double KP = 0; // 12 / 1.6
+    public static final double KS = 0.42088; // 0.34646
+    public static final double KG = 0.18; // 0.1159 or 0.13 or 0.30995
+    public static final double KV = 46.18; // 52.183
+    public static final double KA = 5.4707; // 4.3241
+    public static final double KP = 4; // 12 / 1.6
     public static final double KI = 0;
     public static final double KD = 0;
   }
