@@ -167,9 +167,9 @@ public final class Constants {
     // Top face of the carriage rail to the carpet
     public static final Distance zeroOffset = Inches.of(25);
     public static final Distance l1 = Inches.of(25); //22
-    public static final Distance l2 = Inches.of(36); //36
-    public static final Distance l3 = Inches.of(52);
-    public static final Distance l4 = Inches.of(76);
+    public static final Distance l2 = Inches.of(38); //36
+    public static final Distance l3 = Inches.of(55);
+    public static final Distance l4 = Inches.of(79);
 
     public static final Current stallThreshold = Amps.of(70);
     public static final Time stallDuration = Milliseconds.of(500);
@@ -192,10 +192,10 @@ public final class Constants {
     public static final int currentLimit = 40;
 
     public static final double KS = 2.5;
-    public static final double KG = 3;
+    public static final double KG = 4;
     public static final double KV = 1.1023;
     public static final double KA = 0.28148;
-    public static final double KP = 20;
+    public static final double KP = 25;
     public static final double KI = 0;
     public static final double KD = 1;
   }
@@ -211,11 +211,11 @@ public final class Constants {
     public static final Voltage grabIntakeVoltage = Volts.of(-6);
     public static final Voltage grabScoreVoltage = Volts.of(6);
 
-    public static final Angle intakeAngle = Degrees.of(30);
     public static final Angle troughScoreAngle = Degrees.of(-15);
-    public static final Angle branchScoreAngle = Degrees.of(-35);
-    public static final Angle tipScoreAngle = Degrees.of(-60);
+    public static final Angle branchScoreAngle = Degrees.of(-27);
+    public static final Angle tipScoreAngle = Degrees.of(-30);
     public static final Angle stowAngle = Degrees.of(48);
+    public static final Angle intakeAngle = stowAngle;
 
     public static final double wristGearing = 60;
 
