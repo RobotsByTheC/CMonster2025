@@ -40,6 +40,10 @@ public class Algae extends SubsystemBase {
   private AlgaeIO io;
   private final ProfiledPIDController profiledPIDController;
   private final ArmFeedforward feedForward;
+
+  private double pidVoltage;
+  private double feedForwardVoltage;
+
   @NotLogged private final SysIdRoutine sysIdRoutine;
   public final Trigger atMaxAngle = new Trigger(() -> io.getWristAngle().gte(maxWristAngle));
   public final Trigger atMinAngle = new Trigger(() -> io.getWristAngle().lte(minWristAngle));
@@ -120,9 +124,9 @@ public class Algae extends SubsystemBase {
   }
 
   private Voltage calculatePIDVoltage(Angle targetAngle) {
-    double pidVoltage =
+    pidVoltage =
         profiledPIDController.calculate(io.getWristAngle().in(Radians), targetAngle.in(Radians));
-    double feedForwardVoltage = feedForward.calculate(targetAngle.in(Radians), 0);
+    feedForwardVoltage = feedForward.calculate(io.getWristAngle().in(Radians), 0);
     return Volts.of(pidVoltage + feedForwardVoltage);
   }
 }
