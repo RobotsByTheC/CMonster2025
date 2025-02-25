@@ -46,9 +46,9 @@ public class Robot extends TimedRobot {
   private final Algae algae;
 
   // Driver and operator controls
-  @NotLogged private final CommandXboxController driverController; // NOPMD
-  @NotLogged private final Joystick lStick; // NOPMD
-  @NotLogged private final Joystick rStick; // NOPMD
+  private final CommandXboxController driverController; // NOPMD
+  private final Joystick lStick; // NOPMD
+  private final Joystick rStick; // NOPMD
 
   public Robot() {
     // Initialize our subsystems. If our program is running in simulation mode (either from the
@@ -127,7 +127,7 @@ public class Robot extends TimedRobot {
     LA:
     */
     configureTeleopBindings();
-//    configureTestBindings();
+    //configureTestBindings();
   }
 
   /**

@@ -29,9 +29,9 @@ public class RealAlgaeIO implements AlgaeIO {
   private final SparkMax grabLeft;
   private final SparkMax grabRight;
   private final SparkMax wrist;
-  @NotLogged private final SparkMaxConfig grabLeftConfig;
-  @NotLogged private final SparkMaxConfig grabRightConfig;
-  @NotLogged private final SparkMaxConfig wristConfig;
+  private final SparkMaxConfig grabLeftConfig;
+  private final SparkMaxConfig grabRightConfig;
+  private final SparkMaxConfig wristConfig;
   private final AbsoluteEncoder wristEncoder;
 
   private Time grabberActionStart = Milliseconds.of(System.currentTimeMillis());
