@@ -1,15 +1,15 @@
-package frc.robot.subsystems.coral;
+package frc.robot.subsystems.algae;
 
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.RPM;
-import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.Milliseconds;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Volts;
-import static frc.robot.Constants.CoralConstants.grabCurrentLimit;
-import static frc.robot.Constants.CoralConstants.leftCanID;
-import static frc.robot.Constants.CoralConstants.rightCanID;
-import static frc.robot.Constants.CoralConstants.wristCanID;
-import static frc.robot.Constants.CoralConstants.wristCurrentLimit;
+import static frc.robot.Constants.AlgaeConstants.grabCurrentLimit;
+import static frc.robot.Constants.AlgaeConstants.leftCanID;
+import static frc.robot.Constants.AlgaeConstants.rightCanID;
+import static frc.robot.Constants.AlgaeConstants.wristCanID;
+import static frc.robot.Constants.AlgaeConstants.wristCurrentLimit;
 
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.spark.SparkBase;
@@ -21,10 +21,11 @@ import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.units.measure.Voltage;
 
 @Logged
-public class RealCoralIO implements CoralIO {
+public class RealAlgaeIO implements AlgaeIO {
   private final SparkMax grabLeft;
   private final SparkMax grabRight;
   private final SparkMax wrist;
@@ -33,7 +34,11 @@ public class RealCoralIO implements CoralIO {
   @NotLogged private final SparkMaxConfig wristConfig;
   private final AbsoluteEncoder wristEncoder;
 
-  public RealCoralIO() {
+  private Time grabberActionStart = Milliseconds.of(System.currentTimeMillis());
+  private boolean hasAlgae = false;
+  private Voltage grabberVoltage = Volts.zero();
+
+  public RealAlgaeIO() {
     grabLeft = new SparkMax(leftCanID, SparkLowLevel.MotorType.kBrushless);
     grabRight = new SparkMax(rightCanID, SparkLowLevel.MotorType.kBrushless);
 
@@ -42,9 +47,11 @@ public class RealCoralIO implements CoralIO {
 
     grabLeftConfig = new SparkMaxConfig();
     grabLeftConfig.secondaryCurrentLimit(grabCurrentLimit.in(Amps));
-    grabLeftConfig.inverted(true);
+
     grabRightConfig = new SparkMaxConfig();
     grabRightConfig.secondaryCurrentLimit(grabCurrentLimit.in(Amps));
+    grabRightConfig.inverted(true);
+
     wristConfig = new SparkMaxConfig();
     wristConfig.secondaryCurrentLimit(wristCurrentLimit.in(Amps));
     wristConfig.absoluteEncoder.inverted(true);
@@ -70,8 +77,20 @@ public class RealCoralIO implements CoralIO {
 
   @Override
   public void setGrabVoltage(Voltage voltage) {
-    grabRight.setVoltage(voltage);
+    if (!grabberVoltage.equals(voltage)) {
+      grabberActionStart = Milliseconds.of(System.currentTimeMillis());
+    }
+    if (System.currentTimeMillis() - grabberActionStart.in(Milliseconds) > 500) {
+      if (grabberVoltage.magnitude() > 0) {
+        hasAlgae = true;
+      } else if (grabberVoltage.magnitude() < 0) {
+        hasAlgae = false;
+      }
+    }
+    grabberVoltage = voltage;
+
     grabLeft.setVoltage(voltage);
+    grabRight.setVoltage(voltage);
   }
 
   @Override
@@ -86,31 +105,21 @@ public class RealCoralIO implements CoralIO {
 
   @Override
   public Voltage getWristAppliedVoltage() {
-    return Volts.of(wrist.getAppliedOutput() * wrist.getBusVoltage());
+    return Volts.of(wrist.getAppliedOutput());
   }
 
   @Override
-  public boolean hasLeftCoral() {
-    return true;
-  }
-
-  @Override
-  public boolean hasRightCoral() {
-    return true;
+  public boolean hasAlgae() {
+    return hasAlgae;
   }
 
   @Override
   public Angle getWristAngle() {
-    Angle r = Rotations.of(wristEncoder.getPosition());
-    if (r.gt(Degrees.of(180))) {
-      return r.minus(Degrees.of(360));
-    } else {
-      return r;
-    }
+    return Degrees.of(wristEncoder.getPosition());
   }
 
   @Override
   public AngularVelocity getWristVelocity() {
-    return RPM.of(wristEncoder.getVelocity());
+    return RadiansPerSecond.of(wristEncoder.getVelocity());
   }
 }

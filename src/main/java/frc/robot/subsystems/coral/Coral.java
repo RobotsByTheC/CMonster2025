@@ -1,9 +1,29 @@
 package frc.robot.subsystems.coral;
 
-import static edu.wpi.first.units.Units.*;
-import static frc.robot.Constants.CoralConstants.*;
+import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.Second;
+import static edu.wpi.first.units.Units.Volts;
+import static frc.robot.Constants.CoralConstants.KA;
+import static frc.robot.Constants.CoralConstants.KD;
+import static frc.robot.Constants.CoralConstants.KG;
+import static frc.robot.Constants.CoralConstants.KI;
+import static frc.robot.Constants.CoralConstants.KP;
+import static frc.robot.Constants.CoralConstants.KS;
+import static frc.robot.Constants.CoralConstants.KV;
+import static frc.robot.Constants.CoralConstants.branchScoreAngle;
+import static frc.robot.Constants.CoralConstants.grabIntakeVoltage;
+import static frc.robot.Constants.CoralConstants.grabScoreVoltage;
+import static frc.robot.Constants.CoralConstants.intakeAngle;
+import static frc.robot.Constants.CoralConstants.maxWristAngle;
+import static frc.robot.Constants.CoralConstants.minWristAngle;
+import static frc.robot.Constants.CoralConstants.stowAngle;
+import static frc.robot.Constants.CoralConstants.tipScoreAngle;
+import static frc.robot.Constants.CoralConstants.troughScoreAngle;
+import static frc.robot.Constants.CoralConstants.wristTolerance;
 
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -21,7 +41,10 @@ public class Coral extends SubsystemBase {
   private CoralIO io;
   private final ProfiledPIDController profiledPIDController;
   private final ArmFeedforward feedforward;
-  private final SysIdRoutine sysIdRoutine;
+  @NotLogged private final SysIdRoutine sysIdRoutine;
+
+  private double pidVoltage;
+  private double feedForwardVoltage;
 
   public final Trigger atMaxAngle = new Trigger(() -> io.getWristAngle().gte(maxWristAngle));
   public final Trigger atMinAngle = new Trigger(() -> io.getWristAngle().lte(minWristAngle));
@@ -39,7 +62,8 @@ public class Coral extends SubsystemBase {
     profiledPIDController.enableContinuousInput(0, 2 * Math.PI);
     sysIdRoutine =
         new SysIdRoutine(
-            new SysIdRoutine.Config(), new SysIdRoutine.Mechanism(io::setWristVoltage, null, this));
+            new SysIdRoutine.Config(Volts.per(Second).of(0.5), Volts.of(4), null),
+            new SysIdRoutine.Mechanism(io::setWristVoltage, null, this));
   }
 
   public Command scoreL1() {
@@ -62,8 +86,15 @@ public class Coral extends SubsystemBase {
         .withName("Score L4");
   }
 
+  public Command stop() {
+    return run(() -> {
+      io.setGrabVoltage(Volts.of(0));
+      io.setWristVoltage(Volts.of(0));
+    }).withName("Stop coral");
+  }
+
   public Command stow() {
-    return coordinatedControl(stowAngle, Volts.zero(), () -> false).withName("Stow arm");
+    return coordinatedControl(stowAngle, Volts.zero(), () -> false).withName("Stow Coral Arm");
   }
 
   public Command intake() {
@@ -97,16 +128,16 @@ public class Coral extends SubsystemBase {
       Angle angle, Voltage grabVoltage, BooleanSupplier endCondition) {
     Command command =
         moveWrist(angle)
-            .until(profiledPIDController::atGoal)
+            .until(profiledPIDController::atSetpoint)
             .andThen(moveWrist(angle).alongWith(controlGrabber(grabVoltage)).until(endCondition));
     command.addRequirements(this);
     return command;
   }
 
   private Voltage calculatePIDVoltage(Angle targetAngle) {
-    double pidVoltage =
+    pidVoltage =
         profiledPIDController.calculate(io.getWristAngle().in(Radians), targetAngle.in(Radians));
-    double feedForwardVoltage = feedforward.calculate(targetAngle.in(Radians), 0);
+    feedForwardVoltage = feedforward.calculate(io.getWristAngle().in(Radians), 0);
     return Volts.of(pidVoltage + feedForwardVoltage);
   }
 }

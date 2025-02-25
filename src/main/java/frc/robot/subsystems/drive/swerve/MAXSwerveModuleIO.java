@@ -14,6 +14,7 @@ import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.units.measure.Distance;
@@ -32,8 +33,8 @@ public class MAXSwerveModuleIO implements ModuleIO {
   private final RelativeEncoder drivingEncoder;
   private final AbsoluteEncoder turningEncoder;
 
-  private final SparkClosedLoopController drivingPIDController;
-  private final SparkClosedLoopController turningPIDController;
+  @NotLogged private final SparkClosedLoopController drivingPIDController;
+  @NotLogged private final SparkClosedLoopController turningPIDController;
 
   public MAXSwerveModuleIO(SparkMax drivingSparkMax, SparkMax turningSparkMax) {
     this.drivingSparkMax = drivingSparkMax;

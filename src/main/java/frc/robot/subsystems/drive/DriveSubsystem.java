@@ -14,6 +14,7 @@ import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
@@ -47,7 +48,7 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
       new PIDController(Constants.AutoConstants.pThetaController, 0, 0);
 
   // Odometry class for tracking robot pose
-  private final SwerveDrivePoseEstimator poseEstimator;
+  @NotLogged private final SwerveDrivePoseEstimator poseEstimator;
 
   private final Field2d field = new Field2d();
 
@@ -228,6 +229,7 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
   }
 
   // Creates a SysIdRoutine
+  @NotLogged
   private final SysIdRoutine routine =
       new SysIdRoutine(
           new SysIdRoutine.Config(),

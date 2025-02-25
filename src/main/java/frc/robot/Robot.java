@@ -6,6 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.epilogue.logging.EpilogueBackend;
 import edu.wpi.first.epilogue.logging.FileBackend;
 import edu.wpi.first.epilogue.logging.NTEpilogueBackend;
@@ -20,6 +21,9 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.sim.SimulationContext;
+import frc.robot.subsystems.algae.Algae;
+import frc.robot.subsystems.algae.RealAlgaeIO;
+import frc.robot.subsystems.algae.SimAlgaeIO;
 import frc.robot.subsystems.coral.Coral;
 import frc.robot.subsystems.coral.RealCoralIO;
 import frc.robot.subsystems.coral.SimCoralIO;
@@ -39,11 +43,12 @@ public class Robot extends TimedRobot {
   private final DriveSubsystem drive;
   private final Elevator elevator;
   private final Coral coral;
+  private final Algae algae;
 
   // Driver and operator controls
-  private final CommandXboxController driverController; // NOPMD
-  private final Joystick lStick; // NOPMD
-  private final Joystick rStick; // NOPMD
+  @NotLogged private final CommandXboxController driverController; // NOPMD
+  @NotLogged private final Joystick lStick; // NOPMD
+  @NotLogged private final Joystick rStick; // NOPMD
 
   public Robot() {
     // Initialize our subsystems. If our program is running in simulation mode (either from the
@@ -54,11 +59,14 @@ public class Robot extends TimedRobot {
       drive = new DriveSubsystem(new SimSwerveIO());
       elevator = new Elevator(new SimElevatorIO());
       coral = new Coral(new SimCoralIO());
+      algae = new Algae(new SimAlgaeIO());
+
     } else {
       // Running on real hardware
       drive = new DriveSubsystem(new MAXSwerveIO());
       elevator = new Elevator(new RealElevatorIO());
       coral = new Coral(new RealCoralIO());
+      algae = new Algae(new RealAlgaeIO());
     }
 
     driverController = new CommandXboxController(Constants.OIConstants.driverControllerPort);
@@ -79,8 +87,8 @@ public class Robot extends TimedRobot {
      */
     drive.setDefaultCommand(driveWithFlightSticks());
     elevator.setDefaultCommand(elevator.stop());
-    // TODO add coral stow default command
-
+    coral.setDefaultCommand(coral.stow());
+    //    algae.setDefaultCommand(algae.stow());
     // Start data logging
 
     Epilogue.configure(
@@ -89,7 +97,6 @@ public class Robot extends TimedRobot {
                 EpilogueBackend.multi(
                     new FileBackend(DataLogManager.getLog()),
                     new NTEpilogueBackend(NetworkTableInstance.getDefault())));
-
   }
 
   @SuppressWarnings("unused")
@@ -120,7 +127,7 @@ public class Robot extends TimedRobot {
     LA:
     */
     configureTeleopBindings();
-    configureTestBindings();
+//    configureTestBindings();
   }
 
   /**
@@ -160,10 +167,8 @@ public class Robot extends TimedRobot {
                 .andThen(coral.scoreL4().deadlineFor(elevator.holdCurrentPosition()))
                 .andThen(elevator.home().alongWith(coral.stow()))
                 .withName("Score L4"));
-    //    driverController.rightBumper().whileTrue(elevator.home().withName("Home Elevator"));
-    //    driverController.leftBumper().whileTrue(coral.intake().withName("Intake Coral"));
-    driverController.povDown().whileTrue(coral.scoreL1());
-    driverController.povUp().whileTrue(coral.stow());
+//    driverController.leftBumper().whileTrue(elevator.home());
+    driverController.rightBumper().whileTrue(coral.intake());
   }
 
   /**
@@ -174,7 +179,7 @@ public class Robot extends TimedRobot {
     driverController
         .leftBumper()
         .and(RobotModeTriggers.test())
-        .whileTrue(elevator.runSysIdRoutine().withName("Run Elevator Sysid Routine"));
+        .whileTrue(elevator.findFeedforwardTerms());
     driverController
         .rightBumper()
         .and(RobotModeTriggers.test())
@@ -182,7 +187,7 @@ public class Robot extends TimedRobot {
   }
 
   private void configureAutomaticBindings() {
-    elevator.isStalling.whileTrue(elevator.stop());
+//    elevator.isStalling.whileTrue(elevator.stop());
   }
 
   /**

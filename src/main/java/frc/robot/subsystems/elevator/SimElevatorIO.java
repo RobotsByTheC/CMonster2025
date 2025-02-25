@@ -1,8 +1,15 @@
 package frc.robot.subsystems.elevator;
 
-import static edu.wpi.first.units.Units.*;
+import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Kilograms;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.Pounds;
+import static edu.wpi.first.units.Units.Volts;
 
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Distance;
@@ -15,8 +22,8 @@ import frc.robot.sim.SimulationContext;
 
 @Logged
 public class SimElevatorIO implements ElevatorIO {
-  private final ElevatorSim elevatorSim;
-  private final MechanismSim mechanismSim;
+  @NotLogged private final ElevatorSim elevatorSim;
+  @NotLogged private final MechanismSim mechanismSim;
 
   public SimElevatorIO() {
     elevatorSim =

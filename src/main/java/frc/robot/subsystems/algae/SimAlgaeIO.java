@@ -1,4 +1,4 @@
-package frc.robot.subsystems.coral;
+package frc.robot.subsystems.algae;
 
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Inches;
@@ -7,10 +7,10 @@ import static edu.wpi.first.units.Units.Milliseconds;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Volts;
-import static frc.robot.Constants.CoralConstants.maxWristAngle;
-import static frc.robot.Constants.CoralConstants.minWristAngle;
-import static frc.robot.Constants.CoralConstants.stowAngle;
-import static frc.robot.Constants.CoralConstants.wristGearing;
+import static frc.robot.Constants.AlgaeConstants.maxWristAngle;
+import static frc.robot.Constants.AlgaeConstants.minWristAngle;
+import static frc.robot.Constants.AlgaeConstants.stowAngle;
+import static frc.robot.Constants.AlgaeConstants.wristGearing;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
@@ -25,21 +25,21 @@ import frc.robot.sim.MechanismSim;
 import frc.robot.sim.SimulationContext;
 
 @Logged
-public class SimCoralIO implements CoralIO {
-  private boolean hasCoral;
-  private Time grabberActionStart = Milliseconds.of(System.currentTimeMillis());
-
-  private Voltage grabberVoltage = Volts.zero();
+public class SimAlgaeIO implements AlgaeIO {
   @NotLogged private final SingleJointedArmSim wristSim;
   @NotLogged private final MechanismSim mechanismSim;
 
-  public SimCoralIO() {
+  private Time grabberActionStart = Milliseconds.of(System.currentTimeMillis());
+  private boolean hasAlgae = false;
+  private Voltage grabberVoltage = Volts.zero();
+
+  public SimAlgaeIO() {
     wristSim =
         new SingleJointedArmSim(
             DCMotor.getNEO(1),
             wristGearing,
             0.1,
-            Meters.convertFrom(10, Inches),
+            Meters.convertFrom(12, Inches),
             minWristAngle.in(Radians),
             maxWristAngle.in(Radians),
             true,
@@ -71,12 +71,11 @@ public class SimCoralIO implements CoralIO {
     }
     if (System.currentTimeMillis() - grabberActionStart.in(Milliseconds) > 500) {
       if (grabberVoltage.magnitude() > 0) {
-        hasCoral = true;
+        hasAlgae = true;
       } else if (grabberVoltage.magnitude() < 0) {
-        hasCoral = false;
+        hasAlgae = false;
       }
     }
-
     grabberVoltage = voltage;
   }
 
@@ -96,13 +95,8 @@ public class SimCoralIO implements CoralIO {
   }
 
   @Override
-  public boolean hasLeftCoral() {
-    return hasCoral;
-  }
-
-  @Override
-  public boolean hasRightCoral() {
-    return hasCoral;
+  public boolean hasAlgae() {
+    return hasAlgae;
   }
 
   @Override

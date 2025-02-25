@@ -6,6 +6,7 @@ import static frc.robot.Constants.ModuleConstants.drivingMotorReduction;
 import static frc.robot.Constants.ModuleConstants.turningMotorReduction;
 
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -23,10 +24,13 @@ public class MAXSwerveModuleSim implements MechanismSim {
   // Note that this does not perfectly model reality - in particular, friction is not modeled.
   // The wheel simulation has a much higher moment of inertia than the physical wheel in order to
   // account for the inertia of the rest of the robot. (This is a /very/ rough approximation)
+  @NotLogged
   private final FlywheelSim wheelSim =
       new FlywheelSim(
           LinearSystemId.createFlywheelSystem(DCMotor.getNEO(1), 0.025, drivingMotorReduction),
           DCMotor.getNEO(1));
+
+  @NotLogged
   private final FlywheelSim turnSim =
       new FlywheelSim(
           LinearSystemId.createFlywheelSystem(DCMotor.getNeo550(1), 0.001, turningMotorReduction),
