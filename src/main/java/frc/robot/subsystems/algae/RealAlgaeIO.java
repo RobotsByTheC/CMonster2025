@@ -3,6 +3,7 @@ package frc.robot.subsystems.algae;
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Milliseconds;
+import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.Constants.AlgaeConstants.grabCurrentLimit;
@@ -115,7 +116,12 @@ public class RealAlgaeIO implements AlgaeIO {
 
   @Override
   public Angle getWristAngle() {
-    return Degrees.of(wristEncoder.getPosition());
+    Angle r = Radians.of(wristEncoder.getPosition());
+    if (r.gt(Degrees.of(180))) {
+      return r.minus(Degrees.of(360));
+    } else {
+      return r;
+    }
   }
 
   @Override
