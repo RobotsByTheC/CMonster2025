@@ -167,8 +167,8 @@ public class Robot extends TimedRobot {
                 .andThen(coral.scoreL4().deadlineFor(elevator.holdCurrentPosition()))
                 .andThen(elevator.home().alongWith(coral.stow()))
                 .withName("Score L4"));
-//    driverController.leftBumper().whileTrue(elevator.home());
-    driverController.rightBumper().whileTrue(coral.intake());
+    driverController.leftBumper().whileTrue(algae.stow());
+    driverController.rightBumper().whileTrue(algae.intakeGround());
   }
 
   /**
