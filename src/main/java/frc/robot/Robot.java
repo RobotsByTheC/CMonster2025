@@ -127,7 +127,7 @@ public class Robot extends TimedRobot {
     LA:
     */
     configureTeleopBindings();
-    //configureTestBindings();
+//    configureTestBindings();
   }
 
   /**
@@ -167,7 +167,7 @@ public class Robot extends TimedRobot {
                 .andThen(coral.scoreL4().deadlineFor(elevator.holdCurrentPosition()))
                 .andThen(elevator.home().alongWith(coral.stow()))
                 .withName("Score L4"));
-    driverController.leftBumper().whileTrue(elevator.home());
+//    driverController.leftBumper().whileTrue(elevator.home());
     driverController.rightBumper().whileTrue(coral.intake());
   }
 
