@@ -80,6 +80,13 @@ public class Algae extends SubsystemBase {
     return coordinatedControl(stowAngle, Volts.zero(), () -> false).withName("Stow Algae Arm");
   }
 
+  public Command stop() {
+    return run(() -> {
+      io.setGrabVoltage(Volts.of(0));
+      io.setWristVoltage(Volts.of(0));
+    }).withName("Stop Algae");
+  }
+
   public Command runSysIdRoutine() {
     return sysIdRoutine
         .dynamic(SysIdRoutine.Direction.kReverse)
