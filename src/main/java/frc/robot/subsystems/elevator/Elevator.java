@@ -27,7 +27,6 @@ import static frc.robot.Constants.ElevatorConstants.stallThreshold;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -45,7 +44,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 @Logged
 public class Elevator extends SubsystemBase {
   private final ElevatorIO io;
-  private final PIDController pidController;
+  private final ProfiledPIDController profiledPIDController;
   private final ElevatorFeedforward feedforward;
 
   public final Trigger atMinHeight = new Trigger(() -> getHeight().lte(minHeight));
@@ -60,11 +59,12 @@ public class Elevator extends SubsystemBase {
   public Elevator(ElevatorIO io) {
     this.io = io;
     feedforward = new ElevatorFeedforward(KS, KG, KV, KA);
-    pidController =
-        new PIDController(
+    profiledPIDController =
+        new ProfiledPIDController(
             KP,
             KI,
-            KD);
+            KD,
+            new TrapezoidProfile.Constraints(feedforward.maxAchievableVelocity(12.5, 20), 20));
     sysIdRoutine =
         new SysIdRoutine(
             new SysIdRoutine.Config(Volts.per(Second).of(0.5), Volts.of(6), null),
@@ -111,9 +111,11 @@ public class Elevator extends SubsystemBase {
 
   public Command goToHeight(Distance targetHeight) {
     return startRun(
-            () -> pidController.reset(),
+            () ->
+                profiledPIDController.reset(
+                    io.getHeight().in(Meters), io.getVelocity().in(MetersPerSecond)),
             () -> io.setVoltage(calculatePIDVoltage(targetHeight)))
-        .until(pidController::atSetpoint)
+        .until(profiledPIDController::atGoal)
         .withName("Go To Height " + targetHeight.toLongString());
   }
 
@@ -144,7 +146,8 @@ public class Elevator extends SubsystemBase {
     return startRun(
         () -> {
           startingHeight.mut_replace(io.getHeight());
-          pidController.reset();
+          profiledPIDController.reset(
+              io.getHeight().in(Meters), io.getVelocity().in(MetersPerSecond));
         },
         () -> io.setVoltage(calculatePIDVoltage(startingHeight)));
   }
@@ -201,7 +204,7 @@ public class Elevator extends SubsystemBase {
 
   private Voltage calculatePIDVoltage(Distance targetHeight) {
     double pidVoltage =
-        pidController.calculate(io.getHeight().in(Meters), targetHeight.in(Meters));
+        profiledPIDController.calculate(io.getHeight().in(Meters), targetHeight.in(Meters));
     double feedForwardVoltage = feedforward.calculate(0);
     return Volts.of(pidVoltage + feedForwardVoltage);
   }
