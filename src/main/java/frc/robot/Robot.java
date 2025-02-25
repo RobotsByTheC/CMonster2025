@@ -88,7 +88,7 @@ public class Robot extends TimedRobot {
     drive.setDefaultCommand(driveWithFlightSticks());
     elevator.setDefaultCommand(elevator.stop());
     coral.setDefaultCommand(coral.stow());
-    //    algae.setDefaultCommand(algae.stow());
+    algae.setDefaultCommand(algae.stow());
     // Start data logging
 
     Epilogue.configure(
