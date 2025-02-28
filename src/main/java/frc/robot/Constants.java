@@ -237,6 +237,9 @@ public final class Constants {
     public static final int rightCanID = 14;
     public static final int wristCanID = 13;
 
+    public static final Current grabStallLimit = Amps.of(15);
+    public static final Time grabStallDuration = Milliseconds.of(500);
+
     public static final Current grabCurrentLimit = Amps.of(15);
     public static final Current wristCurrentLimit = Amps.of(40);
 
