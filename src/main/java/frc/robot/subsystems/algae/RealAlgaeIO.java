@@ -47,6 +47,7 @@ public class RealAlgaeIO implements AlgaeIO {
     wristEncoder = wrist.getAbsoluteEncoder();
 
     grabLeftConfig = new SparkMaxConfig();
+    grabLeftConfig.inverted(true);
     grabLeftConfig.secondaryCurrentLimit(grabCurrentLimit.in(Amps));
 
     grabRightConfig = new SparkMaxConfig();
@@ -54,6 +55,7 @@ public class RealAlgaeIO implements AlgaeIO {
     grabRightConfig.inverted(true);
 
     wristConfig = new SparkMaxConfig();
+    wristConfig.inverted(true);
     wristConfig.secondaryCurrentLimit(wristCurrentLimit.in(Amps));
     wristConfig.absoluteEncoder.inverted(true);
 
