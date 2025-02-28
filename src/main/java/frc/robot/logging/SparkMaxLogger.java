@@ -13,13 +13,13 @@ public class SparkMaxLogger extends ClassSpecificLogger<SparkMax> {
 
   @Override
   protected void update(EpilogueBackend backend, SparkMax sparkMax) {
-    backend.log("appliedOutput", sparkMax.getAppliedOutput());
-    backend.log("busVoltage", sparkMax.getBusVoltage());
-    backend.log("hasActiveFault", sparkMax.hasActiveFault());
-    backend.log("hasActiveWarning", sparkMax.hasActiveWarning());
-    backend.log("outputCurrent", sparkMax.getOutputCurrent());
-    backend.log("canID", sparkMax.getDeviceId());
-    backend.log("firmware", sparkMax.getFirmwareString());
-    backend.log("motorTemperature", sparkMax.getMotorTemperature());
+//    backend.log("appliedOutput", sparkMax.getAppliedOutput());
+//    backend.log("busVoltage", sparkMax.getBusVoltage());
+//    backend.log("hasActiveFault", sparkMax.hasActiveFault());
+//    backend.log("hasActiveWarning", sparkMax.hasActiveWarning());
+//    backend.log("outputCurrent", sparkMax.getOutputCurrent());
+//    backend.log("canID", sparkMax.getDeviceId());
+//    backend.log("firmware", sparkMax.getFirmwareString());
+//    backend.log("motorTemperature", sparkMax.getMotorTemperature());
   }
 }
