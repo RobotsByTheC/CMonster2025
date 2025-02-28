@@ -139,7 +139,8 @@ public class Algae extends SubsystemBase {
     Command command =
         moveWrist(angle)
             .until(profiledPIDController::atGoal)
-            .andThen(moveWrist(angle).alongWith(controlGrabber(grabVoltage)).until(endCondition));
+            .andThen(moveWrist(angle).alongWith(controlGrabber(grabVoltage)))
+            .until(endCondition);
     command.addRequirements(this);
     return command;
   }
