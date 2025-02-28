@@ -261,9 +261,9 @@ public final class Constants {
     public static final double KG = 0.13169;
     public static final double KV = 0.9437;
     public static final double KA = 0.022004;
-    public static final double KP = 9.1942;
+    public static final double KP = 3; //6
     public static final double KI = 0;
-    public static final double KD = 0.18799;
+    public static final double KD = 0; //0.1
   }
 
   public static final class OIConstants {
