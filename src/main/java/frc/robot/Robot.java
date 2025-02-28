@@ -6,7 +6,6 @@ package frc.robot;
 
 import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
-import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.epilogue.logging.EpilogueBackend;
 import edu.wpi.first.epilogue.logging.FileBackend;
 import edu.wpi.first.epilogue.logging.NTEpilogueBackend;
@@ -24,9 +23,6 @@ import frc.robot.sim.SimulationContext;
 import frc.robot.subsystems.algae.Algae;
 import frc.robot.subsystems.algae.RealAlgaeIO;
 import frc.robot.subsystems.algae.SimAlgaeIO;
-import frc.robot.subsystems.coral.Coral;
-import frc.robot.subsystems.coral.RealCoralIO;
-import frc.robot.subsystems.coral.SimCoralIO;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.drive.MAXSwerveIO;
 import frc.robot.subsystems.drive.SimSwerveIO;
