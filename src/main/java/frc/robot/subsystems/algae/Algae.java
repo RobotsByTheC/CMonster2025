@@ -130,6 +130,10 @@ public class Algae extends SubsystemBase {
         .withName("Algae Sysid Routine");
   }
 
+  public Command holdPosition() {
+    return stop().andThen(moveWrist(io.getWristAngle()));
+  }
+
   private Command coordinatedControl(
       Angle angle, Voltage grabVoltage, BooleanSupplier endCondition) {
     Command command =
