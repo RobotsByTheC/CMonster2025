@@ -1,8 +1,10 @@
 package frc.robot.subsystems.algae;
 
+import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Second;
+import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.Constants.AlgaeConstants.KA;
 import static frc.robot.Constants.AlgaeConstants.KD;
@@ -13,6 +15,8 @@ import static frc.robot.Constants.AlgaeConstants.KS;
 import static frc.robot.Constants.AlgaeConstants.KV;
 import static frc.robot.Constants.AlgaeConstants.grabIntakeVoltage;
 import static frc.robot.Constants.AlgaeConstants.grabScoreVoltage;
+import static frc.robot.Constants.AlgaeConstants.grabStallDuration;
+import static frc.robot.Constants.AlgaeConstants.grabStallLimit;
 import static frc.robot.Constants.AlgaeConstants.groundIntakeAngle;
 import static frc.robot.Constants.AlgaeConstants.maxWristAngle;
 import static frc.robot.Constants.AlgaeConstants.minWristAngle;
@@ -25,14 +29,17 @@ import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.math.MovingAverage;
 import java.util.function.BooleanSupplier;
 
 @Logged
@@ -40,6 +47,7 @@ public class Algae extends SubsystemBase {
   private AlgaeIO io;
   private final ProfiledPIDController profiledPIDController;
   private final ArmFeedforward feedForward;
+  private final MovingAverage movingAverage = new MovingAverage(9);
 
   private double pidVoltage;
   private double feedForwardVoltage;
@@ -47,6 +55,12 @@ public class Algae extends SubsystemBase {
   @NotLogged private final SysIdRoutine sysIdRoutine;
   public final Trigger atMaxAngle = new Trigger(() -> io.getWristAngle().gte(maxWristAngle));
   public final Trigger atMinAngle = new Trigger(() -> io.getWristAngle().lte(minWristAngle));
+
+  @NotLogged
+  private final Debouncer stallingDebouncer = new Debouncer(grabStallDuration.in(Seconds));
+
+  public final Trigger isGrabberStalling =
+      new Trigger(() -> stallingDebouncer.calculate(getFilteredCurrentDraw().gte(grabStallLimit)));
 
   public Algae(AlgaeIO io) {
     this.io = io;
@@ -58,25 +72,38 @@ public class Algae extends SubsystemBase {
             KD,
             new TrapezoidProfile.Constraints(feedForward.maxAchievableVelocity(12.5, 0, 20), 20));
     profiledPIDController.setTolerance(wristTolerance.in(Radians));
-    profiledPIDController.enableContinuousInput(0, 2 * Math.PI);
     sysIdRoutine =
         new SysIdRoutine(
             new SysIdRoutine.Config(Volts.per(Second).of(0.5), Volts.of(3), null),
             new SysIdRoutine.Mechanism(io::setWristVoltage, null, this));
+    isGrabberStalling.onTrue(stop());
+  }
+
+  @Override
+  public void periodic() {
+    movingAverage.addNumber(io.getGrabCurrentDraw().in(Amps));
+  }
+
+  public Current getFilteredCurrentDraw() {
+    return Amps.of(movingAverage.getAverage());
   }
 
   public Command intakeGround() {
-    return coordinatedControl(groundIntakeAngle, grabIntakeVoltage, () -> io.hasAlgae())
+    return coordinatedControl(groundIntakeAngle, grabIntakeVoltage, isGrabberStalling)
         .withName("Algae Ground Intake");
   }
 
+  public Current getGrabberCurrentDraw() {
+    return io.getGrabCurrentDraw();
+  }
+
   public Command intakeReef() {
-    return coordinatedControl(reefIntakeAngle, grabIntakeVoltage, () -> io.hasAlgae())
+    return coordinatedControl(reefIntakeAngle, grabIntakeVoltage, isGrabberStalling)
         .withName("Algae Reef Intake");
   }
 
   public Command scoreProcessor() {
-    return coordinatedControl(processorScoreAngle, grabScoreVoltage, () -> !io.hasAlgae())
+    return coordinatedControl(processorScoreAngle, grabScoreVoltage, () -> false)
         .withName("Algae Score Processor");
   }
 
