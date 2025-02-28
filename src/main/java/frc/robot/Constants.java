@@ -201,9 +201,9 @@ public final class Constants {
   }
 
   public static final class CoralConstants {
-    public static final int leftCanID = 14;
-    public static final int rightCanID = 12;
-    public static final int wristCanID = 13;
+    public static final int leftCanID = 20;
+    public static final int rightCanID = 21;
+    public static final int wristCanID = 22;
 
     public static final Current grabCurrentLimit = Amps.of(15);
     public static final Current wristCurrentLimit = Amps.of(40);
