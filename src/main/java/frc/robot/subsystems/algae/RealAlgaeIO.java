@@ -52,7 +52,6 @@ public class RealAlgaeIO implements AlgaeIO {
 
     grabRightConfig = new SparkMaxConfig();
     grabRightConfig.secondaryCurrentLimit(grabCurrentLimit.in(Amps));
-    grabRightConfig.inverted(true);
 
     wristConfig = new SparkMaxConfig();
     wristConfig.inverted(true);
