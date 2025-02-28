@@ -233,9 +233,9 @@ public final class Constants {
   }
 
   public static final class AlgaeConstants {
-    public static final int leftCanID = 16;
-    public static final int rightCanID = 15;
-    public static final int wristCanID = 17;
+    public static final int leftCanID = 15;
+    public static final int rightCanID = 14;
+    public static final int wristCanID = 13;
 
     public static final Current grabCurrentLimit = Amps.of(15);
     public static final Current wristCurrentLimit = Amps.of(40);
