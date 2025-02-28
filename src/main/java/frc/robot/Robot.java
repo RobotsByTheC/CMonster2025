@@ -42,7 +42,7 @@ public class Robot extends TimedRobot {
   // The robot's subsystems
   private final DriveSubsystem drive;
   private final Elevator elevator;
-  private final Coral coral;
+  //  private final Coral coral;
   private final Algae algae;
 
   // Driver and operator controls
@@ -58,14 +58,14 @@ public class Robot extends TimedRobot {
     if (Robot.isSimulation()) {
       drive = new DriveSubsystem(new SimSwerveIO());
       elevator = new Elevator(new SimElevatorIO());
-      coral = new Coral(new SimCoralIO());
+      //      coral = new Coral(new SimCoralIO());
       algae = new Algae(new SimAlgaeIO());
 
     } else {
       // Running on real hardware
       drive = new DriveSubsystem(new MAXSwerveIO());
       elevator = new Elevator(new RealElevatorIO());
-      coral = new Coral(new RealCoralIO());
+      //      coral = new Coral(new RealCoralIO());
       algae = new Algae(new RealAlgaeIO());
     }
 
