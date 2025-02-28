@@ -110,11 +110,6 @@ public class RealAlgaeIO implements AlgaeIO {
   }
 
   @Override
-  public boolean hasAlgae() {
-    return hasAlgae;
-  }
-
-  @Override
   public Angle getWristAngle() {
     Angle r = Radians.of(wristEncoder.getPosition());
     if (r.gt(Degrees.of(180))) {

@@ -28,8 +28,6 @@ public interface AlgaeIO {
 
   Voltage getWristAppliedVoltage();
 
-  boolean hasAlgae();
-
   Angle getWristAngle();
 
   AngularVelocity getWristVelocity();
