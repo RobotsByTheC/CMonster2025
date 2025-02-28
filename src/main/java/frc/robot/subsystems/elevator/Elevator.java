@@ -14,7 +14,6 @@ import static frc.robot.Constants.ElevatorConstants.KI;
 import static frc.robot.Constants.ElevatorConstants.KP;
 import static frc.robot.Constants.ElevatorConstants.KS;
 import static frc.robot.Constants.ElevatorConstants.KV;
-import static frc.robot.Constants.ElevatorConstants.currentLimit;
 import static frc.robot.Constants.ElevatorConstants.l1;
 import static frc.robot.Constants.ElevatorConstants.l2;
 import static frc.robot.Constants.ElevatorConstants.l3;
@@ -165,35 +164,40 @@ public class Elevator extends SubsystemBase {
     LinearVelocity cutoffVelocity = InchesPerSecond.of(1);
 
     Trigger triggerUp = new Trigger(() -> io.getVelocity().gte(cutoffVelocity)).debounce(0.5);
-    Trigger triggerDown  = new Trigger(() -> io.getVelocity().lte(cutoffVelocity.unaryMinus())).debounce(0.5);
+    Trigger triggerDown =
+        new Trigger(() -> io.getVelocity().lte(cutoffVelocity.unaryMinus())).debounce(0.5);
 
-    Command up = startRun(
-        () -> appliedVoltage.mut_setBaseUnitMagnitude(1),
-        () -> {
-          appliedVoltage.mut_plus(increment);
-          io.setVoltage(appliedVoltage);
-        }
-    ).until(triggerUp)
-        .finallyDo(() -> riseVoltage.mut_replace(appliedVoltage));
+    Command up =
+        startRun(
+                () -> appliedVoltage.mut_setBaseUnitMagnitude(1),
+                () -> {
+                  appliedVoltage.mut_plus(increment);
+                  io.setVoltage(appliedVoltage);
+                })
+            .until(triggerUp)
+            .finallyDo(() -> riseVoltage.mut_replace(appliedVoltage));
 
-    Command down = run(
-        () -> {
-          appliedVoltage.mut_minus(increment);
-          io.setVoltage(appliedVoltage);
-        }
-    ).until(triggerDown)
-        .finallyDo(() -> fallVoltage.mut_replace(appliedVoltage));
+    Command down =
+        run(() -> {
+              appliedVoltage.mut_minus(increment);
+              io.setVoltage(appliedVoltage);
+            })
+            .until(triggerDown)
+            .finallyDo(() -> fallVoltage.mut_replace(appliedVoltage));
 
-    return up.andThen(down).finallyDo(() -> {
-      double riseVolts = riseVoltage.in(Volts);
-      double fallVolts = fallVoltage.in(Volts);
+    return up.andThen(down)
+        .finallyDo(
+            () -> {
+              double riseVolts = riseVoltage.in(Volts);
+              double fallVolts = fallVoltage.in(Volts);
 
-      double kg = (riseVolts + fallVolts) / 2;
-      double ks = (riseVolts - fallVolts) / 2;
+              double kg = (riseVolts + fallVolts) / 2;
+              double ks = (riseVolts - fallVolts) / 2;
 
-      System.out.printf("kG = %.3f%n", kg);
-      System.out.printf("kS = %.3f%n", ks);
-    }).withName("Find Elevator Feedforward Terms");
+              System.out.printf("kG = %.3f%n", kg);
+              System.out.printf("kS = %.3f%n", ks);
+            })
+        .withName("Find Elevator Feedforward Terms");
   }
 
   private Voltage calculatePIDVoltage(Distance targetHeight) {

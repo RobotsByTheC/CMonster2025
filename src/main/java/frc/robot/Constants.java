@@ -161,13 +161,13 @@ public final class Constants {
   }
 
   public static final class ElevatorConstants {
-    //Elevator minimum rising voltage: 4.5 volts
-    //Elevator minimum falling voltage: 0.7 volts
+    // Elevator minimum rising voltage: 4.5 volts
+    // Elevator minimum falling voltage: 0.7 volts
 
     // Top face of the carriage rail to the carpet
     public static final Distance zeroOffset = Inches.of(25);
-    public static final Distance l1 = Inches.of(25); //22
-    public static final Distance l2 = Inches.of(36); //36
+    public static final Distance l1 = Inches.of(25); // 22
+    public static final Distance l2 = Inches.of(36); // 36
     public static final Distance l3 = Inches.of(52);
     public static final Distance l4 = Inches.of(76);
 
@@ -261,9 +261,9 @@ public final class Constants {
     public static final double KG = 0.13169;
     public static final double KV = 0.9437;
     public static final double KA = 0.022004;
-    public static final double KP = 3; //6
+    public static final double KP = 3; // 6
     public static final double KI = 0;
-    public static final double KD = 0; //0.1
+    public static final double KD = 0; // 0.1
   }
 
   public static final class OIConstants {

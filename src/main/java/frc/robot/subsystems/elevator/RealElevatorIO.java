@@ -3,7 +3,6 @@ package frc.robot.subsystems.elevator;
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.InchesPerSecond;
-import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.Constants.ElevatorConstants.currentLimit;
 import static frc.robot.Constants.ElevatorConstants.leftCanID;

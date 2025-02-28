@@ -88,9 +88,10 @@ public class Coral extends SubsystemBase {
 
   public Command stop() {
     return run(() -> {
-      io.setGrabVoltage(Volts.of(0));
-      io.setWristVoltage(Volts.of(0));
-    }).withName("Stop coral");
+          io.setGrabVoltage(Volts.of(0));
+          io.setWristVoltage(Volts.of(0));
+        })
+        .withName("Stop coral");
   }
 
   public Command stow() {
