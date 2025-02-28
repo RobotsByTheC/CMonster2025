@@ -51,6 +51,7 @@ public class RealAlgaeIO implements AlgaeIO {
     grabLeftConfig.secondaryCurrentLimit(grabCurrentLimit.in(Amps));
 
     grabRightConfig = new SparkMaxConfig();
+    grabRightConfig.idleMode(SparkBaseConfig.IdleMode.kBrake);
     grabRightConfig.secondaryCurrentLimit(grabCurrentLimit.in(Amps));
 
     wristConfig = new SparkMaxConfig();
