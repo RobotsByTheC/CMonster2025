@@ -169,6 +169,9 @@ public class Robot extends TimedRobot {
     //                .withName("Score L4"));
 
     driverController.rightBumper().whileTrue(algae.intakeGround());
+    driverController.rightBumper().onFalse(algae.holdPosition());
+    driverController.leftBumper().whileTrue(algae.scoreProcessor());
+    driverController.leftBumper().onFalse(algae.holdPosition());
   }
 
   /**
