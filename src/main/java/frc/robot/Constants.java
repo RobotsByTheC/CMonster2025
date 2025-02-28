@@ -253,8 +253,8 @@ public final class Constants {
 
     public static final double wristGearing = 60;
 
-    public static final Angle minWristAngle = Degrees.of(-360); // -35
-    public static final Angle maxWristAngle = Degrees.of(360);
+    public static final Angle minWristAngle = Degrees.of(-40); // -35
+    public static final Angle maxWristAngle = Degrees.of(100);
     public static final Angle wristTolerance = Degrees.of(2);
 
     public static final double KS = 0.41008;
