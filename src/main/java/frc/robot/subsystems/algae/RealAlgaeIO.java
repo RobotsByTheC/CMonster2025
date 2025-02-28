@@ -35,10 +35,6 @@ public class RealAlgaeIO implements AlgaeIO {
   private final SparkMaxConfig wristConfig;
   private final AbsoluteEncoder wristEncoder;
 
-  private Time grabberActionStart = Milliseconds.of(System.currentTimeMillis());
-  private boolean hasAlgae = false;
-  private Voltage grabberVoltage = Volts.zero();
-
   public RealAlgaeIO() {
     grabLeft = new SparkMax(leftCanID, SparkLowLevel.MotorType.kBrushless);
     grabRight = new SparkMax(rightCanID, SparkLowLevel.MotorType.kBrushless);
