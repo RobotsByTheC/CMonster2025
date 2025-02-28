@@ -78,18 +78,6 @@ public class RealAlgaeIO implements AlgaeIO {
 
   @Override
   public void setGrabVoltage(Voltage voltage) {
-    if (!grabberVoltage.equals(voltage)) {
-      grabberActionStart = Milliseconds.of(System.currentTimeMillis());
-    }
-    if (System.currentTimeMillis() - grabberActionStart.in(Milliseconds) > 500) {
-      if (grabberVoltage.magnitude() > 0) {
-        hasAlgae = true;
-      } else if (grabberVoltage.magnitude() < 0) {
-        hasAlgae = false;
-      }
-    }
-    grabberVoltage = voltage;
-
     grabLeft.setVoltage(voltage);
     grabRight.setVoltage(voltage);
   }
