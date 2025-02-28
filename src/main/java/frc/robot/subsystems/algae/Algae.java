@@ -112,10 +112,12 @@ public class Algae extends SubsystemBase {
   }
 
   public Command stop() {
-    return run(() -> {
-      io.setGrabVoltage(Volts.of(0));
-      io.setWristVoltage(Volts.of(0));
-    }).withName("Stop Algae");
+    return runOnce(
+            () -> {
+              io.setGrabVoltage(Volts.of(0));
+              io.setWristVoltage(Volts.of(0));
+            })
+        .withName("Stop Algae Grabber");
   }
 
   public Command runSysIdRoutine() {
