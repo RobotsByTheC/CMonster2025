@@ -99,11 +99,11 @@ public class RealAlgaeIO implements AlgaeIO {
 
   @Override
   public Angle getWristAngle() {
-    Angle r = Radians.of(wristEncoder.getPosition());
+    Angle r = Rotations.of(wristEncoder.getPosition());
     if (r.gt(Degrees.of(180))) {
-      return r.minus(Degrees.of(360));
+      return r.minus(Degrees.of(360)).times(-1);
     } else {
-      return r;
+      return r.times(-1);
     }
   }
 
