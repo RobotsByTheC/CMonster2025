@@ -31,10 +31,6 @@ public class SimAlgaeIO implements AlgaeIO {
   @NotLogged private final SingleJointedArmSim wristSim;
   @NotLogged private final MechanismSim mechanismSim;
 
-  private Time grabberActionStart = Milliseconds.of(System.currentTimeMillis());
-  private boolean hasAlgae = false;
-  private Voltage grabberVoltage = Volts.zero();
-
   public SimAlgaeIO() {
     wristSim =
         new SingleJointedArmSim(
@@ -82,11 +78,6 @@ public class SimAlgaeIO implements AlgaeIO {
   @Override
   public Voltage getWristAppliedVoltage() {
     return Volts.of(wristSim.getInput(0));
-  }
-
-  @Override
-  public boolean hasAlgae() {
-    return hasAlgae;
   }
 
   @Override
