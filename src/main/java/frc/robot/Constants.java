@@ -243,7 +243,7 @@ public final class Constants {
     public static final Current grabCurrentLimit = Amps.of(15);
     public static final Current wristCurrentLimit = Amps.of(40);
 
-    public static final Voltage grabIntakeVoltage = Volts.of(6);
+    public static final Voltage grabIntakeVoltage = Volts.of(-6);
     public static final Voltage grabScoreVoltage = Volts.of(6);
 
     public static final Angle groundIntakeAngle = Degrees.of(0);
