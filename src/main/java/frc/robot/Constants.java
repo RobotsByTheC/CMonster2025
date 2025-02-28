@@ -249,7 +249,7 @@ public final class Constants {
     public static final Angle groundIntakeAngle = Degrees.of(0);
     public static final Angle reefIntakeAngle = Degrees.of(-35);
     public static final Angle processorScoreAngle = Degrees.of(0);
-    public static final Angle stowAngle = Degrees.of(125);
+    public static final Angle stowAngle = Degrees.of(90);
 
     public static final double wristGearing = 60;
 
