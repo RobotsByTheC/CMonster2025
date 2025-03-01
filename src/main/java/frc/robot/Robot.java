@@ -40,6 +40,7 @@ public class Robot extends TimedRobot {
   private final Elevator elevator;
   //  private final Coral coral;
   private final Algae algae;
+  private final Vision vision;
 
   // Driver and operator controls
   private final CommandXboxController driverController; // NOPMD
@@ -64,6 +65,7 @@ public class Robot extends TimedRobot {
       //      coral = new Coral(new RealCoralIO());
       algae = new Algae(new RealAlgaeIO());
     }
+    vision = new Vision();
 
     driverController = new CommandXboxController(Constants.OIConstants.driverControllerPort);
     lStick = new Joystick(Constants.OIConstants.leftJoystickPort);
@@ -122,7 +124,7 @@ public class Robot extends TimedRobot {
     LA:
     */
     configureTeleopBindings();
-    //configureTestBindings();
+    // configureTestBindings();
   }
 
   /**
@@ -185,7 +187,7 @@ public class Robot extends TimedRobot {
   }
 
   private void configureAutomaticBindings() {
-//    elevator.isStalling.whileTrue(elevator.stop());
+    //    elevator.isStalling.whileTrue(elevator.stop());
   }
 
   /**
@@ -221,6 +223,8 @@ public class Robot extends TimedRobot {
     // commands, running already-scheduled commands, removing finished or interrupted commands,
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
+    vision.update();
+
     CommandScheduler.getInstance().run();
 
     Epilogue.update(this);
