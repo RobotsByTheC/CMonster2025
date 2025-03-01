@@ -48,6 +48,8 @@ public final class Constants {
     public static final LinearVelocity maxSpeed = MetersPerSecond.of(4.5);
     public static final AngularVelocity maxAngularSpeed = RotationsPerSecond.of(2.0);
 
+    public static final int gyroCanID = 50;
+
     // Chassis configuration
     public static final Distance trackWidth = Inches.of(24.5);
     // Distance between centers of right and left wheels on robot
