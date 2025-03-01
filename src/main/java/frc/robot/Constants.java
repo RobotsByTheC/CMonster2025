@@ -276,7 +276,7 @@ public final class Constants {
             Inches.of(32.5), // Z, up
             new Rotation3d(
                 Degrees.of(0), // Roll, twist
-                Degrees.of(-30), // Pitch, up
+                Degrees.of(30), // Pitch, up
                 Degrees.of(-15) // Yaw, left
                 ));
     public static final Transform3d rightOffset =
@@ -286,7 +286,7 @@ public final class Constants {
             Inches.of(32.5), // Z, up
             new Rotation3d(
                 Degrees.of(0), // Roll, twist
-                Degrees.of(-30), // Pitch, up
+                Degrees.of(30), // Pitch, up
                 Degrees.of(15) // Yaw, left
                 ));
   }
