@@ -82,16 +82,6 @@ public class RealCoralIO implements CoralIO {
   }
 
   @Override
-  public boolean hasLeftCoral() {
-    return true;
-  }
-
-  @Override
-  public boolean hasRightCoral() {
-    return true;
-  }
-
-  @Override
   public Angle getWristAngle() {
     Angle r = Rotations.of(wristEncoder.getPosition());
     if (r.gt(Degrees.of(180))) {

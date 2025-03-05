@@ -204,6 +204,10 @@ public final class Constants {
     public static final int motorCanID = 12;
     public static final int wristCanID = 16;
 
+    public static final Current grabStallLimit = Amps.of(15);
+    public static final Current grabDoneLimit = Amps.of(15);
+    public static final Time grabStallDuration = Milliseconds.of(500);
+
     public static final Current grabCurrentLimit = Amps.of(15);
     public static final Current wristCurrentLimit = Amps.of(40);
 
