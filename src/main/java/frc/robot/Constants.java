@@ -22,6 +22,7 @@ import static edu.wpi.first.units.Units.Volts;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -269,8 +270,8 @@ public final class Constants {
   }
 
   public static final class VisionConstants {
-    public static final Transform3d leftOffset =
-        new Transform3d(
+    public static final Pose3d leftOffset =
+        new Pose3d(
             Inches.of(3), // X, forward
             Inches.of(12.25), // Y, left
             Inches.of(32.5), // Z, up
@@ -279,8 +280,8 @@ public final class Constants {
                 Degrees.of(30), // Pitch, up
                 Degrees.of(-15) // Yaw, left
                 ));
-    public static final Transform3d rightOffset =
-        new Transform3d(
+    public static final Pose3d rightOffset =
+        new Pose3d(
             Inches.of(3), // X, forward
             Inches.of(-12.25), // Y, left
             Inches.of(32.5), // Z, up
