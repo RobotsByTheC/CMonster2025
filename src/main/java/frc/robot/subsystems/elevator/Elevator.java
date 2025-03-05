@@ -114,6 +114,10 @@ public class Elevator extends SubsystemBase {
         .withName("Home");
   }
 
+  public Command down() {
+    return applyVoltage(Volts.of(-3));
+  }
+
   public Command goToHeight(Distance targetHeight) {
     return startRun(
             () ->
