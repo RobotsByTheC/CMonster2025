@@ -44,8 +44,8 @@ public class Robot extends TimedRobot {
 
   // Driver and operator controls
   private final CommandXboxController driverController; // NOPMD
-  private final Joystick lStick; // NOPMD
-  private final Joystick rStick; // NOPMD
+  private final CommandJoystick lStick; // NOPMD
+  private final CommandJoystick rStick; // NOPMD
 
   public Robot() {
     // Initialize our subsystems. If our program is running in simulation mode (either from the
@@ -68,8 +68,8 @@ public class Robot extends TimedRobot {
     vision = new Vision();
 
     driverController = new CommandXboxController(Constants.OIConstants.driverControllerPort);
-    lStick = new Joystick(Constants.OIConstants.leftJoystickPort);
-    rStick = new Joystick(Constants.OIConstants.rightJoystickPort);
+    lStick = new CommandJoystick(Constants.OIConstants.leftJoystickPort);
+    rStick = new CommandJoystick(Constants.OIConstants.rightJoystickPort);
 
     // Configure the button bindings and automatic bindings
     configureButtonBindings();
@@ -169,6 +169,7 @@ public class Robot extends TimedRobot {
     driverController.rightBumper().onFalse(algae.holdPosition());
     driverController.leftBumper().whileTrue(algae.scoreProcessor());
     driverController.leftBumper().onFalse(algae.holdPosition());
+    rStick.trigger().whileTrue(Commands.defer(() -> drive.pointAtTag(vision.getNearestTagId()), Set.of(drive)));
   }
 
   /**
