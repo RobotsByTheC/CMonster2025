@@ -12,6 +12,7 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Volts;
+import static frc.robot.Constants.AutoConstants.pThetaController;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
@@ -20,7 +21,9 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -30,10 +33,13 @@ import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Vision;
+
 import java.util.Arrays;
 import java.util.function.DoubleSupplier;
 
@@ -45,7 +51,7 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
   private final PIDController yController =
       new PIDController(Constants.AutoConstants.pYController, 0, 0);
   private final PIDController thetaController =
-      new PIDController(Constants.AutoConstants.pThetaController, 0, 0);
+      new PIDController(pThetaController, 0, 0);
 
   // Odometry class for tracking robot pose
   @NotLogged private final SwerveDrivePoseEstimator poseEstimator;
@@ -61,6 +67,7 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
   public DriveSubsystem(SwerveIO io) {
     this.io = io;
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
+//    thetaController.setTolerance();
     poseEstimator =
         new SwerveDrivePoseEstimator(
             DriveConstants.driveKinematics,
@@ -233,35 +240,13 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
   private final SysIdRoutine routine =
       new SysIdRoutine(
           new SysIdRoutine.Config(),
-          new SysIdRoutine.Mechanism(this::voltageDrive, this::logMotors, this));
-
-  private Voltage appliedSysidVoltage = Volts.zero();
+          new SysIdRoutine.Mechanism(this::voltageDrive, null, this));
 
   private void voltageDrive(Voltage v) {
     io.frontLeft().setVoltageForDrivingMotor(v);
     io.frontRight().setVoltageForDrivingMotor(v);
     io.rearLeft().setVoltageForDrivingMotor(v);
     io.rearRight().setVoltageForDrivingMotor(v);
-    appliedSysidVoltage = v;
-  }
-
-  private void logMotors(SysIdRoutineLog s) {
-    s.motor("frontLeft")
-        .linearPosition(Meters.of(io.frontLeft().getPosition().distanceMeters))
-        .linearVelocity(MetersPerSecond.of(io.frontLeft().getState().speedMetersPerSecond))
-        .voltage(appliedSysidVoltage);
-    s.motor("rearLeft")
-        .linearPosition(Meters.of(io.rearLeft().getPosition().distanceMeters))
-        .linearVelocity(MetersPerSecond.of(io.rearLeft().getState().speedMetersPerSecond))
-        .voltage(appliedSysidVoltage);
-    s.motor("frontRight")
-        .linearPosition(Meters.of(io.frontRight().getPosition().distanceMeters))
-        .linearVelocity(MetersPerSecond.of(io.frontRight().getState().speedMetersPerSecond))
-        .voltage(appliedSysidVoltage);
-    s.motor("rearRight")
-        .linearPosition(Meters.of(io.rearRight().getPosition().distanceMeters))
-        .linearVelocity(MetersPerSecond.of(io.rearRight().getState().speedMetersPerSecond))
-        .voltage(appliedSysidVoltage);
   }
 
   public Command sysIdQuasistatic(
@@ -285,6 +270,30 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
                       });
             })
         .withName("Set 0");
+  }
+
+  public Command rotateToHeading(Rotation2d heading) {
+    // Use a PID controller to control the heading of the robot
+    return run(() -> {
+      AngularVelocity velocity = RadiansPerSecond.of(thetaController.calculate(io.getHeading().getRadians(), heading.getRadians()));
+      drive(MetersPerSecond.zero(), MetersPerSecond.zero(), velocity, ReferenceFrame.ROBOT);
+    }).until(thetaController::atSetpoint).withName("Rotate to " + heading.getDegrees() + " Degrees");
+  }
+
+  /**
+   * Creates a command that points the drive base at the given AprilTag. The returned command
+   * does nothing if no AprilTag with the given ID exists on the game field.
+   *
+   * @param tagId the ID of the AprilTag to point at.
+   */
+  public Command pointAtTag(int tagId) {
+    return Vision.fieldLayout
+        .getTagPose(tagId)
+        .map(Pose3d::getRotation)
+        .map(Rotation3d::toRotation2d)
+        .map(this::rotateToHeading)
+        .orElseGet(Commands::none)
+        .withName("Point At Tag " + tagId);
   }
 
   private void setForward() {
