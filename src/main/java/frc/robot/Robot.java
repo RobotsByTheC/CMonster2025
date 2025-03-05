@@ -6,17 +6,20 @@ package frc.robot;
 
 import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.epilogue.logging.EpilogueBackend;
 import edu.wpi.first.epilogue.logging.FileBackend;
 import edu.wpi.first.epilogue.logging.NTEpilogueBackend;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.sim.SimulationContext;
@@ -29,6 +32,8 @@ import frc.robot.subsystems.drive.SimSwerveIO;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.RealElevatorIO;
 import frc.robot.subsystems.elevator.SimElevatorIO;
+
+import java.util.Set;
 
 @Logged
 public class Robot extends TimedRobot {
@@ -46,6 +51,7 @@ public class Robot extends TimedRobot {
   private final CommandXboxController driverController; // NOPMD
   private final CommandJoystick lStick; // NOPMD
   private final CommandJoystick rStick; // NOPMD
+  private double loopTime;
 
   public Robot() {
     // Initialize our subsystems. If our program is running in simulation mode (either from the
@@ -94,6 +100,9 @@ public class Robot extends TimedRobot {
                 EpilogueBackend.multi(
                     new FileBackend(DataLogManager.getLog()),
                     new NTEpilogueBackend(NetworkTableInstance.getDefault())));
+
+    // Disable joystick warnings by default
+    DriverStation.silenceJoystickConnectionWarning(true);
   }
 
   @SuppressWarnings("unused")
@@ -220,6 +229,11 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
+    if (DriverStation.isFMSAttached()) {
+      // Enable joystick warnings on the field
+      DriverStation.silenceJoystickConnectionWarning(false);
+    }
+
     // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
     // commands, running already-scheduled commands, removing finished or interrupted commands,
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
