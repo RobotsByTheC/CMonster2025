@@ -165,18 +165,18 @@ public final class Constants {
     // Elevator minimum falling voltage: 0.7 volts
 
     // Top face of the carriage rail to the carpet
-    public static final Distance zeroOffset = Inches.of(25);
-    public static final Distance l1 = Inches.of(25); // 22
-    public static final Distance l2 = Inches.of(36); // 36
-    public static final Distance l3 = Inches.of(52);
-    public static final Distance l4 = Inches.of(76);
+    public static final Distance zeroOffset = Inches.of(2.625 + 12.125);
+    public static final Distance l1 = zeroOffset; // 22
+    public static final Distance l2 = zeroOffset.plus(Inches.of(11)); // 36
+    public static final Distance l3 = zeroOffset.plus(Inches.of(27));
+    public static final Distance l4 = zeroOffset.plus(Inches.of(51));
 
     public static final Current stallThreshold = Amps.of(70);
     public static final Time stallDuration = Milliseconds.of(500);
 
-    public static final Distance minHeight = Inches.of(0);
+    public static final Distance minHeight = Inches.of(14);
     // Slightly less than max elevator extension
-    public static final Distance maxHeight = Inches.of(67.5);
+    public static final Distance maxHeight = Inches.of(66);
 
     public static final int leftCanID = 10;
     public static final int rightCanID = 9;
@@ -191,19 +191,18 @@ public final class Constants {
 
     public static final int currentLimit = 40;
 
-    public static final double KS = 1.9;
-    public static final double KG = 2.6;
-    public static final double KV = 1.1023;
-    public static final double KA = 0.28148;
+    public static final double KS = 0.72627;
+    public static final double KG = 1.6282;
+    public static final double KV = 2.2604;
+    public static final double KA = 0;
     public static final double KP = 20;
     public static final double KI = 0;
     public static final double KD = 1;
   }
 
   public static final class CoralConstants {
-    public static final int leftCanID = 20;
-    public static final int rightCanID = 21;
-    public static final int wristCanID = 22;
+    public static final int motorCanID = 12;
+    public static final int wristCanID = 16;
 
     public static final Current grabCurrentLimit = Amps.of(15);
     public static final Current wristCurrentLimit = Amps.of(40);
@@ -220,14 +219,14 @@ public final class Constants {
     public static final double wristGearing = 60;
 
     public static final Angle minWristAngle = Degrees.of(-65); // -75
-    public static final Angle maxWristAngle = Degrees.of(50); // 50
+    public static final Angle maxWristAngle = Degrees.of(75); // 50
     public static final Angle wristTolerance = Degrees.of(2);
 
     public static final double KS = 0.42088; // 0.34646
     public static final double KG = 0.18; // 0.1159 or 0.13 or 0.30995
     public static final double KV = 46.18; // 52.183
     public static final double KA = 5.4707; // 4.3241
-    public static final double KP = 4; // 12 / 1.6
+    public static final double KP = 2; // 12 / 1.6
     public static final double KI = 0;
     public static final double KD = 0;
   }
