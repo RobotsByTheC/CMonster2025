@@ -13,7 +13,7 @@ public class AbsoluteEncoderLogger extends ClassSpecificLogger<AbsoluteEncoder> 
 
   @Override
   protected void update(EpilogueBackend epilogueBackend, AbsoluteEncoder absoluteEncoder) {
-    epilogueBackend.log("position", absoluteEncoder.getPosition());
-    epilogueBackend.log("velocity", absoluteEncoder.getVelocity());
+//    epilogueBackend.log("position", absoluteEncoder.getPosition());
+//    epilogueBackend.log("velocity", absoluteEncoder.getVelocity());
   }
 }
