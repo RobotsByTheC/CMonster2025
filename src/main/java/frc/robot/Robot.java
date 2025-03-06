@@ -183,11 +183,17 @@ public class Robot extends TimedRobot {
                 .withName("Intake"));
 
     // Algae
-    driverController.leftBumper().whileTrue(algae.intakeGround());
+    driverController
+        .leftBumper()
+        .whileTrue(elevator.goToIntakeHeight().andThen(algae.intakeGround()));
     driverController.leftBumper().onFalse(algae.holdPosition());
     driverController.rightBumper().whileTrue(algae.intakeReef());
     driverController.rightBumper().onFalse(algae.holdPosition());
-    driverController.leftTrigger().whileTrue(algae.scoreProcessor());
+    driverController
+        .leftTrigger()
+        .whileTrue(elevator.goToIntakeHeight()
+        .andThen(algae.scoreProcessor())
+        .andThen(elevator.goToBottom().alongWith(algae.stow())));
     driverController.leftTrigger().onFalse(algae.holdPosition());
   }
 

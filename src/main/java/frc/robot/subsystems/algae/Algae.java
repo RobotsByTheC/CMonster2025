@@ -18,6 +18,7 @@ import static frc.robot.Constants.AlgaeConstants.grabScoreVoltage;
 import static frc.robot.Constants.AlgaeConstants.grabStallDuration;
 import static frc.robot.Constants.AlgaeConstants.grabStallLimit;
 import static frc.robot.Constants.AlgaeConstants.groundIntakeAngle;
+import static frc.robot.Constants.AlgaeConstants.holdAngle;
 import static frc.robot.Constants.AlgaeConstants.maxWristAngle;
 import static frc.robot.Constants.AlgaeConstants.minWristAngle;
 import static frc.robot.Constants.AlgaeConstants.processorScoreAngle;
@@ -109,6 +110,10 @@ public class Algae extends SubsystemBase {
 
   public Command stow() {
     return coordinatedControl(stowAngle, Volts.zero(), () -> false).withName("Stow Algae Arm");
+  }
+
+  public Command hold() {
+    return coordinatedControl(holdAngle, Volts.zero(), () -> false).withName("Hold Algae");
   }
 
   public Command stop() {

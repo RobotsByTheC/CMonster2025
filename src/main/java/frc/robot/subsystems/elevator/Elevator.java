@@ -15,6 +15,7 @@ import static frc.robot.Constants.ElevatorConstants.KI;
 import static frc.robot.Constants.ElevatorConstants.KP;
 import static frc.robot.Constants.ElevatorConstants.KS;
 import static frc.robot.Constants.ElevatorConstants.KV;
+import static frc.robot.Constants.ElevatorConstants.algaeIntake;
 import static frc.robot.Constants.ElevatorConstants.intake;
 import static frc.robot.Constants.ElevatorConstants.l1;
 import static frc.robot.Constants.ElevatorConstants.l2;
@@ -141,7 +142,7 @@ public class Elevator extends SubsystemBase {
   }
 
   public Command goToBottom() {
-    return goToHeight(minHeight.plus(Inches.of(3))).withName("Dropping to Min height").andThen(home());
+    return goToHeight(minHeight.plus(Inches.of(1.5))).withName("Dropping to Min height").andThen(home());
   }
 
   public Command goToL1Height() {
@@ -162,6 +163,10 @@ public class Elevator extends SubsystemBase {
 
   public Command goToIntakeHeight() {
     return goToHeight(intake).withName("Rising to Inatke");
+  }
+
+  public Command goToAlgaeIntakeHeight() {
+    return goToHeight(algaeIntake).withName("Rising to Algae");
   }
 
   public Command holdCurrentPosition() {
