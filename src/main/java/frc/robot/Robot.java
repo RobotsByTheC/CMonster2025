@@ -141,7 +141,7 @@ public class Robot extends TimedRobot {
             elevator
                 .goToL1Height()
                 .andThen(coral.scoreL1().deadlineFor(elevator.holdCurrentPosition()))
-                .andThen(elevator.home().alongWith(coral.stow()))
+                .andThen(elevator.goToBottom().alongWith(coral.stow()))
                 .withName("Score L1"));
     driverController
         .b()
@@ -149,7 +149,7 @@ public class Robot extends TimedRobot {
             elevator
                 .goToL2Height()
                 .andThen(coral.scoreL2().deadlineFor(elevator.holdCurrentPosition()))
-                .andThen(elevator.home().alongWith(coral.stow()))
+                .andThen(elevator.goToBottom().alongWith(coral.stow()))
                 .withName("Score L2"));
     driverController
         .x()
@@ -157,7 +157,7 @@ public class Robot extends TimedRobot {
             elevator
                 .goToL3Height()
                 .andThen(coral.scoreL3().deadlineFor(elevator.holdCurrentPosition()))
-                .andThen(elevator.home().alongWith(coral.stow()))
+                .andThen(elevator.goToBottom().alongWith(coral.stow()))
                 .withName("Score L3"));
     driverController
         .y()
@@ -165,15 +165,22 @@ public class Robot extends TimedRobot {
             elevator
                 .goToL4Height()
                 .andThen(coral.scoreL4().deadlineFor(elevator.holdCurrentPosition()))
-                .andThen(elevator.home().alongWith(coral.stow()))
+                .andThen(elevator.goToBottom().alongWith(coral.stow()))
                 .withName("Score L4"));
 
-    //Elevator
-    driverController.povDown().whileTrue(elevator.down());
+    // Elevator
+    driverController.povDown().whileTrue(elevator.goToBottom());
     driverController.povUp().whileTrue(elevator.home());
 
     // Coral
-    driverController.start().whileTrue(coral.intake());
+    driverController
+        .start()
+        .whileTrue(
+            elevator
+                .goToIntakeHeight()
+                .andThen(coral.intake().deadlineFor(elevator.holdCurrentPosition()))
+                .andThen(elevator.goToBottom().alongWith(coral.stow()))
+                .withName("Intake"));
 
     // Algae
     driverController.leftBumper().whileTrue(algae.intakeGround());
@@ -189,10 +196,10 @@ public class Robot extends TimedRobot {
    * routines.
    */
   private void configureTestBindings() {
-//    driverController
-//        .leftBumper()
-//        .and(RobotModeTriggers.test())
-//        .whileTrue(elevator.findFeedforwardTerms().withName("Run Elevator Sysid Routine"));
+    //    driverController
+    //        .leftBumper()
+    //        .and(RobotModeTriggers.test())
+    //        .whileTrue(elevator.findFeedforwardTerms().withName("Run Elevator Sysid Routine"));
     driverController
         .rightBumper()
         .and(RobotModeTriggers.test())
