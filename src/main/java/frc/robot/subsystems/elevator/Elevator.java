@@ -73,7 +73,7 @@ public class Elevator extends SubsystemBase {
         new SysIdRoutine(
             new SysIdRoutine.Config(Volts.per(Second).of(0.5), Volts.of(5), null),
             new SysIdRoutine.Mechanism(
-                (voltage) -> {
+                voltage -> {
                   if (voltage.magnitude() < 0) {
                     io.setVoltage(voltage.div(3));
                   } else {

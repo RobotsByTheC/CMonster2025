@@ -50,10 +50,10 @@ public class Algae extends SubsystemBase {
   private final MovingAverage movingAverage = new MovingAverage(9);
 
   @SuppressWarnings("FieldCanBeLocal")
-  private double pidVoltage;
+  private double pidVoltage; //NOPMD
 
   @SuppressWarnings("FieldCanBeLocal")
-  private double feedForwardVoltage;
+  private double feedForwardVoltage; //NOPMD
 
   @NotLogged private final SysIdRoutine sysIdRoutine;
   public final Trigger atMaxAngle;

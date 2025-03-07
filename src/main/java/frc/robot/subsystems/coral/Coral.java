@@ -46,16 +46,16 @@ import java.util.function.BooleanSupplier;
 
 @Logged
 public class Coral extends SubsystemBase {
-  private CoralIO io;
+  private CoralIO io; //NOPMD
   private final ProfiledPIDController profiledPIDController;
   private final ArmFeedforward feedforward;
   @NotLogged private final SysIdRoutine sysIdRoutine;
 
   @SuppressWarnings("FieldCanBeLocal")
-  private double pidVoltage;
+  private double pidVoltage; //NOPMD
 
   @SuppressWarnings("FieldCanBeLocal")
-  private double feedForwardVoltage;
+  private double feedForwardVoltage; //NOPMD
 
   private final MovingAverage movingAverage = new MovingAverage(9);
 

@@ -29,11 +29,11 @@ public class RealCoralIO implements CoralIO {
 
   @SuppressWarnings("FieldCanBeLocal")
   @NotLogged
-  private final SparkMaxConfig grabMotorConfig;
+  private final SparkMaxConfig grabMotorConfig; //NOPMD
 
   @SuppressWarnings("FieldCanBeLocal")
   @NotLogged
-  private final SparkMaxConfig wristConfig;
+  private final SparkMaxConfig wristConfig; //NOPMD
 
   private final AbsoluteEncoder wristEncoder;
 
