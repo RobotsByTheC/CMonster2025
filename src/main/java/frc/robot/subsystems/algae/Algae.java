@@ -18,7 +18,6 @@ import static frc.robot.Constants.AlgaeConstants.grabScoreVoltage;
 import static frc.robot.Constants.AlgaeConstants.grabStallDuration;
 import static frc.robot.Constants.AlgaeConstants.grabStallLimit;
 import static frc.robot.Constants.AlgaeConstants.groundIntakeAngle;
-import static frc.robot.Constants.AlgaeConstants.holdAngle;
 import static frc.robot.Constants.AlgaeConstants.maxWristAngle;
 import static frc.robot.Constants.AlgaeConstants.minWristAngle;
 import static frc.robot.Constants.AlgaeConstants.processorScoreAngle;
@@ -45,17 +44,20 @@ import java.util.function.BooleanSupplier;
 
 @Logged
 public class Algae extends SubsystemBase {
-  private AlgaeIO io;
+  private final AlgaeIO io;
   private final ProfiledPIDController profiledPIDController;
   private final ArmFeedforward feedForward;
   private final MovingAverage movingAverage = new MovingAverage(9);
 
+  @SuppressWarnings("FieldCanBeLocal")
   private double pidVoltage;
+
+  @SuppressWarnings("FieldCanBeLocal")
   private double feedForwardVoltage;
 
   @NotLogged private final SysIdRoutine sysIdRoutine;
-  public final Trigger atMaxAngle = new Trigger(() -> io.getWristAngle().gte(maxWristAngle));
-  public final Trigger atMinAngle = new Trigger(() -> io.getWristAngle().lte(minWristAngle));
+  public final Trigger atMaxAngle;
+  public final Trigger atMinAngle;
 
   @NotLogged
   private final Debouncer stallingDebouncer = new Debouncer(grabStallDuration.in(Seconds));
@@ -65,6 +67,10 @@ public class Algae extends SubsystemBase {
 
   public Algae(AlgaeIO io) {
     this.io = io;
+
+    atMaxAngle = new Trigger(() -> io.getWristAngle().gte(maxWristAngle));
+    atMinAngle = new Trigger(() -> io.getWristAngle().lte(minWristAngle));
+
     feedForward = new ArmFeedforward(KS, KG, KV, KA);
     profiledPIDController =
         new ProfiledPIDController(
@@ -110,10 +116,6 @@ public class Algae extends SubsystemBase {
 
   public Command stow() {
     return coordinatedControl(stowAngle, Volts.zero(), () -> false).withName("Stow Algae Arm");
-  }
-
-  public Command hold() {
-    return coordinatedControl(holdAngle, Volts.zero(), () -> false).withName("Hold Algae");
   }
 
   public Command stop() {

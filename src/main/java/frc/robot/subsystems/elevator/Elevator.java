@@ -113,8 +113,8 @@ public class Elevator extends SubsystemBase {
             new Trigger(
                     () ->
                         io.getCurrentDraw().gte(Amps.of(15))
-                            && (io.getVelocity().abs(InchesPerSecond)) < .1)
-                .debounce(.15))
+                            && (io.getVelocity().abs(InchesPerSecond)) < 0.1)
+                .debounce(0.15))
         .finallyDo(
             (boolean interrupted) -> {
               if (!interrupted) {
@@ -165,19 +165,19 @@ public class Elevator extends SubsystemBase {
   }
 
   public Command goToIntakeHeight() {
-    return goToHeight(intake).withName("Rising to Inatke");
+    return goToHeight(intake).withName("Rising to Intake Coral");
   }
 
   public Command goToAlgaeIntakeHeight() {
-    return goToHeight(algaeIntake).withName("Rising to Algae");
+    return goToHeight(algaeIntake).withName("Rising to Algae Intake");
   }
 
   public Command goToAlgaeL2Height() {
-    return goToHeight(algaeL2).withName("Rising to Algae");
+    return goToHeight(algaeL2).withName("Rising to Algae L2");
   }
 
   public Command goToAlgaeL3Height() {
-    return goToHeight(algaeL3).withName("Rising to Algae");
+    return goToHeight(algaeL3).withName("Rising to Algae L3");
   }
 
   public Command holdCurrentPosition() {
@@ -191,6 +191,7 @@ public class Elevator extends SubsystemBase {
         () -> io.setVoltage(calculatePIDVoltage(startingHeight)));
   }
 
+  @SuppressWarnings("unused")
   public Command runSysIdRoutine() {
     return sysIdRoutine
         .dynamic(SysIdRoutine.Direction.kForward)
@@ -201,6 +202,7 @@ public class Elevator extends SubsystemBase {
         .withName("Elevator Sysid Routine");
   }
 
+  @SuppressWarnings("unused")
   public Command findFeedforwardTerms() {
     MutVoltage appliedVoltage = Volts.mutable(1);
     MutVoltage riseVoltage = Volts.mutable(0);

@@ -28,9 +28,16 @@ public class RealAlgaeIO implements AlgaeIO {
   private final SparkMax grabLeft;
   private final SparkMax grabRight;
   private final SparkMax wrist;
+
+  @SuppressWarnings("FieldCanBeLocal")
   private final SparkMaxConfig grabLeftConfig;
+
+  @SuppressWarnings("FieldCanBeLocal")
   private final SparkMaxConfig grabRightConfig;
+
+  @SuppressWarnings("FieldCanBeLocal")
   private final SparkMaxConfig wristConfig;
+
   private final AbsoluteEncoder wristEncoder;
 
   public RealAlgaeIO() {

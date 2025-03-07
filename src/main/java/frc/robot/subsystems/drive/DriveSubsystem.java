@@ -40,10 +40,16 @@ import java.util.function.DoubleSupplier;
 @Logged
 public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
   private final SwerveIO io;
+
+  @SuppressWarnings("unused")
   private final PIDController xController =
       new PIDController(Constants.AutoConstants.pXController, 0, 0);
+
+  @SuppressWarnings("unused")
   private final PIDController yController =
       new PIDController(Constants.AutoConstants.pYController, 0, 0);
+
+  @SuppressWarnings("FieldCanBeLocal")
   private final PIDController thetaController =
       new PIDController(Constants.AutoConstants.pThetaController, 0, 0);
 
@@ -98,6 +104,7 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
    *
    * @param pose The pose to which to set the odometry.
    */
+  @SuppressWarnings("unused")
   public void resetOdometry(Pose2d pose) {
     io.resetHeading(pose.getRotation());
     poseEstimator.resetPosition(io.getHeading(), io.getModulePositions(), pose);
@@ -148,11 +155,13 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
   }
 
   /** Resets the drive encoders to currently read a position of 0. */
+  @SuppressWarnings("unused")
   public void resetEncoders() {
     io.resetEncoders();
   }
 
   /** Zeroes the heading of the robot. */
+  @SuppressWarnings("unused")
   public void zeroHeading() {
     io.zeroHeading();
   }
@@ -174,18 +183,18 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
     return io.getModuleStates();
   }
 
+  @SuppressWarnings("unused")
   public Command setXCommand() {
     return run(this::setX)
         .until(
-            () -> {
-              return Arrays.stream(getModuleStates())
-                  .allMatch(
-                      state -> {
-                        double v = Math.abs(state.speedMetersPerSecond);
-                        double angle = state.angle.getDegrees();
-                        return v <= 0.01 && Math.abs(angle % 45) <= 1.5;
-                      });
-            })
+            () ->
+                Arrays.stream(getModuleStates())
+                    .allMatch(
+                        state -> {
+                          double v = Math.abs(state.speedMetersPerSecond);
+                          double angle = state.angle.getDegrees();
+                          return v <= 0.01 && Math.abs(angle % 45) <= 1.5;
+                        }))
         .withName("Set X");
   }
 
@@ -264,11 +273,13 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
         .voltage(appliedSysidVoltage);
   }
 
-  public Command sysIdQuasistatic(
+  @SuppressWarnings("unused")
+  public Command sysIdQuasiStatic(
       SysIdRoutine.Direction direction) { // can bind to controller buttons
     return routine.quasistatic(direction);
   }
 
+  @SuppressWarnings("unused")
   public Command sysIdDynamic(SysIdRoutine.Direction direction) { // can bind to controller buttons
     return routine.dynamic(direction);
   }
@@ -276,14 +287,13 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
   public Command pointForward() {
     return run(this::setForward)
         .until(
-            () -> {
-              return Arrays.stream(getModuleStates())
-                  .allMatch(
-                      state -> {
-                        double angle = state.angle.getDegrees();
-                        return 1.5 >= angle && angle >= -1.5;
-                      });
-            })
+            () ->
+                Arrays.stream(getModuleStates())
+                    .allMatch(
+                        state -> {
+                          double angle = state.angle.getDegrees();
+                          return 1.5 >= angle && angle >= -1.5;
+                        }))
         .withName("Set 0");
   }
 

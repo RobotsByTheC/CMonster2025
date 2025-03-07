@@ -25,7 +25,9 @@ import frc.robot.sim.SimulationContext;
 
 @Logged
 public class SimCoralIO implements CoralIO {
+  @SuppressWarnings({"FieldCanBeLocal", "unused"})
   private Voltage grabberVoltage = Volts.zero();
+
   @NotLogged private final SingleJointedArmSim wristSim;
   @NotLogged private final MechanismSim mechanismSim;
 
@@ -48,8 +50,8 @@ public class SimCoralIO implements CoralIO {
           }
 
           @Override
-          public void update(double timestep) {
-            wristSim.update(timestep);
+          public void update(double time) {
+            wristSim.update(time);
           }
         };
     SimulationContext.getDefault().addMechanism(mechanismSim);

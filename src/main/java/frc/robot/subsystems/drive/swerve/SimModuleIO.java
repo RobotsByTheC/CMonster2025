@@ -51,7 +51,7 @@ public class SimModuleIO implements ModuleIO {
     this(new MAXSwerveModuleSim());
   }
 
-  private void update(double timestep) {
+  private void update(double time) {
     // Set simulation motor voltages based on the commanded inputs to the module
     Voltage driveVolts =
         Volts.of(
@@ -64,11 +64,11 @@ public class SimModuleIO implements ModuleIO {
     sim.setDriveVoltage(driveVolts);
     sim.setTurnVoltage(turnVolts);
 
-    // Write "sensor" values by integrating the simulated velocities over the past timestep
+    // Write "sensor" values by integrating the simulated velocities over the past timeStep
     currentPosition.angle =
         currentPosition.angle.plus(
-            Rotation2d.fromRadians(sim.getTurnVelocity().in(RadiansPerSecond) * timestep));
-    currentPosition.distanceMeters += getWheelVelocity().in(MetersPerSecond) * timestep;
+            Rotation2d.fromRadians(sim.getTurnVelocity().in(RadiansPerSecond) * time));
+    currentPosition.distanceMeters += getWheelVelocity().in(MetersPerSecond) * time;
   }
 
   @Override
@@ -104,6 +104,7 @@ public class SimModuleIO implements ModuleIO {
     currentPosition.distanceMeters = 0;
   }
 
+  @SuppressWarnings("unused")
   public Voltage getDriveVoltage() {
     return lastVoltage;
   }

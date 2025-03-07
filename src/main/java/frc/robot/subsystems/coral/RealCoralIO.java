@@ -26,8 +26,15 @@ import edu.wpi.first.units.measure.Voltage;
 public class RealCoralIO implements CoralIO {
   private final SparkMax grabMotor;
   private final SparkMax wrist;
-  @NotLogged private final SparkMaxConfig grabMotorConfig;
-  @NotLogged private final SparkMaxConfig wristConfig;
+
+  @SuppressWarnings("FieldCanBeLocal")
+  @NotLogged
+  private final SparkMaxConfig grabMotorConfig;
+
+  @SuppressWarnings("FieldCanBeLocal")
+  @NotLogged
+  private final SparkMaxConfig wristConfig;
+
   private final AbsoluteEncoder wristEncoder;
 
   public RealCoralIO() {

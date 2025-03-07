@@ -51,7 +51,10 @@ public class Coral extends SubsystemBase {
   private final ArmFeedforward feedforward;
   @NotLogged private final SysIdRoutine sysIdRoutine;
 
+  @SuppressWarnings("FieldCanBeLocal")
   private double pidVoltage;
+
+  @SuppressWarnings("FieldCanBeLocal")
   private double feedForwardVoltage;
 
   private final MovingAverage movingAverage = new MovingAverage(9);
@@ -112,6 +115,7 @@ public class Coral extends SubsystemBase {
     return coordinatedControl(tipScoreAngle, grabScoreVoltage, isGrabberDone).withName("Score L4");
   }
 
+  @SuppressWarnings("unused")
   public Command stop() {
     return run(() -> {
           io.setGrabVoltage(Volts.of(0));

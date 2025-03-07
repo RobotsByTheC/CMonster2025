@@ -62,7 +62,7 @@ public final class Constants {
             new Translation2d(wheelBase.div(-2), trackWidth.div(2)),
             new Translation2d(wheelBase.div(-2), trackWidth.div(-2)));
 
-    // Angular offsets here describe how the swerve modules are physically rotated with respect to
+    // Angular offsets here describe how the swerve modules are physically rotated with respect
     // to the chassis. There should be offsets at 0, 90, 180, and 270 degrees for a rectangular
     // chassis.
     public static final Rotation2d frontLeftChassisAngularOffset = Rotation2d.fromDegrees(0);
@@ -132,7 +132,7 @@ public final class Constants {
 
     static {
       // Note: All unit-based configuration values should use SI units (meters, radians, seconds,
-      // etc) for consistency
+      // etc.) for consistency
 
       drivingConfig.idleMode(IdleMode.kBrake).smartCurrentLimit((int) drivingCurrentLimit.in(Amps));
       drivingConfig
@@ -173,7 +173,7 @@ public final class Constants {
     public static final Distance l3 = zeroOffset.plus(Inches.of(29.5));
     public static final Distance l4 = zeroOffset.plus(Inches.of(56));
     public static final Distance intake = zeroOffset.plus(Inches.of(5.25));
-    public static final Distance algaeIntake = zeroOffset.plus(Inches.of(4.5));
+    public static final Distance algaeIntake = zeroOffset.plus(Inches.of(3));
     public static final Distance algaeL2 = zeroOffset.plus(Inches.of(36));
     public static final Distance algaeL3 = zeroOffset.plus(Inches.of(49.5));
 
@@ -187,6 +187,7 @@ public final class Constants {
     public static final int leftCanID = 10;
     public static final int rightCanID = 9;
 
+    @SuppressWarnings("unused")
     public static final double gearboxReduction = 4.86; // 4.86:1
 
     // Raw: 21.3689 rotations from bottom to top
@@ -259,6 +260,8 @@ public final class Constants {
     public static final Angle reefIntakeAngle = Degrees.of(-35);
     public static final Angle processorScoreAngle = Degrees.of(0);
     public static final Angle stowAngle = Degrees.of(90);
+
+    @SuppressWarnings("unused")
     public static final Angle holdAngle = Degrees.of(50);
 
     public static final double wristGearing = 60;

@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.sim.SimulationContext;
@@ -170,7 +169,7 @@ public class Robot extends TimedRobot {
 
     // Elevator
     driverController.leftBumper().whileTrue(elevator.goToBottom());
-    //driverController.povUp().whileTrue(elevator.home());
+    // driverController.povUp().whileTrue(elevator.home());
 
     // Coral
     driverController
@@ -180,33 +179,22 @@ public class Robot extends TimedRobot {
                 .goToIntakeHeight()
                 .andThen(coral.intake().deadlineFor(elevator.holdCurrentPosition()))
                 .andThen(elevator.goToBottom().alongWith(coral.stow()))
-                .withName("Intake"));
+                .withName("Coral Intake"));
 
     // Algae
     driverController
         .povUp()
-        .whileTrue(
-            elevator
-                .goToAlgaeIntakeHeight()
-                .andThen(algae.intakeGround())
-                .andThen(elevator.goToBottom().alongWith(algae.stow())));
+        .whileTrue(elevator.goToAlgaeIntakeHeight().andThen(algae.intakeGround()));
+    driverController.povUp().onFalse(elevator.goToBottom().alongWith(algae.stow()));
     driverController.povDown().onFalse(algae.stow().andThen(algae.holdPosition()));
     driverController
-    .povLeft()
-    .whileTrue(
-      elevator
-          .goToAlgaeL2Height()
-          .andThen(algae.intakeReef())
-          .andThen(algae.stow()));
-    driverController.povLeft().onFalse(algae.holdPosition());
+        .povLeft()
+        .whileTrue(elevator.goToAlgaeL2Height().andThen(algae.intakeReef()).andThen(algae.stow()));
+    driverController.povLeft().onFalse(elevator.goToBottom().alongWith(algae.stow()));
     driverController
-    .povRight()
-    .whileTrue(
-      elevator
-          .goToAlgaeL3Height()
-          .andThen(algae.intakeReef())
-          .andThen(algae.stow()));
-    driverController.povRight().onFalse(algae.holdPosition());
+        .povRight()
+        .whileTrue(elevator.goToAlgaeL3Height().andThen(algae.intakeReef()).andThen(algae.stow()));
+    driverController.povRight().onFalse(elevator.goToBottom().alongWith(algae.stow()));
     driverController
         .povDown()
         .whileTrue(
@@ -214,18 +202,18 @@ public class Robot extends TimedRobot {
                 .goToAlgaeIntakeHeight()
                 .andThen(algae.scoreProcessor())
                 .andThen(elevator.goToBottom().alongWith(algae.stow())));
-    driverController.povDown().onFalse(algae.stow().andThen(algae.holdPosition()));
   }
 
   /**
    * Configures additional controls that are only active in test mode. Primarily used for sysid
    * routines.
    */
+  @SuppressWarnings("unused")
   private void configureTestBindings() {
-    //    driverController
-    //        .leftBumper()
-    //        .and(RobotModeTriggers.test())
-    //        .whileTrue(elevator.findFeedforwardTerms().withName("Run Elevator Sysid Routine"));
+    driverController
+        .leftTrigger()
+        .and(RobotModeTriggers.test())
+        .whileTrue(elevator.findFeedforwardTerms().withName("Run Elevator Sysid Routine"));
     driverController
         .rightBumper()
         .and(RobotModeTriggers.test())

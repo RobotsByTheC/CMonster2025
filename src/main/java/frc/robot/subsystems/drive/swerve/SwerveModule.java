@@ -71,6 +71,7 @@ public class SwerveModule implements AutoCloseable {
             desiredState.speedMetersPerSecond, desiredState.angle.plus(angularOffset));
 
     // Optimize the reference state to avoid spinning further than 90 degrees.
+    @SuppressWarnings("deprecation")
     var optimizedState = SwerveModuleState.optimize(correctedState, io.getModuleRotation());
     this.targetState = optimizedState;
 

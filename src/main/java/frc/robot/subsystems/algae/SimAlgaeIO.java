@@ -47,8 +47,8 @@ public class SimAlgaeIO implements AlgaeIO {
           }
 
           @Override
-          public void update(double timestep) {
-            wristSim.update(timestep);
+          public void update(double time) {
+            wristSim.update(time);
           }
         };
     SimulationContext.getDefault().addMechanism(mechanismSim);

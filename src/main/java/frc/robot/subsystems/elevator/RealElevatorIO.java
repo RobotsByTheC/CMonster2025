@@ -27,7 +27,11 @@ import edu.wpi.first.units.measure.Voltage;
 public class RealElevatorIO implements ElevatorIO {
   private final SparkMax left;
   private final SparkMax right;
-  @NotLogged private final SparkMaxConfig sparkConfig;
+
+  @SuppressWarnings("FieldCanBeLocal")
+  @NotLogged
+  private final SparkMaxConfig sparkConfig;
+
   private final RelativeEncoder rightEncoder;
   private final RelativeEncoder leftEncoder;
 

@@ -35,15 +35,15 @@ public class SimSwerveIO implements SwerveIO {
     SimulationContext.getDefault().addPeriodic(update);
   }
 
-  private void update(double timestep) {
+  private void update(double time) {
     // Compute the current chassis speeds (x, y, ω)
     var speeds =
         driveKinematics.toChassisSpeeds(
             frontLeft.getState(), frontRight.getState(), rearLeft.getState(), rearRight.getState());
 
-    // Update the heading by integrating the angular velocity by the timestep
-    // (note: smaller timesteps will give more accurate results)
-    heading = heading.plus(Rotation2d.fromRadians(speeds.omegaRadiansPerSecond * timestep));
+    // Update the heading by integrating the angular velocity by the time
+    // (note: smaller time steps will give more accurate results)
+    heading = heading.plus(Rotation2d.fromRadians(speeds.omegaRadiansPerSecond * time));
   }
 
   @Override
