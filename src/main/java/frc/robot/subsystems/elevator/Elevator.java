@@ -16,6 +16,8 @@ import static frc.robot.Constants.ElevatorConstants.KP;
 import static frc.robot.Constants.ElevatorConstants.KS;
 import static frc.robot.Constants.ElevatorConstants.KV;
 import static frc.robot.Constants.ElevatorConstants.algaeIntake;
+import static frc.robot.Constants.ElevatorConstants.algaeL2;
+import static frc.robot.Constants.ElevatorConstants.algaeL3;
 import static frc.robot.Constants.ElevatorConstants.intake;
 import static frc.robot.Constants.ElevatorConstants.l1;
 import static frc.robot.Constants.ElevatorConstants.l2;
@@ -122,7 +124,6 @@ public class Elevator extends SubsystemBase {
         .withName("Home");
   }
 
-
   public Command goToHeight(Distance targetHeight) {
     return startRun(
             () ->
@@ -130,19 +131,21 @@ public class Elevator extends SubsystemBase {
                     io.getHeight().in(Meters), io.getVelocity().in(MetersPerSecond)),
             () -> {
               Voltage calc = calculatePIDVoltage(targetHeight);
-      
-                if (calc.magnitude() < 0) {
-                  io.setVoltage(calc.div(2));
-                } else {
-                  io.setVoltage(calc);
-                }
+
+              if (calc.magnitude() < 0) {
+                io.setVoltage(calc.div(2));
+              } else {
+                io.setVoltage(calc);
+              }
             })
         .until(profiledPIDController::atGoal)
         .withName("Go To Height " + targetHeight.toLongString());
   }
 
   public Command goToBottom() {
-    return goToHeight(minHeight.plus(Inches.of(1.5))).withName("Dropping to Min height").andThen(home());
+    return goToHeight(minHeight.plus(Inches.of(1.5)))
+        .withName("Dropping to Min height")
+        .andThen(home());
   }
 
   public Command goToL1Height() {
@@ -167,6 +170,14 @@ public class Elevator extends SubsystemBase {
 
   public Command goToAlgaeIntakeHeight() {
     return goToHeight(algaeIntake).withName("Rising to Algae");
+  }
+
+  public Command goToAlgaeL2Height() {
+    return goToHeight(algaeL2).withName("Rising to Algae");
+  }
+
+  public Command goToAlgaeL3Height() {
+    return goToHeight(algaeL3).withName("Rising to Algae");
   }
 
   public Command holdCurrentPosition() {

@@ -173,7 +173,9 @@ public final class Constants {
     public static final Distance l3 = zeroOffset.plus(Inches.of(29.5));
     public static final Distance l4 = zeroOffset.plus(Inches.of(56));
     public static final Distance intake = zeroOffset.plus(Inches.of(5.25));
-    public static final Distance algaeIntake = zeroOffset.plus(Inches.of(1));
+    public static final Distance algaeIntake = zeroOffset.plus(Inches.of(4.5));
+    public static final Distance algaeL2 = zeroOffset.plus(Inches.of(36));
+    public static final Distance algaeL3 = zeroOffset.plus(Inches.of(49.5));
 
     public static final Current stallThreshold = Amps.of(70);
     public static final Time stallDuration = Milliseconds.of(500);
@@ -195,8 +197,8 @@ public final class Constants {
 
     public static final int currentLimit = 40;
 
-    public static final double KS = 0.5;
-    public static final double KG = .5;
+    public static final double KS = 0.7;
+    public static final double KG = 1;
     public static final double KV = 2.2604;
     public static final double KA = 0;
     public static final double KP = 20;
@@ -244,8 +246,8 @@ public final class Constants {
     public static final int rightCanID = 14;
     public static final int wristCanID = 13;
 
-    public static final Current grabStallLimit = Amps.of(20);
-    public static final Time grabStallDuration = Milliseconds.of(500);
+    public static final Current grabStallLimit = Amps.of(22);
+    public static final Time grabStallDuration = Milliseconds.of(300);
 
     public static final Current grabCurrentLimit = Amps.of(15);
     public static final Current wristCurrentLimit = Amps.of(40);
@@ -256,8 +258,8 @@ public final class Constants {
     public static final Angle groundIntakeAngle = Degrees.of(-15);
     public static final Angle reefIntakeAngle = Degrees.of(-35);
     public static final Angle processorScoreAngle = Degrees.of(0);
-    public static final Angle stowAngle = Degrees.of(80);
-    public static final Angle holdAngle = Degrees.of(45);
+    public static final Angle stowAngle = Degrees.of(90);
+    public static final Angle holdAngle = Degrees.of(50);
 
     public static final double wristGearing = 60;
 
@@ -266,10 +268,10 @@ public final class Constants {
     public static final Angle wristTolerance = Degrees.of(2);
 
     public static final double KS = 0.41008;
-    public static final double KG = 0.13169;
+    public static final double KG = 0.1169;
     public static final double KV = 0.9437;
     public static final double KA = 0.022004;
-    public static final double KP = 6; // 6
+    public static final double KP = 5; // 6
     public static final double KI = 0;
     public static final double KD = 0; // 0.1
   }

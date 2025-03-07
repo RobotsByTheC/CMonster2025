@@ -169,8 +169,8 @@ public class Robot extends TimedRobot {
                 .withName("Score L4"));
 
     // Elevator
-    driverController.povDown().whileTrue(elevator.goToBottom());
-    driverController.povUp().whileTrue(elevator.home());
+    driverController.leftBumper().whileTrue(elevator.goToBottom());
+    //driverController.povUp().whileTrue(elevator.home());
 
     // Coral
     driverController
@@ -184,17 +184,37 @@ public class Robot extends TimedRobot {
 
     // Algae
     driverController
-        .leftBumper()
-        .whileTrue(elevator.goToIntakeHeight().andThen(algae.intakeGround()));
-    driverController.leftBumper().onFalse(algae.holdPosition());
-    driverController.rightBumper().whileTrue(algae.intakeReef());
-    driverController.rightBumper().onFalse(algae.holdPosition());
+        .povUp()
+        .whileTrue(
+            elevator
+                .goToAlgaeIntakeHeight()
+                .andThen(algae.intakeGround())
+                .andThen(elevator.goToBottom().alongWith(algae.stow())));
+    driverController.povDown().onFalse(algae.stow().andThen(algae.holdPosition()));
     driverController
-        .leftTrigger()
-        .whileTrue(elevator.goToIntakeHeight()
-        .andThen(algae.scoreProcessor())
-        .andThen(elevator.goToBottom().alongWith(algae.stow())));
-    driverController.leftTrigger().onFalse(algae.holdPosition());
+    .povLeft()
+    .whileTrue(
+      elevator
+          .goToAlgaeL2Height()
+          .andThen(algae.intakeReef())
+          .andThen(algae.stow()));
+    driverController.povLeft().onFalse(algae.holdPosition());
+    driverController
+    .povRight()
+    .whileTrue(
+      elevator
+          .goToAlgaeL3Height()
+          .andThen(algae.intakeReef())
+          .andThen(algae.stow()));
+    driverController.povRight().onFalse(algae.holdPosition());
+    driverController
+        .povDown()
+        .whileTrue(
+            elevator
+                .goToAlgaeIntakeHeight()
+                .andThen(algae.scoreProcessor())
+                .andThen(elevator.goToBottom().alongWith(algae.stow())));
+    driverController.povDown().onFalse(algae.stow().andThen(algae.holdPosition()));
   }
 
   /**
