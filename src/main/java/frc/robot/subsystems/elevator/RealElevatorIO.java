@@ -30,7 +30,7 @@ public class RealElevatorIO implements ElevatorIO {
 
   @SuppressWarnings("FieldCanBeLocal")
   @NotLogged
-  private final SparkMaxConfig sparkConfig; //NOPMD
+  private final SparkMaxConfig sparkConfig; // NOPMD
 
   private final RelativeEncoder rightEncoder;
   private final RelativeEncoder leftEncoder;

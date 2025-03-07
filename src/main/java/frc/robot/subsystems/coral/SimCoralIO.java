@@ -26,7 +26,7 @@ import frc.robot.sim.SimulationContext;
 @Logged
 public class SimCoralIO implements CoralIO {
   @SuppressWarnings({"FieldCanBeLocal", "unused"})
-  private Voltage grabberVoltage = Volts.zero(); //NOPMD
+  private Voltage grabberVoltage = Volts.zero(); // NOPMD
 
   @NotLogged private final SingleJointedArmSim wristSim;
   @NotLogged private final MechanismSim mechanismSim;
