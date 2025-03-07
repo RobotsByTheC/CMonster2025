@@ -234,8 +234,7 @@ public class Robot extends TimedRobot {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // TODO
-    return Commands.none();
+    return drive.autoLeaveArea();
   }
 
   @Logged(name = "Battery Voltage")

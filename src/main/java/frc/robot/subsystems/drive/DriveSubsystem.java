@@ -284,6 +284,17 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
     return routine.dynamic(direction);
   }
 
+  public Command autoLeaveArea() {
+    return run(
+        () ->
+            drive(
+                MetersPerSecond.of(0.1),
+                MetersPerSecond.zero(),
+                RadiansPerSecond.zero(),
+                ReferenceFrame.ROBOT));
+  }
+
+  @SuppressWarnings("unused")
   public Command pointForward() {
     return run(this::setForward)
         .until(
