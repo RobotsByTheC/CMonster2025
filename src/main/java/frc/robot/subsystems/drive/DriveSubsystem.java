@@ -9,6 +9,7 @@ import static edu.wpi.first.units.Units.Feet;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.Milliseconds;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Volts;
@@ -30,6 +31,7 @@ import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
@@ -108,6 +110,9 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
   public void resetOdometry(Pose2d pose) {
     io.resetHeading(pose.getRotation());
     poseEstimator.resetPosition(io.getHeading(), io.getModulePositions(), pose);
+  }
+  public Command zeroGyro() {
+    return Commands.runOnce(() -> io.resetHeading(Rotation2d.kZero)).withName("Reset Gyro");
   }
 
   /**
@@ -288,10 +293,10 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
     return run(
         () ->
             drive(
-                MetersPerSecond.of(0.1),
+                MetersPerSecond.of(-0.1),
                 MetersPerSecond.zero(),
                 RadiansPerSecond.zero(),
-                ReferenceFrame.ROBOT));
+                ReferenceFrame.FIELD)).withTimeout(Milliseconds.of(500));
   }
 
   @SuppressWarnings("unused")
