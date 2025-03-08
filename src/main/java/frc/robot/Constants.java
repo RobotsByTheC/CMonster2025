@@ -62,7 +62,7 @@ public final class Constants {
             new Translation2d(wheelBase.div(-2), trackWidth.div(2)),
             new Translation2d(wheelBase.div(-2), trackWidth.div(-2)));
 
-    // Angular offsets here describe how the swerve modules are physically rotated with respect to
+    // Angular offsets here describe how the swerve modules are physically rotated with respect
     // to the chassis. There should be offsets at 0, 90, 180, and 270 degrees for a rectangular
     // chassis.
     public static final Rotation2d frontLeftChassisAngularOffset = Rotation2d.fromDegrees(0);
@@ -132,7 +132,7 @@ public final class Constants {
 
     static {
       // Note: All unit-based configuration values should use SI units (meters, radians, seconds,
-      // etc) for consistency
+      // etc.) for consistency
 
       drivingConfig.idleMode(IdleMode.kBrake).smartCurrentLimit((int) drivingCurrentLimit.in(Amps));
       drivingConfig
@@ -173,6 +173,10 @@ public final class Constants {
     public static final Distance l3 = zeroOffset.plus(Inches.of(29.5));
     public static final Distance l4 = zeroOffset.plus(Inches.of(56));
     public static final Distance intake = zeroOffset.plus(Inches.of(5.25));
+    public static final Distance algaeIntakeHeight = zeroOffset.plus(Inches.of(7));
+    public static final Distance algaeScoreHeight = zeroOffset.plus(Inches.of(6));
+    public static final Distance algaeL2 = zeroOffset.plus(Inches.of(37.5));
+    public static final Distance algaeL3 = zeroOffset.plus(Inches.of(51));
 
     public static final Current stallThreshold = Amps.of(70);
     public static final Time stallDuration = Milliseconds.of(500);
@@ -184,6 +188,7 @@ public final class Constants {
     public static final int leftCanID = 10;
     public static final int rightCanID = 9;
 
+    @SuppressWarnings("unused")
     public static final double gearboxReduction = 4.86; // 4.86:1
 
     // Raw: 21.3689 rotations from bottom to top
@@ -194,8 +199,8 @@ public final class Constants {
 
     public static final int currentLimit = 40;
 
-    public static final double KS = 0.5;
-    public static final double KG = 2.5;
+    public static final double KS = 1;
+    public static final double KG = 2.25;
     public static final double KV = 2.2604;
     public static final double KA = 0;
     public static final double KP = 20;
@@ -204,7 +209,7 @@ public final class Constants {
   }
 
   public static final class CoralConstants {
-    public static final int motorCanID = 12;
+    public static final int grabberCanID = 12;
     public static final int wristCanID = 16;
 
     public static final Current grabStallLimit = Amps.of(6.5);
@@ -221,7 +226,7 @@ public final class Constants {
     public static final Angle troughScoreAngle = Degrees.of(-15);
     public static final Angle branchScoreAngle = Degrees.of(-30);
     public static final Angle tipScoreAngle = Degrees.of(-33.5);
-    public static final Angle stowAngle = Degrees.of(77.5);
+    public static final Angle stowAngle = Degrees.of(40);
 
     public static final double wristGearing = 60;
 
@@ -233,7 +238,7 @@ public final class Constants {
     public static final double KG = 0.2; // 0.1159 or 0.13 or 0.30995
     public static final double KV = 46.18; // 52.183
     public static final double KA = 5.4707; // 4.3241
-    public static final double KP = 3; // 12 / 1.6
+    public static final double KP = 1; // 12 / 1.6
     public static final double KI = 0;
     public static final double KD = 0;
   }
@@ -243,8 +248,8 @@ public final class Constants {
     public static final int rightCanID = 14;
     public static final int wristCanID = 13;
 
-    public static final Current grabStallLimit = Amps.of(15);
-    public static final Time grabStallDuration = Milliseconds.of(500);
+    public static final Current grabStallLimit = Amps.of(17);
+    public static final Time grabStallDuration = Milliseconds.of(600);
 
     public static final Current grabCurrentLimit = Amps.of(15);
     public static final Current wristCurrentLimit = Amps.of(40);
@@ -252,10 +257,13 @@ public final class Constants {
     public static final Voltage grabIntakeVoltage = Volts.of(-6);
     public static final Voltage grabScoreVoltage = Volts.of(6);
 
-    public static final Angle groundIntakeAngle = Degrees.of(0);
+    public static final Angle groundIntakeAngle = Degrees.of(-15);
     public static final Angle reefIntakeAngle = Degrees.of(-35);
     public static final Angle processorScoreAngle = Degrees.of(0);
-    public static final Angle stowAngle = Degrees.of(90);
+    public static final Angle stowAngle = Degrees.of(70);
+
+    @SuppressWarnings("unused")
+    public static final Angle holdAngle = Degrees.of(50);
 
     public static final double wristGearing = 60;
 
@@ -264,10 +272,10 @@ public final class Constants {
     public static final Angle wristTolerance = Degrees.of(2);
 
     public static final double KS = 0.41008;
-    public static final double KG = 0.13169;
+    public static final double KG = 0.1169;
     public static final double KV = 0.9437;
     public static final double KA = 0.022004;
-    public static final double KP = 3; // 6
+    public static final double KP = 5; // 6
     public static final double KI = 0;
     public static final double KD = 0; // 0.1
   }

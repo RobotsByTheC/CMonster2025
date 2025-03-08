@@ -44,17 +44,20 @@ import java.util.function.BooleanSupplier;
 
 @Logged
 public class Algae extends SubsystemBase {
-  private AlgaeIO io;
+  private final AlgaeIO io;
   private final ProfiledPIDController profiledPIDController;
   private final ArmFeedforward feedForward;
   private final MovingAverage movingAverage = new MovingAverage(9);
 
-  private double pidVoltage;
-  private double feedForwardVoltage;
+  @SuppressWarnings("FieldCanBeLocal")
+  private double pidVoltage; // NOPMD
+
+  @SuppressWarnings("FieldCanBeLocal")
+  private double feedForwardVoltage; // NOPMD
 
   @NotLogged private final SysIdRoutine sysIdRoutine;
-  public final Trigger atMaxAngle = new Trigger(() -> io.getWristAngle().gte(maxWristAngle));
-  public final Trigger atMinAngle = new Trigger(() -> io.getWristAngle().lte(minWristAngle));
+  public final Trigger atMaxAngle;
+  public final Trigger atMinAngle;
 
   @NotLogged
   private final Debouncer stallingDebouncer = new Debouncer(grabStallDuration.in(Seconds));
@@ -64,6 +67,10 @@ public class Algae extends SubsystemBase {
 
   public Algae(AlgaeIO io) {
     this.io = io;
+
+    atMaxAngle = new Trigger(() -> io.getWristAngle().gte(maxWristAngle));
+    atMinAngle = new Trigger(() -> io.getWristAngle().lte(minWristAngle));
+
     feedForward = new ArmFeedforward(KS, KG, KV, KA);
     profiledPIDController =
         new ProfiledPIDController(
@@ -91,6 +98,10 @@ public class Algae extends SubsystemBase {
   public Command intakeGround() {
     return coordinatedControl(groundIntakeAngle, grabIntakeVoltage, isGrabberStalling)
         .withName("Algae Ground Intake");
+  }
+
+  public Command stowUntilDone() {
+    return moveWrist(stowAngle).until(profiledPIDController::atGoal);
   }
 
   public Current getGrabberCurrentDraw() {

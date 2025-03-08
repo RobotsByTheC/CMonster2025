@@ -37,6 +37,7 @@ public interface SwerveIO extends AutoCloseable {
    * Stops driving and halts movement. The robot may skid or continue to coast for a short period
    * after motor outputs are set to zero.
    */
+  @SuppressWarnings("unused")
   default void stop() {
     frontLeft().stop();
     frontRight().stop();

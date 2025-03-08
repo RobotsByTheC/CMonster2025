@@ -31,7 +31,7 @@ public class SimElevatorIO implements ElevatorIO {
             DCMotor.getNEO(2),
             5.5,
             Kilograms.convertFrom(8 + (20 * 2), Pounds),
-            Meters.convertFrom(.866, Inches),
+            Meters.convertFrom(0.866, Inches),
             Constants.ElevatorConstants.minHeight.in(Meters),
             Constants.ElevatorConstants.maxHeight.in(Meters),
             true,
@@ -44,8 +44,8 @@ public class SimElevatorIO implements ElevatorIO {
           }
 
           @Override
-          public void update(double timestep) {
-            elevatorSim.update(timestep);
+          public void update(double time) {
+            elevatorSim.update(time);
           }
         };
     SimulationContext.getDefault().addMechanism(mechanismSim);

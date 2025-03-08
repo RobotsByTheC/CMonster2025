@@ -9,6 +9,7 @@ import static edu.wpi.first.units.Units.Feet;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.Milliseconds;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Volts;
@@ -30,6 +31,7 @@ import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
@@ -40,10 +42,16 @@ import java.util.function.DoubleSupplier;
 @Logged
 public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
   private final SwerveIO io;
+
+  @SuppressWarnings("unused")
   private final PIDController xController =
       new PIDController(Constants.AutoConstants.pXController, 0, 0);
+
+  @SuppressWarnings("unused")
   private final PIDController yController =
       new PIDController(Constants.AutoConstants.pYController, 0, 0);
+
+  @SuppressWarnings("FieldCanBeLocal")
   private final PIDController thetaController =
       new PIDController(Constants.AutoConstants.pThetaController, 0, 0);
 
@@ -98,9 +106,13 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
    *
    * @param pose The pose to which to set the odometry.
    */
+  @SuppressWarnings("unused")
   public void resetOdometry(Pose2d pose) {
     io.resetHeading(pose.getRotation());
     poseEstimator.resetPosition(io.getHeading(), io.getModulePositions(), pose);
+  }
+  public Command zeroGyro() {
+    return Commands.runOnce(() -> io.resetHeading(Rotation2d.kZero)).withName("Reset Gyro");
   }
 
   /**
@@ -148,11 +160,13 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
   }
 
   /** Resets the drive encoders to currently read a position of 0. */
+  @SuppressWarnings("unused")
   public void resetEncoders() {
     io.resetEncoders();
   }
 
   /** Zeroes the heading of the robot. */
+  @SuppressWarnings("unused")
   public void zeroHeading() {
     io.zeroHeading();
   }
@@ -174,18 +188,18 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
     return io.getModuleStates();
   }
 
+  @SuppressWarnings("unused")
   public Command setXCommand() {
     return run(this::setX)
         .until(
-            () -> {
-              return Arrays.stream(getModuleStates())
-                  .allMatch(
-                      state -> {
-                        double v = Math.abs(state.speedMetersPerSecond);
-                        double angle = state.angle.getDegrees();
-                        return v <= 0.01 && Math.abs(angle % 45) <= 1.5;
-                      });
-            })
+            () ->
+                Arrays.stream(getModuleStates())
+                    .allMatch(
+                        state -> {
+                          double v = Math.abs(state.speedMetersPerSecond);
+                          double angle = state.angle.getDegrees();
+                          return v <= 0.01 && Math.abs(angle % 45) <= 1.5;
+                        }))
         .withName("Set X");
   }
 
@@ -264,26 +278,38 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
         .voltage(appliedSysidVoltage);
   }
 
-  public Command sysIdQuasistatic(
+  @SuppressWarnings("unused")
+  public Command sysIdQuasiStatic(
       SysIdRoutine.Direction direction) { // can bind to controller buttons
     return routine.quasistatic(direction);
   }
 
+  @SuppressWarnings("unused")
   public Command sysIdDynamic(SysIdRoutine.Direction direction) { // can bind to controller buttons
     return routine.dynamic(direction);
   }
 
+  public Command autoLeaveArea() {
+    return run(
+        () ->
+            drive(
+                MetersPerSecond.of(-0.1),
+                MetersPerSecond.zero(),
+                RadiansPerSecond.zero(),
+                ReferenceFrame.FIELD)).withTimeout(Milliseconds.of(500));
+  }
+
+  @SuppressWarnings("unused")
   public Command pointForward() {
     return run(this::setForward)
         .until(
-            () -> {
-              return Arrays.stream(getModuleStates())
-                  .allMatch(
-                      state -> {
-                        double angle = state.angle.getDegrees();
-                        return 1.5 >= angle && angle >= -1.5;
-                      });
-            })
+            () ->
+                Arrays.stream(getModuleStates())
+                    .allMatch(
+                        state -> {
+                          double angle = state.angle.getDegrees();
+                          return 1.5 >= angle && angle >= -1.5;
+                        }))
         .withName("Set 0");
   }
 
