@@ -44,7 +44,7 @@ public class Robot extends TimedRobot {
   private final Algae algae;
 
   // Driver and operator controls
-  private final CommandXboxController driverController; // NOPMD
+  private final CommandXboxController operatorController; // NOPMD
   private final CommandJoystick rStick; // NOPMD
   private final CommandJoystick lStick; // NOPMD
 
@@ -67,9 +67,9 @@ public class Robot extends TimedRobot {
       algae = new Algae(new RealAlgaeIO());
     }
 
-    driverController = new CommandXboxController(Constants.OIConstants.driverControllerPort);
-    lStick = new Joystick(Constants.OIConstants.leftJoystickPort);
-    rStick = new Joystick(Constants.OIConstants.rightJoystickPort);
+    operatorController = new CommandXboxController(Constants.OIConstants.driverControllerPort);
+    rStick = new CommandJoystick(Constants.OIConstants.leftJoystickPort);
+    lStick = new CommandJoystick(Constants.OIConstants.rightJoystickPort);
 
     // Configure the button bindings and automatic bindings
     configureButtonBindings();
@@ -100,12 +100,12 @@ public class Robot extends TimedRobot {
   private Command driveWithXbox() {
     //noinspection SuspiciousNameCombination
     return drive.driveWithJoysticks(
-        driverController::getLeftY, driverController::getLeftX, driverController::getRightX);
+        operatorController::getLeftY, operatorController::getLeftX, operatorController::getRightX);
   }
 
   private Command driveWithFlightSticks() {
     //noinspection SuspiciousNameCombination
-    return drive.driveWithJoysticks(rStick::getY, rStick::getX, lStick::getTwist);
+    return drive.driveWithJoysticks(lStick::getY, lStick::getX, rStick::getTwist);
   }
 
   private void configureButtonBindings() {
@@ -142,7 +142,7 @@ public class Robot extends TimedRobot {
                 .andThen(coral.scoreL1().deadlineFor(elevator.holdCurrentPosition()))
                 .andThen(elevator.goToBottom().alongWith(coral.stow()))
                 .withName("Score L1"));
-    driverController
+    operatorController
         .b()
         .whileTrue(
             elevator
@@ -150,7 +150,7 @@ public class Robot extends TimedRobot {
                 .andThen(coral.scoreL2().deadlineFor(elevator.holdCurrentPosition()))
                 .andThen(elevator.goToBottom().alongWith(coral.stow()))
                 .withName("Score L2"));
-    driverController
+    operatorController
         .x()
         .whileTrue(
             elevator
@@ -158,7 +158,7 @@ public class Robot extends TimedRobot {
                 .andThen(coral.scoreL3().deadlineFor(elevator.holdCurrentPosition()))
                 .andThen(elevator.goToBottom().alongWith(coral.stow()))
                 .withName("Score L3"));
-    driverController
+    operatorController
         .y()
         .whileTrue(
             elevator
@@ -210,15 +210,15 @@ public class Robot extends TimedRobot {
    */
   @SuppressWarnings("unused")
   private void configureTestBindings() {
-    driverController
+    operatorController
         .leftTrigger()
         .and(RobotModeTriggers.test())
         .whileTrue(elevator.findFeedforwardTerms().withName("Run Elevator Sysid Routine"));
-    driverController
+    operatorController
         .rightBumper()
         .and(RobotModeTriggers.test())
         .whileTrue(coral.runSysIdRoutine().withName("Run Coral Sysid Routine"));
-    driverController
+    operatorController
         .leftBumper()
         .and(RobotModeTriggers.test())
         .whileTrue(algae.runSysIdRoutine().withName("Run Algae Sysid Routine"));
