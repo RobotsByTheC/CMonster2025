@@ -100,6 +100,10 @@ public class Algae extends SubsystemBase {
         .withName("Algae Ground Intake");
   }
 
+  public Command stowUntilDone() {
+    return moveWrist(stowAngle).until(profiledPIDController::atGoal);
+  }
+
   public Current getGrabberCurrentDraw() {
     return io.getGrabCurrentDraw();
   }
