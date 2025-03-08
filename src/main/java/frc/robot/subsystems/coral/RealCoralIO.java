@@ -6,7 +6,7 @@ import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.Constants.CoralConstants.grabCurrentLimit;
-import static frc.robot.Constants.CoralConstants.motorCanID;
+import static frc.robot.Constants.CoralConstants.grabberCanID;
 import static frc.robot.Constants.CoralConstants.wristCanID;
 import static frc.robot.Constants.CoralConstants.wristCurrentLimit;
 
@@ -38,7 +38,7 @@ public class RealCoralIO implements CoralIO {
   private final AbsoluteEncoder wristEncoder;
 
   public RealCoralIO() {
-    grabMotor = new SparkMax(motorCanID, SparkLowLevel.MotorType.kBrushless);
+    grabMotor = new SparkMax(grabberCanID, SparkLowLevel.MotorType.kBrushless);
 
     wrist = new SparkMax(wristCanID, SparkLowLevel.MotorType.kBrushless);
     wristEncoder = wrist.getAbsoluteEncoder();
