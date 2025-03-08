@@ -86,6 +86,7 @@ public class Robot extends TimedRobot {
     drive.setDefaultCommand(driveWithFlightSticks());
     elevator.setDefaultCommand(elevator.stop());
     coral.setDefaultCommand(coral.stow());
+    algae.setDefaultCommand(algae.stow());
     // Start data logging
 
     Epilogue.configure(
@@ -114,15 +115,15 @@ public class Robot extends TimedRobot {
     BB: Score L2
     BX: Score L3
     BY: Score L4
-    LB: Algae Intake Ground
-    RB: Algae Intake Reef
-    LT: Algae Score Processor
+    LB: Elevator Home
+    RB: Coral Intake
+    LT:
     RT: [BROKEN]
-    ST: Coral Intake
-    UA: Elevator Home
-    RA:
-    DA: Elevator Down
-    LA:
+    ST:
+    UA: Algae Intake Ground
+    RA: Algae Intake L3
+    DA: Algae Score
+    LA: Algae Intake L2
     */
 
     configureTeleopBindings();
@@ -134,7 +135,31 @@ public class Robot extends TimedRobot {
    * for controlling subsystems.
    */
   private void configureTeleopBindings() {
-    driverController
+    rStick.button(7).onTrue(drive.zeroGyro());
+
+    bindElevator();
+
+    bindCoral();
+
+    bindAlgae();
+
+
+  }
+
+  private void bindElevator() {
+    operatorController.leftBumper().whileTrue(elevator.goToBottom());
+  }
+
+  private void bindCoral() {
+    operatorController
+        .rightBumper()
+        .whileTrue(
+            elevator
+                .goToIntakeHeight()
+                .andThen(coral.intake().deadlineFor(elevator.holdCurrentPosition()))
+                .andThen(elevator.goToBottom())
+                .withName("Coral Intake"));
+    operatorController
         .a()
         .whileTrue(
             elevator
@@ -166,42 +191,32 @@ public class Robot extends TimedRobot {
                 .andThen(coral.scoreL4().deadlineFor(elevator.holdCurrentPosition()))
                 .andThen(elevator.goToBottom().alongWith(coral.stow()))
                 .withName("Score L4"));
+  }
 
-    // Elevator
-    driverController.leftBumper().whileTrue(elevator.goToBottom());
-    // driverController.povUp().whileTrue(elevator.home());
-
-    // Coral
-    driverController
-        .start()
-        .whileTrue(
-            elevator
-                .goToIntakeHeight()
-                .andThen(coral.intake().deadlineFor(elevator.holdCurrentPosition()))
-                .andThen(elevator.goToBottom().alongWith(coral.stow()))
-                .withName("Coral Intake"));
-
-    // Algae
-    driverController
+  private void bindAlgae() {
+    // Intake Ground
+    operatorController
         .povUp()
         .whileTrue(elevator.goToAlgaeIntakeHeight().andThen(algae.intakeGround()));
-    driverController.povUp().onFalse(elevator.goToBottom().alongWith(algae.stow()));
-    driverController.povDown().onFalse(algae.stow().andThen(algae.holdPosition()));
-    driverController
-        .povLeft()
-        .whileTrue(elevator.goToAlgaeL2Height().andThen(algae.intakeReef()).andThen(algae.stow()));
-    driverController.povLeft().onFalse(elevator.goToBottom().alongWith(algae.stow()));
-    driverController
-        .povRight()
-        .whileTrue(elevator.goToAlgaeL3Height().andThen(algae.intakeReef()).andThen(algae.stow()));
-    driverController.povRight().onFalse(elevator.goToBottom().alongWith(algae.stow()));
-    driverController
+
+    operatorController.povUp().onFalse(algae.stowUntilDone().andThen(elevator.goToBottom()));
+
+    // Score Processor
+    operatorController
         .povDown()
-        .whileTrue(
-            elevator
-                .goToAlgaeIntakeHeight()
-                .andThen(algae.scoreProcessor())
-                .andThen(elevator.goToBottom().alongWith(algae.stow())));
+        .whileTrue(elevator.goToAlgaeScoreHeight().andThen(algae.scoreProcessor()));
+
+    operatorController.povDown().onFalse(algae.stowUntilDone().andThen(elevator.goToBottom()));
+
+    // Algae L2
+    operatorController.povLeft().whileTrue(elevator.goToAlgaeL2Height().andThen(algae.intakeReef()));
+
+    operatorController.povLeft().onFalse(algae.stowUntilDone().andThen(elevator.goToBottom()));
+
+    // Algae L3
+    operatorController.povRight().whileTrue(elevator.goToAlgaeL3Height().andThen(algae.intakeReef()));
+
+    operatorController.povRight().onFalse(algae.stowUntilDone().andThen(elevator.goToBottom()));
   }
 
   /**
