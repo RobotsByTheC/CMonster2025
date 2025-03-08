@@ -11,11 +11,11 @@ import edu.wpi.first.epilogue.logging.FileBackend;
 import edu.wpi.first.epilogue.logging.NTEpilogueBackend;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DataLogManager;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.sim.SimulationContext;
@@ -45,8 +45,8 @@ public class Robot extends TimedRobot {
 
   // Driver and operator controls
   private final CommandXboxController driverController; // NOPMD
-  private final Joystick lStick; // NOPMD
-  private final Joystick rStick; // NOPMD
+  private final CommandJoystick rStick; // NOPMD
+  private final CommandJoystick lStick; // NOPMD
 
   public Robot() {
     // Initialize our subsystems. If our program is running in simulation mode (either from the
