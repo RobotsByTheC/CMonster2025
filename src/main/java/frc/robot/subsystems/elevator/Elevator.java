@@ -144,7 +144,7 @@ public class Elevator extends SubsystemBase {
   }
 
   public Command goToBottom() {
-    return goToHeight(minHeight.plus(Inches.of(1.5)))
+    return goToHeight(minHeight.plus(Inches.of(3)))
         .withName("Dropping to Min height")
         .andThen(home());
   }
