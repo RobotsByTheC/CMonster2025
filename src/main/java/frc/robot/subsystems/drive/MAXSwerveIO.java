@@ -18,6 +18,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.units.measure.LinearAcceleration;
 import frc.robot.Constants;
 import frc.robot.subsystems.drive.swerve.MAXSwerveModuleIO;
 import frc.robot.subsystems.drive.swerve.SwerveModule;
@@ -89,5 +90,10 @@ public class MAXSwerveIO implements SwerveIO {
   @Override
   public void zeroHeading() {
     gyro.reset();
+  }
+
+  @Override
+  public LinearAcceleration getForwardAcceleration() {
+    return gyro.getAccelerationX().getValue();
   }
 }

@@ -7,6 +7,7 @@ package frc.robot.subsystems.drive;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Feet;
 import static edu.wpi.first.units.Units.FeetPerSecond;
+import static edu.wpi.first.units.Units.FeetPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
@@ -302,6 +303,16 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
                         RadiansPerSecond.zero(),
                         ReferenceFrame.FIELD))
                 .withTimeout(Milliseconds.of(3000)));
+  }
+
+  public Command moveBackwardsUntilStopped() {
+    return run(() ->
+            drive(
+                FeetPerSecond.of(1),
+                FeetPerSecond.zero(),
+                RadiansPerSecond.zero(),
+                ReferenceFrame.FIELD))
+        .until(() -> io.getForwardAcceleration().lte(FeetPerSecondPerSecond.of(-0.25)));
   }
 
   @SuppressWarnings("unused")

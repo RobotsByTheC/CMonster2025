@@ -19,6 +19,7 @@ import static frc.robot.Constants.ElevatorConstants.algaeIntakeHeight;
 import static frc.robot.Constants.ElevatorConstants.algaeL2;
 import static frc.robot.Constants.ElevatorConstants.algaeL3;
 import static frc.robot.Constants.ElevatorConstants.algaeScoreHeight;
+import static frc.robot.Constants.ElevatorConstants.bargeHeight;
 import static frc.robot.Constants.ElevatorConstants.intake;
 import static frc.robot.Constants.ElevatorConstants.l1;
 import static frc.robot.Constants.ElevatorConstants.l2;
@@ -51,6 +52,8 @@ public class Elevator extends SubsystemBase {
   private final ElevatorIO io;
   private final ProfiledPIDController profiledPIDController;
   private final ElevatorFeedforward feedforward;
+
+  private MutDistance manualOffset = Inches.mutable(0);
 
   public final Trigger atMinHeight = new Trigger(() -> getHeight().lte(minHeight));
   public final Trigger atMaxHeight = new Trigger(() -> getHeight().gte(maxHeight));
@@ -131,7 +134,7 @@ public class Elevator extends SubsystemBase {
                 profiledPIDController.reset(
                     io.getHeight().in(Meters), io.getVelocity().in(MetersPerSecond)),
             () -> {
-              Voltage calc = calculatePIDVoltage(targetHeight);
+              Voltage calc = calculatePIDVoltage(targetHeight.plus(manualOffset));
 
               if (calc.magnitude() < 0) {
                 io.setVoltage(calc.div(2));
@@ -163,6 +166,10 @@ public class Elevator extends SubsystemBase {
 
   public Command goToL4Height() {
     return goToHeight(l4).withName("Rising to L4");
+  }
+
+  public Command goToBargeHeight() {
+    return goToHeight(bargeHeight).withName("Rising to L4");
   }
 
   public Command goToIntakeHeight() {
@@ -258,5 +265,12 @@ public class Elevator extends SubsystemBase {
         profiledPIDController.calculate(io.getHeight().in(Meters), targetHeight.in(Meters));
     double feedForwardVoltage = feedforward.calculate(0);
     return Volts.of(pidVoltage + feedForwardVoltage);
+  }
+
+  public Distance getManualOffset() {
+    return manualOffset;
+  }
+  public void setManualOffset(Distance d) {
+    manualOffset.mut_replace(d);
   }
 }

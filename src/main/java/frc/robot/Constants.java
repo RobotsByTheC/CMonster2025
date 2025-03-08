@@ -170,12 +170,13 @@ public final class Constants {
     public static final Distance zeroOffset = Inches.of(2.625 + 12.125);
     public static final Distance l1 = zeroOffset; // 22
     public static final Distance l2 = zeroOffset.plus(Inches.of(13.5)); // 36
-    public static final Distance l3 = zeroOffset.plus(Inches.of(29.5));
-    public static final Distance l4 = zeroOffset.plus(Inches.of(56));
+    public static final Distance l3 = zeroOffset.plus(Inches.of(27.5));
+    public static final Distance l4 = zeroOffset.plus(Inches.of(57));
+    public static final Distance bargeHeight = Inches.of(74.5);
     public static final Distance intake = zeroOffset.plus(Inches.of(5.25));
-    public static final Distance algaeIntakeHeight = zeroOffset.plus(Inches.of(7));
+    public static final Distance algaeIntakeHeight = zeroOffset.plus(Inches.of(8.5));
     public static final Distance algaeScoreHeight = zeroOffset.plus(Inches.of(6));
-    public static final Distance algaeL2 = zeroOffset.plus(Inches.of(37.5));
+    public static final Distance algaeL2 = zeroOffset.plus(Inches.of(34.5));
     public static final Distance algaeL3 = zeroOffset.plus(Inches.of(51));
 
     public static final Current stallThreshold = Amps.of(70);
@@ -204,7 +205,7 @@ public final class Constants {
     public static final double KV = 2.2604;
     public static final double KA = 0;
     public static final double KP = 20;
-    public static final double KI = 0;
+    public static final double KI = 3;
     public static final double KD = 1;
   }
 
@@ -222,10 +223,10 @@ public final class Constants {
     public static final Voltage grabIntakeVoltage = Volts.of(-6);
     public static final Voltage grabScoreVoltage = Volts.of(6);
 
-    public static final Angle intakeAngle = Degrees.of(43);
+    public static final Angle intakeAngle = Degrees.of(40);
     public static final Angle troughScoreAngle = Degrees.of(-15);
     public static final Angle branchScoreAngle = Degrees.of(-30);
-    public static final Angle tipScoreAngle = Degrees.of(-33.5);
+    public static final Angle tipScoreAngle = Degrees.of(-50); // -33.5
     public static final Angle stowAngle = Degrees.of(40);
 
     public static final double wristGearing = 60;
@@ -254,13 +255,15 @@ public final class Constants {
     public static final Current grabCurrentLimit = Amps.of(15);
     public static final Current wristCurrentLimit = Amps.of(40);
 
-    public static final Voltage grabIntakeVoltage = Volts.of(-6);
-    public static final Voltage grabScoreVoltage = Volts.of(6);
+    public static final Voltage grabIntakeVoltage = Volts.of(-9);
+    public static final Voltage grabScoreVoltage = Volts.of(9);
+    public static final Voltage bargeScoreVoltage = Volts.of(12);
 
     public static final Angle groundIntakeAngle = Degrees.of(-15);
     public static final Angle reefIntakeAngle = Degrees.of(-35);
     public static final Angle processorScoreAngle = Degrees.of(0);
-    public static final Angle stowAngle = Degrees.of(70);
+    public static final Angle bargeScoreAngle = Degrees.of(55);
+    public static final Angle stowAngle = Degrees.of(75);
 
     @SuppressWarnings("unused")
     public static final Angle holdAngle = Degrees.of(50);

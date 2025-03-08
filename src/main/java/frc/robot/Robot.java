@@ -32,6 +32,8 @@ import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.RealElevatorIO;
 import frc.robot.subsystems.elevator.SimElevatorIO;
 
+import static edu.wpi.first.units.Units.Inches;
+
 @Logged
 public class Robot extends TimedRobot {
   private Command autonomousCommand;
@@ -167,7 +169,9 @@ public class Robot extends TimedRobot {
                 .goToL1Height()
                 .andThen(coral.scoreL1().deadlineFor(elevator.holdCurrentPosition()))
                 .withName("Score L1"));
+
     operatorController.a().onFalse(elevator.goToBottom().alongWith(coral.stow()));
+
     operatorController
         .b()
         .whileTrue(
@@ -175,7 +179,9 @@ public class Robot extends TimedRobot {
                 .goToL2Height()
                 .andThen(coral.scoreL2().deadlineFor(elevator.holdCurrentPosition()))
                 .withName("Score L2"));
+
     operatorController.b().onFalse(elevator.goToBottom().alongWith(coral.stow()));
+
     operatorController
         .x()
         .whileTrue(
@@ -203,6 +209,15 @@ public class Robot extends TimedRobot {
   }
 
   private void bindAlgae() {
+    // Score Barge
+    operatorController
+        .start()
+        .whileTrue(
+            elevator
+                .goToBargeHeight()
+                .andThen(algae.scoreBarge().deadlineFor(elevator.holdCurrentPosition()))
+                .withName("Score Algae Barge"));
+
     // Intake Ground
     operatorController
         .povUp()
@@ -262,7 +277,8 @@ public class Robot extends TimedRobot {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return drive.autoLeaveArea();
+    return drive.moveBackwardsUntilStopped().andThen(coral.scoreL4());
+//    return drive.autoLeaveArea();
   }
 
   @Logged(name = "Battery Voltage")
@@ -289,6 +305,8 @@ public class Robot extends TimedRobot {
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
+
+    elevator.setManualOffset(Inches.of(operatorController.getLeftY()));
 
     Epilogue.update(this);
   }
