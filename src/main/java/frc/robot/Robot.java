@@ -142,8 +142,6 @@ public class Robot extends TimedRobot {
     bindCoral();
 
     bindAlgae();
-
-
   }
 
   private void bindElevator() {
@@ -159,38 +157,49 @@ public class Robot extends TimedRobot {
                 .andThen(coral.intake().deadlineFor(elevator.holdCurrentPosition()))
                 .andThen(elevator.goToBottom())
                 .withName("Coral Intake"));
+    //    operatorController.rightBumper().onFalse(
+    //        coral.stow()
+    //    );
     operatorController
         .a()
         .whileTrue(
             elevator
                 .goToL1Height()
                 .andThen(coral.scoreL1().deadlineFor(elevator.holdCurrentPosition()))
-                .andThen(elevator.goToBottom().alongWith(coral.stow()))
                 .withName("Score L1"));
+    operatorController.a().onFalse(elevator.goToBottom().alongWith(coral.stow()));
     operatorController
         .b()
         .whileTrue(
             elevator
                 .goToL2Height()
                 .andThen(coral.scoreL2().deadlineFor(elevator.holdCurrentPosition()))
-                .andThen(elevator.goToBottom().alongWith(coral.stow()))
                 .withName("Score L2"));
+    operatorController.b().onFalse(elevator.goToBottom().alongWith(coral.stow()));
     operatorController
         .x()
         .whileTrue(
             elevator
                 .goToL3Height()
-                .andThen(coral.scoreL3().deadlineFor(elevator.holdCurrentPosition()))
-                .andThen(elevator.goToBottom().alongWith(coral.stow()))
-                .withName("Score L3"));
+                .andThen(
+                    coral
+                        .scoreL3()
+                        .deadlineFor(elevator.holdCurrentPosition())
+                        .withName("Score L3")));
+
+    operatorController.x().onFalse(elevator.goToBottom().alongWith(coral.stow()));
+
     operatorController
         .y()
         .whileTrue(
             elevator
                 .goToL4Height()
-                .andThen(coral.scoreL4().deadlineFor(elevator.holdCurrentPosition()))
-                .andThen(elevator.goToBottom().alongWith(coral.stow()))
-                .withName("Score L4"));
+                .andThen(
+                    coral
+                        .scoreL4()
+                        .deadlineFor(elevator.holdCurrentPosition())
+                        .withName("Score L4")));
+    operatorController.y().onFalse(elevator.goToBottom().alongWith(coral.stow()));
   }
 
   private void bindAlgae() {
@@ -209,12 +218,16 @@ public class Robot extends TimedRobot {
     operatorController.povDown().onFalse(algae.stowUntilDone().andThen(elevator.goToBottom()));
 
     // Algae L2
-    operatorController.povLeft().whileTrue(elevator.goToAlgaeL2Height().andThen(algae.intakeReef()));
+    operatorController
+        .povLeft()
+        .whileTrue(elevator.goToAlgaeL2Height().andThen(algae.intakeReef()));
 
     operatorController.povLeft().onFalse(algae.stowUntilDone().andThen(elevator.goToBottom()));
 
     // Algae L3
-    operatorController.povRight().whileTrue(elevator.goToAlgaeL3Height().andThen(algae.intakeReef()));
+    operatorController
+        .povRight()
+        .whileTrue(elevator.goToAlgaeL3Height().andThen(algae.intakeReef()));
 
     operatorController.povRight().onFalse(algae.stowUntilDone().andThen(elevator.goToBottom()));
   }

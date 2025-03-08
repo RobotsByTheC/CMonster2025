@@ -6,12 +6,14 @@ package frc.robot.subsystems.drive;
 
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Feet;
+import static edu.wpi.first.units.Units.FeetPerSecond;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Milliseconds;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
 import edu.wpi.first.epilogue.Logged;
@@ -111,6 +113,7 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
     io.resetHeading(pose.getRotation());
     poseEstimator.resetPosition(io.getHeading(), io.getModulePositions(), pose);
   }
+
   public Command zeroGyro() {
     return Commands.runOnce(() -> io.resetHeading(Rotation2d.kZero)).withName("Reset Gyro");
   }
@@ -290,13 +293,15 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
   }
 
   public Command autoLeaveArea() {
-    return run(
-        () ->
-            drive(
-                MetersPerSecond.of(-0.1),
-                MetersPerSecond.zero(),
-                RadiansPerSecond.zero(),
-                ReferenceFrame.FIELD)).withTimeout(Milliseconds.of(500));
+    return Commands.waitTime(Seconds.of(10))
+        .andThen(
+            run(() ->
+                    drive(
+                        FeetPerSecond.of(1),
+                        FeetPerSecond.zero(),
+                        RadiansPerSecond.zero(),
+                        ReferenceFrame.FIELD))
+                .withTimeout(Milliseconds.of(3000)));
   }
 
   @SuppressWarnings("unused")

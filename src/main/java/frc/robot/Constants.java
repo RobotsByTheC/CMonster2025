@@ -212,9 +212,9 @@ public final class Constants {
     public static final int grabberCanID = 12;
     public static final int wristCanID = 16;
 
-    public static final Current grabStallLimit = Amps.of(6.5);
-    public static final Current grabDoneLimit = Amps.of(15);
-    public static final Time grabStallDuration = Milliseconds.of(250);
+    public static final Current grabStallLimit = Amps.of(9);
+    public static final Current grabDoneLimit = Amps.of(6.5);
+    public static final Time grabStallDuration = Milliseconds.of(150);
 
     public static final Current grabCurrentLimit = Amps.of(15);
     public static final Current wristCurrentLimit = Amps.of(40);
@@ -238,7 +238,7 @@ public final class Constants {
     public static final double KG = 0.2; // 0.1159 or 0.13 or 0.30995
     public static final double KV = 46.18; // 52.183
     public static final double KA = 5.4707; // 4.3241
-    public static final double KP = 1; // 12 / 1.6
+    public static final double KP = 12 / Math.PI; // 12 / 1.6
     public static final double KI = 0;
     public static final double KD = 0;
   }
