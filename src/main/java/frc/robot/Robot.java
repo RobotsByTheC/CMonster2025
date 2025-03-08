@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Inches;
+
 import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.logging.EpilogueBackend;
@@ -31,8 +33,6 @@ import frc.robot.subsystems.drive.SimSwerveIO;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.RealElevatorIO;
 import frc.robot.subsystems.elevator.SimElevatorIO;
-
-import static edu.wpi.first.units.Units.Inches;
 
 @Logged
 public class Robot extends TimedRobot {
@@ -85,7 +85,10 @@ public class Robot extends TimedRobot {
      * xbox and flight sticks. Refer to Constants.java (OIConstants)
      * for the correct Driver Station inputs.
      */
-    drive.setDefaultCommand(driveWithFlightSticks());
+    drive.setDefaultCommand(driveFastWithFlightSticks());
+
+    rStick.trigger().whileTrue(driveSlowWithFlightSticks());
+
     elevator.setDefaultCommand(elevator.stop());
     coral.setDefaultCommand(coral.stow());
     algae.setDefaultCommand(algae.stow());
@@ -102,13 +105,17 @@ public class Robot extends TimedRobot {
   @SuppressWarnings("unused")
   private Command driveWithXbox() {
     //noinspection SuspiciousNameCombination
-    return drive.driveWithJoysticks(
+    return drive.driveFastWithJoysticks(
         operatorController::getLeftY, operatorController::getLeftX, operatorController::getRightX);
   }
 
-  private Command driveWithFlightSticks() {
+  private Command driveFastWithFlightSticks() {
     //noinspection SuspiciousNameCombination
-    return drive.driveWithJoysticks(lStick::getY, lStick::getX, rStick::getTwist);
+    return drive.driveFastWithJoysticks(lStick::getY, lStick::getX, rStick::getTwist);
+  }
+  private Command driveSlowWithFlightSticks() {
+    //noinspection SuspiciousNameCombination
+    return drive.driveSlowWithJoysticks(lStick::getY, lStick::getX, rStick::getTwist);
   }
 
   private void configureButtonBindings() {
@@ -223,7 +230,7 @@ public class Robot extends TimedRobot {
         .povUp()
         .whileTrue(elevator.goToAlgaeIntakeHeight().andThen(algae.intakeGround()));
 
-    operatorController.povUp().onFalse(algae.stowUntilDone().andThen(elevator.goToBottom()));
+    operatorController.povUp().onFalse(algae.stowUntilDone().deadlineFor(elevator.goToBottom()));
 
     // Score Processor
     operatorController
@@ -277,8 +284,17 @@ public class Robot extends TimedRobot {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return drive.moveBackwardsUntilStopped().andThen(coral.scoreL4());
-//    return drive.autoLeaveArea();
+    //    return drive
+    //        .moveBackwardsUntilStopped()
+    //        .andThen(
+    //            elevator
+    //                .goToL4Height()
+    //                .andThen(
+    //                    coral
+    //                        .scoreL4()
+    //                        .deadlineFor(elevator.holdCurrentPosition())
+    //                        .withName("Score L4")));
+    return drive.autoLeaveArea();
   }
 
   @Logged(name = "Battery Voltage")
@@ -306,7 +322,7 @@ public class Robot extends TimedRobot {
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
 
-    elevator.setManualOffset(Inches.of(operatorController.getLeftY()));
+    elevator.setManualOffset(Inches.of(operatorController.getLeftY() * -2));
 
     Epilogue.update(this);
   }

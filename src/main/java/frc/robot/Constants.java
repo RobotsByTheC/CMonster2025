@@ -47,6 +47,7 @@ public final class Constants {
     // the robot, rather the allowed maximum speeds
     public static final LinearVelocity maxSpeed = MetersPerSecond.of(4.5);
     public static final AngularVelocity maxAngularSpeed = RotationsPerSecond.of(2.0);
+    public static final AngularVelocity slowAngularSpeed = RotationsPerSecond.of(0.5);
 
     public static final int gyroCanID = 50;
 
@@ -169,15 +170,15 @@ public final class Constants {
     // Top face of the carriage rail to the carpet
     public static final Distance zeroOffset = Inches.of(2.625 + 12.125);
     public static final Distance l1 = zeroOffset; // 22
-    public static final Distance l2 = zeroOffset.plus(Inches.of(13.5)); // 36
-    public static final Distance l3 = zeroOffset.plus(Inches.of(27.5));
+    public static final Distance l2 = zeroOffset.plus(Inches.of(12)); // 36
+    public static final Distance l3 = zeroOffset.plus(Inches.of(26.5));
     public static final Distance l4 = zeroOffset.plus(Inches.of(57));
     public static final Distance bargeHeight = Inches.of(74.5);
-    public static final Distance intake = zeroOffset.plus(Inches.of(5.25));
-    public static final Distance algaeIntakeHeight = zeroOffset.plus(Inches.of(8.5));
+    public static final Distance intake = zeroOffset.plus(Inches.of(4.5));
+    public static final Distance algaeIntakeHeight = zeroOffset.plus(Inches.of(6));
     public static final Distance algaeScoreHeight = zeroOffset.plus(Inches.of(6));
-    public static final Distance algaeL2 = zeroOffset.plus(Inches.of(34.5));
-    public static final Distance algaeL3 = zeroOffset.plus(Inches.of(51));
+    public static final Distance algaeL2 = zeroOffset.plus(Inches.of(33.5));
+    public static final Distance algaeL3 = zeroOffset.plus(Inches.of(47));
 
     public static final Current stallThreshold = Amps.of(70);
     public static final Time stallDuration = Milliseconds.of(500);
@@ -201,11 +202,11 @@ public final class Constants {
     public static final int currentLimit = 40;
 
     public static final double KS = 1;
-    public static final double KG = 2.25;
+    public static final double KG = 2.5;
     public static final double KV = 2.2604;
     public static final double KA = 0;
     public static final double KP = 20;
-    public static final double KI = 3;
+    public static final double KI = 7.5;
     public static final double KD = 1;
   }
 

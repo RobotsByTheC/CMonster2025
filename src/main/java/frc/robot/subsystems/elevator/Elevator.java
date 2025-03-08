@@ -270,6 +270,7 @@ public class Elevator extends SubsystemBase {
   public Distance getManualOffset() {
     return manualOffset;
   }
+
   public void setManualOffset(Distance d) {
     manualOffset.mut_replace(d);
   }

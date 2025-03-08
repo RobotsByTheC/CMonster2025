@@ -98,7 +98,7 @@ public class Algae extends SubsystemBase {
   }
 
   public Command intakeGround() {
-    return coordinatedControl(groundIntakeAngle, grabIntakeVoltage, isGrabberStalling)
+    return coordinatedControl(groundIntakeAngle, grabIntakeVoltage, () -> false)
         .withName("Algae Ground Intake");
   }
 
