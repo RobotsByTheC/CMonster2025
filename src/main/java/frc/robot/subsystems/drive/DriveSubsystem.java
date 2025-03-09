@@ -319,11 +319,11 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
         .andThen(
             run(() ->
                     drive(
-                        FeetPerSecond.of(1),
+                        FeetPerSecond.of(3),
                         FeetPerSecond.zero(),
                         RadiansPerSecond.zero(),
                         ReferenceFrame.FIELD))
-                .withTimeout(Milliseconds.of(3000)));
+                .withName("Auto Leave Area"));
   }
 
   public Command moveBackwardsUntilStopped() {
