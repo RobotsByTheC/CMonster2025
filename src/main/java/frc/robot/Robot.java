@@ -87,7 +87,7 @@ public class Robot extends TimedRobot {
      */
     drive.setDefaultCommand(driveFastWithFlightSticks());
 
-    rStick.trigger().whileTrue(driveSlowWithFlightSticks());
+//    rStick.trigger().whileTrue(driveSlowWithFlightSticks()); // Disabled because William is a shit driver
 
     elevator.setDefaultCommand(elevator.stop());
     coral.setDefaultCommand(coral.stow());
@@ -163,7 +163,7 @@ public class Robot extends TimedRobot {
         .whileTrue(
             elevator
                 .goToIntakeHeight()
-                .andThen(coral.intake().deadlineFor(elevator.holdCurrentPosition()))
+                .andThen(coral.intake().deadlineFor(elevator.holdTargetPosition()))
                 .andThen(elevator.goToBottom())
                 .withName("Coral Intake"));
     //    operatorController.rightBumper().onFalse(
@@ -174,7 +174,7 @@ public class Robot extends TimedRobot {
         .whileTrue(
             elevator
                 .goToL1Height()
-                .andThen(coral.scoreL1().deadlineFor(elevator.holdCurrentPosition()))
+                .andThen(coral.scoreL1().deadlineFor(elevator.holdTargetPosition()))
                 .withName("Score L1"));
 
     operatorController.a().onFalse(elevator.goToBottom().alongWith(coral.stow()));
@@ -184,7 +184,7 @@ public class Robot extends TimedRobot {
         .whileTrue(
             elevator
                 .goToL2Height()
-                .andThen(coral.scoreL2().deadlineFor(elevator.holdCurrentPosition()))
+                .andThen(coral.scoreL2().deadlineFor(elevator.holdTargetPosition()))
                 .withName("Score L2"));
 
     operatorController.b().onFalse(elevator.goToBottom().alongWith(coral.stow()));
@@ -197,7 +197,7 @@ public class Robot extends TimedRobot {
                 .andThen(
                     coral
                         .scoreL3()
-                        .deadlineFor(elevator.holdCurrentPosition())
+                        .deadlineFor(elevator.holdTargetPosition())
                         .withName("Score L3")));
 
     operatorController.x().onFalse(elevator.goToBottom().alongWith(coral.stow()));
@@ -210,7 +210,7 @@ public class Robot extends TimedRobot {
                 .andThen(
                     coral
                         .scoreL4()
-                        .deadlineFor(elevator.holdCurrentPosition())
+                        .deadlineFor(elevator.holdTargetPosition())
                         .withName("Score L4")));
     operatorController.y().onFalse(elevator.goToBottom().alongWith(coral.stow()));
   }
@@ -222,7 +222,7 @@ public class Robot extends TimedRobot {
         .whileTrue(
             elevator
                 .goToBargeHeight()
-                .andThen(algae.scoreBarge().deadlineFor(elevator.holdCurrentPosition()))
+                .andThen(algae.scoreBarge().deadlineFor(elevator.holdTargetPosition()))
                 .withName("Score Algae Barge"));
 
     // Intake Ground

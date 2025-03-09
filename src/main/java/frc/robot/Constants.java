@@ -174,11 +174,11 @@ public final class Constants {
     public static final Distance l3 = zeroOffset.plus(Inches.of(25.5));
     public static final Distance l4 = zeroOffset.plus(Inches.of(57));
     public static final Distance bargeHeight = Inches.of(74.5);
-    public static final Distance intake = zeroOffset.plus(Inches.of(4.5));
+    public static final Distance coralIntake = zeroOffset.plus(Inches.of(2));
     public static final Distance algaeIntakeHeight = zeroOffset.plus(Inches.of(6));
     public static final Distance algaeScoreHeight = zeroOffset.plus(Inches.of(6));
-    public static final Distance algaeL2 = zeroOffset.plus(Inches.of(33.5));
-    public static final Distance algaeL3 = zeroOffset.plus(Inches.of(47));
+    public static final Distance algaeL2 = zeroOffset.plus(Inches.of(37.5));
+    public static final Distance algaeL3 = zeroOffset.plus(Inches.of(54));
 
     public static final Current stallThreshold = Amps.of(70);
     public static final Time stallDuration = Milliseconds.of(500);
@@ -205,9 +205,9 @@ public final class Constants {
     public static final double KG = 3;
     public static final double KV = 2.2604;
     public static final double KA = 0;
-    public static final double KP = 20;
+    public static final double KP = 17.5;
     public static final double KI = 7.5;
-    public static final double KD = 1;
+    public static final double KD = 3.5;
   }
 
   public static final class CoralConstants {
