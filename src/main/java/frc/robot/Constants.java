@@ -170,8 +170,8 @@ public final class Constants {
     // Top face of the carriage rail to the carpet
     public static final Distance zeroOffset = Inches.of(2.625 + 12.125);
     public static final Distance l1 = zeroOffset; // 22
-    public static final Distance l2 = zeroOffset.plus(Inches.of(12)); // 36
-    public static final Distance l3 = zeroOffset.plus(Inches.of(26.5));
+    public static final Distance l2 = zeroOffset.plus(Inches.of(11)); // 36
+    public static final Distance l3 = zeroOffset.plus(Inches.of(25.5));
     public static final Distance l4 = zeroOffset.plus(Inches.of(57));
     public static final Distance bargeHeight = Inches.of(74.5);
     public static final Distance intake = zeroOffset.plus(Inches.of(4.5));
@@ -202,7 +202,7 @@ public final class Constants {
     public static final int currentLimit = 40;
 
     public static final double KS = 1;
-    public static final double KG = 2.5;
+    public static final double KG = 3;
     public static final double KV = 2.2604;
     public static final double KA = 0;
     public static final double KP = 20;
