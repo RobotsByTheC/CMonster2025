@@ -201,7 +201,7 @@ public final class Constants {
 
     public static final int currentLimit = 40;
 
-    public static final double KS = 1;
+    public static final double KS = 2;
     public static final double KG = 3;
     public static final double KV = 2.2604;
     public static final double KA = 0;

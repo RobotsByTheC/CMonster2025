@@ -11,7 +11,6 @@ import static edu.wpi.first.units.Units.FeetPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.Milliseconds;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
@@ -240,24 +239,25 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
         .finallyDo(this::setX)
         .withName("Drive With Joysticks");
   }
+
   public Command driveSlowWithJoysticks(DoubleSupplier x, DoubleSupplier y, DoubleSupplier omega) {
     var xSpeed = MetersPerSecond.mutable(0);
     var ySpeed = MetersPerSecond.mutable(0);
     var omegaSpeed = RadiansPerSecond.mutable(0);
 
     return run(() -> {
-      xSpeed.mut_setMagnitude(
-          MathUtil.applyDeadband(x.getAsDouble(), 0.01)
-              * DriveConstants.maxSpeed.in(MetersPerSecond));
-      ySpeed.mut_setMagnitude(
-          MathUtil.applyDeadband(y.getAsDouble(), 0.01)
-              * DriveConstants.maxSpeed.in(MetersPerSecond));
-      omegaSpeed.mut_setMagnitude(
-          MathUtil.applyDeadband(omega.getAsDouble(), 0.15)
-              * DriveConstants.slowAngularSpeed.in(RadiansPerSecond));
+          xSpeed.mut_setMagnitude(
+              MathUtil.applyDeadband(x.getAsDouble(), 0.01)
+                  * DriveConstants.maxSpeed.in(MetersPerSecond));
+          ySpeed.mut_setMagnitude(
+              MathUtil.applyDeadband(y.getAsDouble(), 0.01)
+                  * DriveConstants.maxSpeed.in(MetersPerSecond));
+          omegaSpeed.mut_setMagnitude(
+              MathUtil.applyDeadband(omega.getAsDouble(), 0.15)
+                  * DriveConstants.slowAngularSpeed.in(RadiansPerSecond));
 
-      drive(xSpeed, ySpeed, omegaSpeed, ReferenceFrame.FIELD);
-    })
+          drive(xSpeed, ySpeed, omegaSpeed, ReferenceFrame.FIELD);
+        })
         .finallyDo(this::setX)
         .withName("Drive With Joysticks");
   }
@@ -317,13 +317,14 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
   public Command autoLeaveArea() {
     return Commands.waitTime(Seconds.of(10))
         .andThen(
-            run(() ->
+            run(
+                () ->
                     drive(
                         FeetPerSecond.of(3),
                         FeetPerSecond.zero(),
                         RadiansPerSecond.zero(),
-                        ReferenceFrame.FIELD))
-                .withName("Auto Leave Area"));
+                        ReferenceFrame.FIELD)))
+        .withName("Auto Leave Area");
   }
 
   public Command moveBackwardsUntilStopped() {

@@ -87,7 +87,8 @@ public class Robot extends TimedRobot {
      */
     drive.setDefaultCommand(driveFastWithFlightSticks());
 
-//    rStick.trigger().whileTrue(driveSlowWithFlightSticks()); // Disabled because William is a shit driver
+    //    rStick.trigger().whileTrue(driveSlowWithFlightSticks()); // Disabled because William is a
+    // shit driver
 
     elevator.setDefaultCommand(elevator.stop());
     coral.setDefaultCommand(coral.stow());
@@ -113,6 +114,7 @@ public class Robot extends TimedRobot {
     //noinspection SuspiciousNameCombination
     return drive.driveFastWithJoysticks(lStick::getY, lStick::getX, rStick::getTwist);
   }
+
   private Command driveSlowWithFlightSticks() {
     //noinspection SuspiciousNameCombination
     return drive.driveSlowWithJoysticks(lStick::getY, lStick::getX, rStick::getTwist);
