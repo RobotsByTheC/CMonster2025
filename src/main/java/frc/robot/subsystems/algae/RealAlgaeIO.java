@@ -116,6 +116,6 @@ public class RealAlgaeIO implements AlgaeIO {
 
   @Override
   public AngularVelocity getWristVelocity() {
-    return RadiansPerSecond.of(wristEncoder.getVelocity());
+    return RPM.of(wristEncoder.getVelocity());
   }
 }
