@@ -4,10 +4,9 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.Inches;
-
 import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.epilogue.logging.EpilogueBackend;
 import edu.wpi.first.epilogue.logging.FileBackend;
 import edu.wpi.first.epilogue.logging.NTEpilogueBackend;
@@ -46,9 +45,9 @@ public class Robot extends TimedRobot {
   private final Algae algae;
 
   // Driver and operator controls
-  private final CommandXboxController operatorController; // NOPMD
-  private final CommandJoystick rStick; // NOPMD
-  private final CommandJoystick lStick; // NOPMD
+  @NotLogged private final CommandXboxController operatorController; // NOPMD
+  @NotLogged private final CommandJoystick rStick; // NOPMD
+  @NotLogged private final CommandJoystick lStick; // NOPMD
 
   public Robot() {
     // Initialize our subsystems. If our program is running in simulation mode (either from the
@@ -115,6 +114,7 @@ public class Robot extends TimedRobot {
     return drive.driveFastWithJoysticks(lStick::getY, lStick::getX, rStick::getTwist);
   }
 
+  @SuppressWarnings("unused")
   private Command driveSlowWithFlightSticks() {
     //noinspection SuspiciousNameCombination
     return drive.driveSlowWithJoysticks(lStick::getY, lStick::getX, rStick::getTwist);
@@ -168,9 +168,6 @@ public class Robot extends TimedRobot {
                 .andThen(coral.intake().deadlineFor(elevator.holdTargetPosition()))
                 .andThen(elevator.goToBottom())
                 .withName("Coral Intake"));
-    //    operatorController.rightBumper().onFalse(
-    //        coral.stow()
-    //    );
     operatorController
         .a()
         .whileTrue(
@@ -323,8 +320,6 @@ public class Robot extends TimedRobot {
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
-
-    elevator.setManualOffset(Inches.of(operatorController.getLeftY() * -2));
 
     Epilogue.update(this);
   }

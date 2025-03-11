@@ -49,7 +49,7 @@ public class Algae extends SubsystemBase {
   private final AlgaeIO io;
   private final ProfiledPIDController profiledPIDController;
   private final ArmFeedforward feedForward;
-  private final MovingAverage movingAverage = new MovingAverage(9);
+  @NotLogged private final MovingAverage movingAverage = new MovingAverage(9);
 
   @SuppressWarnings("FieldCanBeLocal")
   private double pidVoltage; // NOPMD

@@ -53,8 +53,6 @@ public class Elevator extends SubsystemBase {
   private final ProfiledPIDController profiledPIDController;
   private final ElevatorFeedforward feedforward;
 
-  private MutDistance manualOffset = Inches.mutable(0);
-
   public final Trigger atMinHeight = new Trigger(() -> getHeight().lte(minHeight));
   public final Trigger atMaxHeight = new Trigger(() -> getHeight().gte(maxHeight));
   @NotLogged private final Debouncer stallingDebouncer = new Debouncer(stallDuration.in(Seconds));
@@ -192,6 +190,7 @@ public class Elevator extends SubsystemBase {
     return goToHeight(algaeL3).withName("Rising to Algae L3");
   }
 
+  @SuppressWarnings("unused")
   public Command holdCurrentPosition() {
     MutDistance startingHeight = Meters.mutable(0);
     return startRun(
@@ -269,13 +268,5 @@ public class Elevator extends SubsystemBase {
         profiledPIDController.calculate(io.getHeight().in(Meters), targetHeight.in(Meters));
     double feedForwardVoltage = feedforward.calculate(0);
     return Volts.of(pidVoltage + feedForwardVoltage);
-  }
-
-  public Distance getManualOffset() {
-    return manualOffset;
-  }
-
-  public void setManualOffset(Distance d) {
-    manualOffset.mut_replace(d);
   }
 }

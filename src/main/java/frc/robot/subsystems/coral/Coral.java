@@ -56,7 +56,7 @@ public class Coral extends SubsystemBase {
   @SuppressWarnings("FieldCanBeLocal")
   private double feedForwardVoltage; // NOPMD
 
-  private final MovingAverage movingAverage = new MovingAverage(9);
+  @NotLogged private final MovingAverage movingAverage = new MovingAverage(9);
 
   public final Trigger atMaxAngle = new Trigger(() -> io.getWristAngle().gte(maxWristAngle));
   public final Trigger atMinAngle = new Trigger(() -> io.getWristAngle().lte(minWristAngle));
