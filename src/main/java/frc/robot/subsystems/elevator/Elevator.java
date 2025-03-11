@@ -19,7 +19,8 @@ import static frc.robot.Constants.ElevatorConstants.algaeIntakeHeight;
 import static frc.robot.Constants.ElevatorConstants.algaeL2;
 import static frc.robot.Constants.ElevatorConstants.algaeL3;
 import static frc.robot.Constants.ElevatorConstants.algaeScoreHeight;
-import static frc.robot.Constants.ElevatorConstants.intake;
+import static frc.robot.Constants.ElevatorConstants.bargeHeight;
+import static frc.robot.Constants.ElevatorConstants.coralIntake;
 import static frc.robot.Constants.ElevatorConstants.l1;
 import static frc.robot.Constants.ElevatorConstants.l2;
 import static frc.robot.Constants.ElevatorConstants.l3;
@@ -165,8 +166,12 @@ public class Elevator extends SubsystemBase {
     return goToHeight(l4).withName("Rising to L4");
   }
 
+  public Command goToBargeHeight() {
+    return goToHeight(bargeHeight).withName("Rising to L4");
+  }
+
   public Command goToIntakeHeight() {
-    return goToHeight(intake).withName("Rising to Intake Coral");
+    return goToHeight(coralIntake).withName("Rising to Intake Coral");
   }
 
   public Command goToAlgaeIntakeHeight() {
@@ -185,6 +190,7 @@ public class Elevator extends SubsystemBase {
     return goToHeight(algaeL3).withName("Rising to Algae L3");
   }
 
+  @SuppressWarnings("unused")
   public Command holdCurrentPosition() {
     MutDistance startingHeight = Meters.mutable(0);
     return startRun(
@@ -194,6 +200,10 @@ public class Elevator extends SubsystemBase {
               io.getHeight().in(Meters), io.getVelocity().in(MetersPerSecond));
         },
         () -> io.setVoltage(calculatePIDVoltage(startingHeight)));
+  }
+
+  public Command holdTargetPosition() {
+    return run(() -> goToHeight(Meters.of(profiledPIDController.getSetpoint().position)));
   }
 
   @SuppressWarnings("unused")

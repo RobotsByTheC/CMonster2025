@@ -6,12 +6,14 @@ package frc.robot.subsystems.drive;
 
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Feet;
+import static edu.wpi.first.units.Units.FeetPerSecond;
+import static edu.wpi.first.units.Units.FeetPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.Milliseconds;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
 import edu.wpi.first.epilogue.Logged;
@@ -111,6 +113,7 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
     io.resetHeading(pose.getRotation());
     poseEstimator.resetPosition(io.getHeading(), io.getModulePositions(), pose);
   }
+
   public Command zeroGyro() {
     return Commands.runOnce(() -> io.resetHeading(Rotation2d.kZero)).withName("Reset Gyro");
   }
@@ -215,7 +218,7 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
    *     as a number from -1 (maximum clockwise speed) to +1 (maximum counter-clockwise speed).
    * @return the driving command
    */
-  public Command driveWithJoysticks(DoubleSupplier x, DoubleSupplier y, DoubleSupplier omega) {
+  public Command driveFastWithJoysticks(DoubleSupplier x, DoubleSupplier y, DoubleSupplier omega) {
     var xSpeed = MetersPerSecond.mutable(0);
     var ySpeed = MetersPerSecond.mutable(0);
     var omegaSpeed = RadiansPerSecond.mutable(0);
@@ -228,8 +231,30 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
               MathUtil.applyDeadband(y.getAsDouble(), 0.01)
                   * DriveConstants.maxSpeed.in(MetersPerSecond));
           omegaSpeed.mut_setMagnitude(
-              MathUtil.applyDeadband(omega.getAsDouble(), 0.1)
+              MathUtil.applyDeadband(omega.getAsDouble(), 0.3)
                   * DriveConstants.maxAngularSpeed.in(RadiansPerSecond));
+
+          drive(xSpeed, ySpeed, omegaSpeed, ReferenceFrame.FIELD);
+        })
+        .finallyDo(this::setX)
+        .withName("Drive With Joysticks");
+  }
+
+  public Command driveSlowWithJoysticks(DoubleSupplier x, DoubleSupplier y, DoubleSupplier omega) {
+    var xSpeed = MetersPerSecond.mutable(0);
+    var ySpeed = MetersPerSecond.mutable(0);
+    var omegaSpeed = RadiansPerSecond.mutable(0);
+
+    return run(() -> {
+          xSpeed.mut_setMagnitude(
+              MathUtil.applyDeadband(x.getAsDouble(), 0.01)
+                  * DriveConstants.maxSpeed.in(MetersPerSecond));
+          ySpeed.mut_setMagnitude(
+              MathUtil.applyDeadband(y.getAsDouble(), 0.01)
+                  * DriveConstants.maxSpeed.in(MetersPerSecond));
+          omegaSpeed.mut_setMagnitude(
+              MathUtil.applyDeadband(omega.getAsDouble(), 0.15)
+                  * DriveConstants.slowAngularSpeed.in(RadiansPerSecond));
 
           drive(xSpeed, ySpeed, omegaSpeed, ReferenceFrame.FIELD);
         })
@@ -290,13 +315,26 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
   }
 
   public Command autoLeaveArea() {
-    return run(
-        () ->
+    return Commands.waitTime(Seconds.of(10))
+        .andThen(
+            run(
+                () ->
+                    drive(
+                        FeetPerSecond.of(3),
+                        FeetPerSecond.zero(),
+                        RadiansPerSecond.zero(),
+                        ReferenceFrame.FIELD)))
+        .withName("Auto Leave Area");
+  }
+
+  public Command moveBackwardsUntilStopped() {
+    return run(() ->
             drive(
-                MetersPerSecond.of(-0.1),
-                MetersPerSecond.zero(),
+                FeetPerSecond.of(1),
+                FeetPerSecond.zero(),
                 RadiansPerSecond.zero(),
-                ReferenceFrame.FIELD)).withTimeout(Milliseconds.of(500));
+                ReferenceFrame.ROBOT))
+        .until(() -> io.getForwardAcceleration().lte(FeetPerSecondPerSecond.of(-1)));
   }
 
   @SuppressWarnings("unused")

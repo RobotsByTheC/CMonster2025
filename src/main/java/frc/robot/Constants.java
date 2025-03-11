@@ -47,6 +47,7 @@ public final class Constants {
     // the robot, rather the allowed maximum speeds
     public static final LinearVelocity maxSpeed = MetersPerSecond.of(4.5);
     public static final AngularVelocity maxAngularSpeed = RotationsPerSecond.of(2.0);
+    public static final AngularVelocity slowAngularSpeed = RotationsPerSecond.of(0.5);
 
     public static final int gyroCanID = 50;
 
@@ -169,14 +170,15 @@ public final class Constants {
     // Top face of the carriage rail to the carpet
     public static final Distance zeroOffset = Inches.of(2.625 + 12.125);
     public static final Distance l1 = zeroOffset; // 22
-    public static final Distance l2 = zeroOffset.plus(Inches.of(13.5)); // 36
-    public static final Distance l3 = zeroOffset.plus(Inches.of(29.5));
-    public static final Distance l4 = zeroOffset.plus(Inches.of(56));
-    public static final Distance intake = zeroOffset.plus(Inches.of(5.25));
-    public static final Distance algaeIntakeHeight = zeroOffset.plus(Inches.of(7));
+    public static final Distance l2 = zeroOffset.plus(Inches.of(11)); // 36
+    public static final Distance l3 = zeroOffset.plus(Inches.of(25.5));
+    public static final Distance l4 = zeroOffset.plus(Inches.of(57));
+    public static final Distance bargeHeight = Inches.of(74.5);
+    public static final Distance coralIntake = zeroOffset.plus(Inches.of(2));
+    public static final Distance algaeIntakeHeight = zeroOffset.plus(Inches.of(6));
     public static final Distance algaeScoreHeight = zeroOffset.plus(Inches.of(6));
     public static final Distance algaeL2 = zeroOffset.plus(Inches.of(37.5));
-    public static final Distance algaeL3 = zeroOffset.plus(Inches.of(51));
+    public static final Distance algaeL3 = zeroOffset.plus(Inches.of(54));
 
     public static final Current stallThreshold = Amps.of(70);
     public static final Time stallDuration = Milliseconds.of(500);
@@ -199,22 +201,22 @@ public final class Constants {
 
     public static final int currentLimit = 40;
 
-    public static final double KS = 1;
-    public static final double KG = 2.25;
+    public static final double KS = 2;
+    public static final double KG = 3;
     public static final double KV = 2.2604;
     public static final double KA = 0;
-    public static final double KP = 20;
-    public static final double KI = 0;
-    public static final double KD = 1;
+    public static final double KP = 17.5;
+    public static final double KI = 7.5;
+    public static final double KD = 3.5;
   }
 
   public static final class CoralConstants {
     public static final int grabberCanID = 12;
     public static final int wristCanID = 16;
 
-    public static final Current grabStallLimit = Amps.of(6.5);
-    public static final Current grabDoneLimit = Amps.of(15);
-    public static final Time grabStallDuration = Milliseconds.of(250);
+    public static final Current grabStallLimit = Amps.of(9);
+    public static final Current grabDoneLimit = Amps.of(6.5);
+    public static final Time grabStallDuration = Milliseconds.of(150);
 
     public static final Current grabCurrentLimit = Amps.of(15);
     public static final Current wristCurrentLimit = Amps.of(40);
@@ -222,10 +224,10 @@ public final class Constants {
     public static final Voltage grabIntakeVoltage = Volts.of(-6);
     public static final Voltage grabScoreVoltage = Volts.of(6);
 
-    public static final Angle intakeAngle = Degrees.of(43);
+    public static final Angle intakeAngle = Degrees.of(40);
     public static final Angle troughScoreAngle = Degrees.of(-15);
     public static final Angle branchScoreAngle = Degrees.of(-30);
-    public static final Angle tipScoreAngle = Degrees.of(-33.5);
+    public static final Angle tipScoreAngle = Degrees.of(-50); // -33.5
     public static final Angle stowAngle = Degrees.of(40);
 
     public static final double wristGearing = 60;
@@ -238,7 +240,7 @@ public final class Constants {
     public static final double KG = 0.2; // 0.1159 or 0.13 or 0.30995
     public static final double KV = 46.18; // 52.183
     public static final double KA = 5.4707; // 4.3241
-    public static final double KP = 1; // 12 / 1.6
+    public static final double KP = 12 / Math.PI; // 12 / 1.6
     public static final double KI = 0;
     public static final double KD = 0;
   }
@@ -254,13 +256,15 @@ public final class Constants {
     public static final Current grabCurrentLimit = Amps.of(15);
     public static final Current wristCurrentLimit = Amps.of(40);
 
-    public static final Voltage grabIntakeVoltage = Volts.of(-6);
-    public static final Voltage grabScoreVoltage = Volts.of(6);
+    public static final Voltage grabIntakeVoltage = Volts.of(-9);
+    public static final Voltage grabScoreVoltage = Volts.of(9);
+    public static final Voltage bargeScoreVoltage = Volts.of(12);
 
     public static final Angle groundIntakeAngle = Degrees.of(-15);
     public static final Angle reefIntakeAngle = Degrees.of(-35);
     public static final Angle processorScoreAngle = Degrees.of(0);
-    public static final Angle stowAngle = Degrees.of(70);
+    public static final Angle bargeScoreAngle = Degrees.of(55);
+    public static final Angle stowAngle = Degrees.of(75);
 
     @SuppressWarnings("unused")
     public static final Angle holdAngle = Degrees.of(50);

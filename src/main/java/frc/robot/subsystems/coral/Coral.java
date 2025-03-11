@@ -31,7 +31,6 @@ import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Current;
@@ -57,18 +56,18 @@ public class Coral extends SubsystemBase {
   @SuppressWarnings("FieldCanBeLocal")
   private double feedForwardVoltage; // NOPMD
 
-  private final MovingAverage movingAverage = new MovingAverage(9);
+  @NotLogged private final MovingAverage movingAverage = new MovingAverage(9);
 
   public final Trigger atMaxAngle = new Trigger(() -> io.getWristAngle().gte(maxWristAngle));
   public final Trigger atMinAngle = new Trigger(() -> io.getWristAngle().lte(minWristAngle));
 
-  private final Debouncer stallingDebouncer = new Debouncer(grabStallDuration.in(Seconds));
-
   public final Trigger isGrabberStalling =
-      new Trigger(() -> stallingDebouncer.calculate(getFilteredCurrentDraw().gte(grabStallLimit)));
+      new Trigger(() -> getFilteredCurrentDraw().gte(grabStallLimit))
+          .debounce(grabStallDuration.in(Seconds));
 
-  public final Trigger isGrabberDone =
-      new Trigger(() -> stallingDebouncer.calculate(getFilteredCurrentDraw().lte(grabDoneLimit)));
+  public final Trigger isGrabberEmpty =
+      new Trigger(() -> getFilteredCurrentDraw().lte(grabDoneLimit))
+          .debounce(grabStallDuration.in(Seconds));
 
   public Coral(CoralIO io) {
     this.io = io;
@@ -97,22 +96,19 @@ public class Coral extends SubsystemBase {
   }
 
   public Command scoreL1() {
-    return coordinatedControl(troughScoreAngle, grabScoreVoltage, isGrabberDone)
-        .withName("Score L1");
+    return coordinatedControl(troughScoreAngle, grabScoreVoltage, () -> false).withName("Score L1");
   }
 
   public Command scoreL2() {
-    return coordinatedControl(branchScoreAngle, grabScoreVoltage, isGrabberDone)
-        .withName("Score L2");
+    return coordinatedControl(branchScoreAngle, grabScoreVoltage, () -> false).withName("Score L2");
   }
 
   public Command scoreL3() {
-    return coordinatedControl(branchScoreAngle, grabScoreVoltage, isGrabberDone)
-        .withName("Score L3");
+    return coordinatedControl(branchScoreAngle, grabScoreVoltage, () -> false).withName("Score L3");
   }
 
   public Command scoreL4() {
-    return coordinatedControl(tipScoreAngle, grabScoreVoltage, isGrabberDone).withName("Score L4");
+    return coordinatedControl(tipScoreAngle, grabScoreVoltage, () -> false).withName("Score L4");
   }
 
   @SuppressWarnings("unused")

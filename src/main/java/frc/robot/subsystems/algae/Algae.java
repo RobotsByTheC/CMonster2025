@@ -13,6 +13,8 @@ import static frc.robot.Constants.AlgaeConstants.KI;
 import static frc.robot.Constants.AlgaeConstants.KP;
 import static frc.robot.Constants.AlgaeConstants.KS;
 import static frc.robot.Constants.AlgaeConstants.KV;
+import static frc.robot.Constants.AlgaeConstants.bargeScoreAngle;
+import static frc.robot.Constants.AlgaeConstants.bargeScoreVoltage;
 import static frc.robot.Constants.AlgaeConstants.grabIntakeVoltage;
 import static frc.robot.Constants.AlgaeConstants.grabScoreVoltage;
 import static frc.robot.Constants.AlgaeConstants.grabStallDuration;
@@ -47,7 +49,7 @@ public class Algae extends SubsystemBase {
   private final AlgaeIO io;
   private final ProfiledPIDController profiledPIDController;
   private final ArmFeedforward feedForward;
-  private final MovingAverage movingAverage = new MovingAverage(9);
+  @NotLogged private final MovingAverage movingAverage = new MovingAverage(9);
 
   @SuppressWarnings("FieldCanBeLocal")
   private double pidVoltage; // NOPMD
@@ -96,7 +98,7 @@ public class Algae extends SubsystemBase {
   }
 
   public Command intakeGround() {
-    return coordinatedControl(groundIntakeAngle, grabIntakeVoltage, isGrabberStalling)
+    return coordinatedControl(groundIntakeAngle, grabIntakeVoltage, () -> false)
         .withName("Algae Ground Intake");
   }
 
@@ -109,13 +111,18 @@ public class Algae extends SubsystemBase {
   }
 
   public Command intakeReef() {
-    return coordinatedControl(reefIntakeAngle, grabIntakeVoltage, isGrabberStalling)
+    return coordinatedControl(reefIntakeAngle, grabIntakeVoltage, () -> false)
         .withName("Algae Reef Intake");
   }
 
   public Command scoreProcessor() {
     return coordinatedControl(processorScoreAngle, grabScoreVoltage, () -> false)
         .withName("Algae Score Processor");
+  }
+
+  public Command scoreBarge() {
+    return coordinatedControl(bargeScoreAngle, bargeScoreVoltage, () -> false)
+        .withName("Algae Score Barge");
   }
 
   public Command stow() {

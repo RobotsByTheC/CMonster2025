@@ -2,7 +2,7 @@ package frc.robot.subsystems.algae;
 
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.Constants.AlgaeConstants.grabCurrentLimit;
@@ -18,6 +18,7 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
@@ -30,15 +31,18 @@ public class RealAlgaeIO implements AlgaeIO {
   private final SparkMax wrist;
 
   @SuppressWarnings("FieldCanBeLocal")
+  @NotLogged
   private final SparkMaxConfig grabLeftConfig; // NOPMD
 
   @SuppressWarnings("FieldCanBeLocal")
+  @NotLogged
   private final SparkMaxConfig grabRightConfig; // NOPMD
 
   @SuppressWarnings("FieldCanBeLocal")
+  @NotLogged
   private final SparkMaxConfig wristConfig; // NOPMD
 
-  private final AbsoluteEncoder wristEncoder;
+  @NotLogged private final AbsoluteEncoder wristEncoder;
 
   public RealAlgaeIO() {
     grabLeft = new SparkMax(leftCanID, SparkLowLevel.MotorType.kBrushless);
@@ -112,6 +116,6 @@ public class RealAlgaeIO implements AlgaeIO {
 
   @Override
   public AngularVelocity getWristVelocity() {
-    return RadiansPerSecond.of(wristEncoder.getVelocity());
+    return RPM.of(wristEncoder.getVelocity());
   }
 }

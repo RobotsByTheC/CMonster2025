@@ -9,6 +9,7 @@ import static frc.robot.Constants.DriveConstants.rearRightChassisAngularOffset;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.units.measure.LinearAcceleration;
 import frc.robot.sim.Simulation;
 import frc.robot.sim.SimulationContext;
 import frc.robot.subsystems.drive.swerve.SimModuleIO;
@@ -85,5 +86,10 @@ public class SimSwerveIO implements SwerveIO {
   public void close() {
     SwerveIO.super.close();
     SimulationContext.getDefault().removePeriodic(update);
+  }
+
+  @Override
+  public LinearAcceleration getForwardAcceleration() {
+    return null;
   }
 }

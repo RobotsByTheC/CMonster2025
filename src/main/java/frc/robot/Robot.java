@@ -6,6 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.epilogue.logging.EpilogueBackend;
 import edu.wpi.first.epilogue.logging.FileBackend;
 import edu.wpi.first.epilogue.logging.NTEpilogueBackend;
@@ -44,9 +45,9 @@ public class Robot extends TimedRobot {
   private final Algae algae;
 
   // Driver and operator controls
-  private final CommandXboxController operatorController; // NOPMD
-  private final CommandJoystick rStick; // NOPMD
-  private final CommandJoystick lStick; // NOPMD
+  @NotLogged private final CommandXboxController operatorController; // NOPMD
+  @NotLogged private final CommandJoystick rStick; // NOPMD
+  @NotLogged private final CommandJoystick lStick; // NOPMD
 
   public Robot() {
     // Initialize our subsystems. If our program is running in simulation mode (either from the
@@ -83,7 +84,11 @@ public class Robot extends TimedRobot {
      * xbox and flight sticks. Refer to Constants.java (OIConstants)
      * for the correct Driver Station inputs.
      */
-    drive.setDefaultCommand(driveWithFlightSticks());
+    drive.setDefaultCommand(driveFastWithFlightSticks());
+
+    //    rStick.trigger().whileTrue(driveSlowWithFlightSticks()); // Disabled because William is a
+    // shit driver
+
     elevator.setDefaultCommand(elevator.stop());
     coral.setDefaultCommand(coral.stow());
     algae.setDefaultCommand(algae.stow());
@@ -100,13 +105,19 @@ public class Robot extends TimedRobot {
   @SuppressWarnings("unused")
   private Command driveWithXbox() {
     //noinspection SuspiciousNameCombination
-    return drive.driveWithJoysticks(
+    return drive.driveFastWithJoysticks(
         operatorController::getLeftY, operatorController::getLeftX, operatorController::getRightX);
   }
 
-  private Command driveWithFlightSticks() {
+  private Command driveFastWithFlightSticks() {
     //noinspection SuspiciousNameCombination
-    return drive.driveWithJoysticks(lStick::getY, lStick::getX, rStick::getTwist);
+    return drive.driveFastWithJoysticks(lStick::getY, lStick::getX, rStick::getTwist);
+  }
+
+  @SuppressWarnings("unused")
+  private Command driveSlowWithFlightSticks() {
+    //noinspection SuspiciousNameCombination
+    return drive.driveSlowWithJoysticks(lStick::getY, lStick::getX, rStick::getTwist);
   }
 
   private void configureButtonBindings() {
@@ -142,8 +153,6 @@ public class Robot extends TimedRobot {
     bindCoral();
 
     bindAlgae();
-
-
   }
 
   private void bindElevator() {
@@ -156,7 +165,7 @@ public class Robot extends TimedRobot {
         .whileTrue(
             elevator
                 .goToIntakeHeight()
-                .andThen(coral.intake().deadlineFor(elevator.holdCurrentPosition()))
+                .andThen(coral.intake().deadlineFor(elevator.holdTargetPosition()))
                 .andThen(elevator.goToBottom())
                 .withName("Coral Intake"));
     operatorController
@@ -164,42 +173,63 @@ public class Robot extends TimedRobot {
         .whileTrue(
             elevator
                 .goToL1Height()
-                .andThen(coral.scoreL1().deadlineFor(elevator.holdCurrentPosition()))
-                .andThen(elevator.goToBottom().alongWith(coral.stow()))
+                .andThen(coral.scoreL1().deadlineFor(elevator.holdTargetPosition()))
                 .withName("Score L1"));
+
+    operatorController.a().onFalse(elevator.goToBottom().alongWith(coral.stow()));
+
     operatorController
         .b()
         .whileTrue(
             elevator
                 .goToL2Height()
-                .andThen(coral.scoreL2().deadlineFor(elevator.holdCurrentPosition()))
-                .andThen(elevator.goToBottom().alongWith(coral.stow()))
+                .andThen(coral.scoreL2().deadlineFor(elevator.holdTargetPosition()))
                 .withName("Score L2"));
+
+    operatorController.b().onFalse(elevator.goToBottom().alongWith(coral.stow()));
+
     operatorController
         .x()
         .whileTrue(
             elevator
                 .goToL3Height()
-                .andThen(coral.scoreL3().deadlineFor(elevator.holdCurrentPosition()))
-                .andThen(elevator.goToBottom().alongWith(coral.stow()))
-                .withName("Score L3"));
+                .andThen(
+                    coral
+                        .scoreL3()
+                        .deadlineFor(elevator.holdTargetPosition())
+                        .withName("Score L3")));
+
+    operatorController.x().onFalse(elevator.goToBottom().alongWith(coral.stow()));
+
     operatorController
         .y()
         .whileTrue(
             elevator
                 .goToL4Height()
-                .andThen(coral.scoreL4().deadlineFor(elevator.holdCurrentPosition()))
-                .andThen(elevator.goToBottom().alongWith(coral.stow()))
-                .withName("Score L4"));
+                .andThen(
+                    coral
+                        .scoreL4()
+                        .deadlineFor(elevator.holdTargetPosition())
+                        .withName("Score L4")));
+    operatorController.y().onFalse(elevator.goToBottom().alongWith(coral.stow()));
   }
 
   private void bindAlgae() {
+    // Score Barge
+    operatorController
+        .start()
+        .whileTrue(
+            elevator
+                .goToBargeHeight()
+                .andThen(algae.scoreBarge().deadlineFor(elevator.holdTargetPosition()))
+                .withName("Score Algae Barge"));
+
     // Intake Ground
     operatorController
         .povUp()
         .whileTrue(elevator.goToAlgaeIntakeHeight().andThen(algae.intakeGround()));
 
-    operatorController.povUp().onFalse(algae.stowUntilDone().andThen(elevator.goToBottom()));
+    operatorController.povUp().onFalse(algae.stowUntilDone().deadlineFor(elevator.goToBottom()));
 
     // Score Processor
     operatorController
@@ -209,12 +239,16 @@ public class Robot extends TimedRobot {
     operatorController.povDown().onFalse(algae.stowUntilDone().andThen(elevator.goToBottom()));
 
     // Algae L2
-    operatorController.povLeft().whileTrue(elevator.goToAlgaeL2Height().andThen(algae.intakeReef()));
+    operatorController
+        .povLeft()
+        .whileTrue(elevator.goToAlgaeL2Height().andThen(algae.intakeReef()));
 
     operatorController.povLeft().onFalse(algae.stowUntilDone().andThen(elevator.goToBottom()));
 
     // Algae L3
-    operatorController.povRight().whileTrue(elevator.goToAlgaeL3Height().andThen(algae.intakeReef()));
+    operatorController
+        .povRight()
+        .whileTrue(elevator.goToAlgaeL3Height().andThen(algae.intakeReef()));
 
     operatorController.povRight().onFalse(algae.stowUntilDone().andThen(elevator.goToBottom()));
   }
@@ -249,6 +283,16 @@ public class Robot extends TimedRobot {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
+    //    return drive
+    //        .moveBackwardsUntilStopped()
+    //        .andThen(
+    //            elevator
+    //                .goToL4Height()
+    //                .andThen(
+    //                    coral
+    //                        .scoreL4()
+    //                        .deadlineFor(elevator.holdCurrentPosition())
+    //                        .withName("Score L4")));
     return drive.autoLeaveArea();
   }
 
