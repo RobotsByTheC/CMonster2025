@@ -6,8 +6,7 @@ import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.Constants.CoralConstants.grabCurrentLimit;
-import static frc.robot.Constants.CoralConstants.leftCanID;
-import static frc.robot.Constants.CoralConstants.rightCanID;
+import static frc.robot.Constants.CoralConstants.grabberCanID;
 import static frc.robot.Constants.CoralConstants.wristCanID;
 import static frc.robot.Constants.CoralConstants.wristCurrentLimit;
 
@@ -25,38 +24,39 @@ import edu.wpi.first.units.measure.Voltage;
 
 @Logged
 public class RealCoralIO implements CoralIO {
-  private final SparkMax grabLeft;
-  private final SparkMax grabRight;
+  private final SparkMax grabMotor;
   private final SparkMax wrist;
-  @NotLogged private final SparkMaxConfig grabLeftConfig;
-  @NotLogged private final SparkMaxConfig grabRightConfig;
-  @NotLogged private final SparkMaxConfig wristConfig;
+
+  @SuppressWarnings("FieldCanBeLocal")
+  @NotLogged
+  private final SparkMaxConfig grabMotorConfig; // NOPMD
+
+  @SuppressWarnings("FieldCanBeLocal")
+  @NotLogged
+  private final SparkMaxConfig wristConfig; // NOPMD
+
   private final AbsoluteEncoder wristEncoder;
 
   public RealCoralIO() {
-    grabLeft = new SparkMax(leftCanID, SparkLowLevel.MotorType.kBrushless);
-    grabRight = new SparkMax(rightCanID, SparkLowLevel.MotorType.kBrushless);
+    grabMotor = new SparkMax(grabberCanID, SparkLowLevel.MotorType.kBrushless);
 
     wrist = new SparkMax(wristCanID, SparkLowLevel.MotorType.kBrushless);
     wristEncoder = wrist.getAbsoluteEncoder();
 
-    grabLeftConfig = new SparkMaxConfig();
-    grabLeftConfig.secondaryCurrentLimit(grabCurrentLimit.in(Amps));
-    grabLeftConfig.inverted(true);
-    grabRightConfig = new SparkMaxConfig();
-    grabRightConfig.secondaryCurrentLimit(grabCurrentLimit.in(Amps));
+    grabMotorConfig = new SparkMaxConfig();
+    grabMotorConfig.secondaryCurrentLimit(grabCurrentLimit.in(Amps));
+    grabMotorConfig.inverted(true);
+
     wristConfig = new SparkMaxConfig();
     wristConfig.secondaryCurrentLimit(wristCurrentLimit.in(Amps));
-    wristConfig.absoluteEncoder.inverted(true);
+    wristConfig.absoluteEncoder.inverted(false);
+    wristConfig.inverted(true);
 
-    grabLeft.configure(
-        grabLeftConfig,
+    grabMotor.configure(
+        grabMotorConfig,
         SparkBase.ResetMode.kResetSafeParameters,
         SparkBase.PersistMode.kPersistParameters);
-    grabRight.configure(
-        grabRightConfig,
-        SparkBase.ResetMode.kResetSafeParameters,
-        SparkBase.PersistMode.kPersistParameters);
+
     wrist.configure(
         wristConfig,
         SparkBase.ResetMode.kResetSafeParameters,
@@ -70,8 +70,7 @@ public class RealCoralIO implements CoralIO {
 
   @Override
   public void setGrabVoltage(Voltage voltage) {
-    grabRight.setVoltage(voltage);
-    grabLeft.setVoltage(voltage);
+    grabMotor.setVoltage(voltage);
   }
 
   @Override
@@ -81,22 +80,12 @@ public class RealCoralIO implements CoralIO {
 
   @Override
   public Current getGrabCurrentDraw() {
-    return Amps.of(grabLeft.getOutputCurrent() + grabRight.getOutputCurrent());
+    return Amps.of(grabMotor.getOutputCurrent());
   }
 
   @Override
   public Voltage getWristAppliedVoltage() {
     return Volts.of(wrist.getAppliedOutput() * wrist.getBusVoltage());
-  }
-
-  @Override
-  public boolean hasLeftCoral() {
-    return true;
-  }
-
-  @Override
-  public boolean hasRightCoral() {
-    return true;
   }
 
   @Override

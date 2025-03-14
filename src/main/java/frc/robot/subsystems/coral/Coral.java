@@ -1,8 +1,10 @@
 package frc.robot.subsystems.coral;
 
+import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Second;
+import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.Constants.CoralConstants.KA;
 import static frc.robot.Constants.CoralConstants.KD;
@@ -12,8 +14,11 @@ import static frc.robot.Constants.CoralConstants.KP;
 import static frc.robot.Constants.CoralConstants.KS;
 import static frc.robot.Constants.CoralConstants.KV;
 import static frc.robot.Constants.CoralConstants.branchScoreAngle;
+import static frc.robot.Constants.CoralConstants.grabDoneLimit;
 import static frc.robot.Constants.CoralConstants.grabIntakeVoltage;
 import static frc.robot.Constants.CoralConstants.grabScoreVoltage;
+import static frc.robot.Constants.CoralConstants.grabStallDuration;
+import static frc.robot.Constants.CoralConstants.grabStallLimit;
 import static frc.robot.Constants.CoralConstants.intakeAngle;
 import static frc.robot.Constants.CoralConstants.maxWristAngle;
 import static frc.robot.Constants.CoralConstants.minWristAngle;
@@ -28,26 +33,41 @@ import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.math.MovingAverage;
 import java.util.function.BooleanSupplier;
 
 @Logged
 public class Coral extends SubsystemBase {
-  private CoralIO io;
+  private CoralIO io; // NOPMD
   private final ProfiledPIDController profiledPIDController;
   private final ArmFeedforward feedforward;
   @NotLogged private final SysIdRoutine sysIdRoutine;
 
-  private double pidVoltage;
-  private double feedForwardVoltage;
+  @SuppressWarnings("FieldCanBeLocal")
+  private double pidVoltage; // NOPMD
+
+  @SuppressWarnings("FieldCanBeLocal")
+  private double feedForwardVoltage; // NOPMD
+
+  @NotLogged private final MovingAverage movingAverage = new MovingAverage(9);
 
   public final Trigger atMaxAngle = new Trigger(() -> io.getWristAngle().gte(maxWristAngle));
   public final Trigger atMinAngle = new Trigger(() -> io.getWristAngle().lte(minWristAngle));
+
+  public final Trigger isGrabberStalling =
+      new Trigger(() -> getFilteredCurrentDraw().gte(grabStallLimit))
+          .debounce(grabStallDuration.in(Seconds));
+
+  public final Trigger isGrabberEmpty =
+      new Trigger(() -> getFilteredCurrentDraw().lte(grabDoneLimit))
+          .debounce(grabStallDuration.in(Seconds));
 
   public Coral(CoralIO io) {
     this.io = io;
@@ -66,26 +86,32 @@ public class Coral extends SubsystemBase {
             new SysIdRoutine.Mechanism(io::setWristVoltage, null, this));
   }
 
+  public Current getFilteredCurrentDraw() {
+    return Amps.of(movingAverage.getAverage());
+  }
+
+  @Override
+  public void periodic() {
+    movingAverage.addNumber(io.getGrabCurrentDraw().in(Amps));
+  }
+
   public Command scoreL1() {
-    return coordinatedControl(troughScoreAngle, grabScoreVoltage, () -> !io.hasAnyCoral())
-        .withName("Score L1");
+    return coordinatedControl(troughScoreAngle, grabScoreVoltage, () -> false).withName("Score L1");
   }
 
   public Command scoreL2() {
-    return coordinatedControl(branchScoreAngle, grabScoreVoltage, () -> !io.hasAnyCoral())
-        .withName("Score L2");
+    return coordinatedControl(branchScoreAngle, grabScoreVoltage, () -> false).withName("Score L2");
   }
 
   public Command scoreL3() {
-    return coordinatedControl(branchScoreAngle, grabScoreVoltage, () -> !io.hasAnyCoral())
-        .withName("Score L3");
+    return coordinatedControl(branchScoreAngle, grabScoreVoltage, () -> false).withName("Score L3");
   }
 
   public Command scoreL4() {
-    return coordinatedControl(tipScoreAngle, grabScoreVoltage, () -> !io.hasAnyCoral())
-        .withName("Score L4");
+    return coordinatedControl(tipScoreAngle, grabScoreVoltage, () -> false).withName("Score L4");
   }
 
+  @SuppressWarnings("unused")
   public Command stop() {
     return run(() -> {
           io.setGrabVoltage(Volts.of(0));
@@ -99,7 +125,7 @@ public class Coral extends SubsystemBase {
   }
 
   public Command intake() {
-    return coordinatedControl(intakeAngle, grabIntakeVoltage, () -> io.hasAnyCoral())
+    return coordinatedControl(intakeAngle, grabIntakeVoltage, isGrabberStalling)
         .withName("Intake coral");
   }
 

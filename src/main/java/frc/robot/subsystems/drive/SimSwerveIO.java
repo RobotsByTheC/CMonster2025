@@ -9,6 +9,7 @@ import static frc.robot.Constants.DriveConstants.rearRightChassisAngularOffset;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.units.measure.LinearAcceleration;
 import frc.robot.sim.Simulation;
 import frc.robot.sim.SimulationContext;
 import frc.robot.subsystems.drive.swerve.SimModuleIO;
@@ -35,15 +36,15 @@ public class SimSwerveIO implements SwerveIO {
     SimulationContext.getDefault().addPeriodic(update);
   }
 
-  private void update(double timestep) {
+  private void update(double time) {
     // Compute the current chassis speeds (x, y, ω)
     var speeds =
         driveKinematics.toChassisSpeeds(
             frontLeft.getState(), frontRight.getState(), rearLeft.getState(), rearRight.getState());
 
-    // Update the heading by integrating the angular velocity by the timestep
-    // (note: smaller timesteps will give more accurate results)
-    heading = heading.plus(Rotation2d.fromRadians(speeds.omegaRadiansPerSecond * timestep));
+    // Update the heading by integrating the angular velocity by the time
+    // (note: smaller time steps will give more accurate results)
+    heading = heading.plus(Rotation2d.fromRadians(speeds.omegaRadiansPerSecond * time));
   }
 
   @Override
@@ -85,5 +86,10 @@ public class SimSwerveIO implements SwerveIO {
   public void close() {
     SwerveIO.super.close();
     SimulationContext.getDefault().removePeriodic(update);
+  }
+
+  @Override
+  public LinearAcceleration getForwardAcceleration() {
+    return null;
   }
 }

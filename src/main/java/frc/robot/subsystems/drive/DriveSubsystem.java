@@ -6,34 +6,29 @@ package frc.robot.subsystems.drive;
 
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Feet;
+import static edu.wpi.first.units.Units.FeetPerSecond;
+import static edu.wpi.first.units.Units.FeetPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
-import static edu.wpi.first.units.Units.RadiansPerSecondPerSecond;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
-import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
+import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
-import static frc.robot.Constants.AutoConstants.pThetaController;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.struct.Pose2dStruct;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Voltage;
@@ -53,20 +48,18 @@ import java.util.function.DoubleSupplier;
 @Logged
 public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
   private final SwerveIO io;
+
+  @SuppressWarnings("unused")
   private final PIDController xController =
       new PIDController(Constants.AutoConstants.pXController, 0, 0);
+
+  @SuppressWarnings("unused")
   private final PIDController yController =
       new PIDController(Constants.AutoConstants.pYController, 0, 0);
-  private final ProfiledPIDController thetaController =
-      new ProfiledPIDController(
-          pThetaController,
-          0,
-          0,
-          new TrapezoidProfile.Constraints(
-              DriveConstants.maxAngularSpeed.in(RadiansPerSecond),
-              RadiansPerSecondPerSecond.convertFrom(10, RotationsPerSecondPerSecond))
-      );
-  private final HolonomicDriveController driveController = new HolonomicDriveController(xController, yController, thetaController);
+
+  @SuppressWarnings("FieldCanBeLocal")
+  private final PIDController thetaController =
+      new PIDController(Constants.AutoConstants.pThetaController, 0, 0);
 
   // Odometry class for tracking robot pose
   @NotLogged private final SwerveDrivePoseEstimator poseEstimator;
@@ -82,7 +75,6 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
   public DriveSubsystem(SwerveIO io) {
     this.io = io;
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
-//    thetaController.setTolerance();
     poseEstimator =
         new SwerveDrivePoseEstimator(
             DriveConstants.driveKinematics,
@@ -120,9 +112,14 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
    *
    * @param pose The pose to which to set the odometry.
    */
+  @SuppressWarnings("unused")
   public void resetOdometry(Pose2d pose) {
     io.resetHeading(pose.getRotation());
     poseEstimator.resetPosition(io.getHeading(), io.getModulePositions(), pose);
+  }
+
+  public Command zeroGyro() {
+    return Commands.runOnce(() -> io.resetHeading(Rotation2d.kZero)).withName("Reset Gyro");
   }
 
   /**
@@ -149,7 +146,7 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
   public Command driveToPose(Pose2d pose) {
     return rotateToHeading(pose.getRotation())
         .andThen(run(() -> {
-          getPose()
+          getPose();
         })).withName("Move to " + pose);
   }
 
@@ -177,11 +174,13 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
   }
 
   /** Resets the drive encoders to currently read a position of 0. */
+  @SuppressWarnings("unused")
   public void resetEncoders() {
     io.resetEncoders();
   }
 
   /** Zeroes the heading of the robot. */
+  @SuppressWarnings("unused")
   public void zeroHeading() {
     io.zeroHeading();
   }
@@ -203,18 +202,18 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
     return io.getModuleStates();
   }
 
+  @SuppressWarnings("unused")
   public Command setXCommand() {
     return run(this::setX)
         .until(
-            () -> {
-              return Arrays.stream(getModuleStates())
-                  .allMatch(
-                      state -> {
-                        double v = Math.abs(state.speedMetersPerSecond);
-                        double angle = state.angle.getDegrees();
-                        return v <= 0.01 && Math.abs(angle % 45) <= 1.5;
-                      });
-            })
+            () ->
+                Arrays.stream(getModuleStates())
+                    .allMatch(
+                        state -> {
+                          double v = Math.abs(state.speedMetersPerSecond);
+                          double angle = state.angle.getDegrees();
+                          return v <= 0.01 && Math.abs(angle % 45) <= 1.5;
+                        }))
         .withName("Set X");
   }
 
@@ -230,7 +229,7 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
    *     as a number from -1 (maximum clockwise speed) to +1 (maximum counter-clockwise speed).
    * @return the driving command
    */
-  public Command driveWithJoysticks(DoubleSupplier x, DoubleSupplier y, DoubleSupplier omega) {
+  public Command driveFastWithJoysticks(DoubleSupplier x, DoubleSupplier y, DoubleSupplier omega) {
     var xSpeed = MetersPerSecond.mutable(0);
     var ySpeed = MetersPerSecond.mutable(0);
     var omegaSpeed = RadiansPerSecond.mutable(0);
@@ -243,8 +242,30 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
               MathUtil.applyDeadband(y.getAsDouble(), 0.01)
                   * DriveConstants.maxSpeed.in(MetersPerSecond));
           omegaSpeed.mut_setMagnitude(
-              MathUtil.applyDeadband(omega.getAsDouble(), 0.1)
+              MathUtil.applyDeadband(omega.getAsDouble(), 0.3)
                   * DriveConstants.maxAngularSpeed.in(RadiansPerSecond));
+
+          drive(xSpeed, ySpeed, omegaSpeed, ReferenceFrame.FIELD);
+        })
+        .finallyDo(this::setX)
+        .withName("Drive With Joysticks");
+  }
+
+  public Command driveSlowWithJoysticks(DoubleSupplier x, DoubleSupplier y, DoubleSupplier omega) {
+    var xSpeed = MetersPerSecond.mutable(0);
+    var ySpeed = MetersPerSecond.mutable(0);
+    var omegaSpeed = RadiansPerSecond.mutable(0);
+
+    return run(() -> {
+          xSpeed.mut_setMagnitude(
+              MathUtil.applyDeadband(x.getAsDouble(), 0.01)
+                  * DriveConstants.maxSpeed.in(MetersPerSecond));
+          ySpeed.mut_setMagnitude(
+              MathUtil.applyDeadband(y.getAsDouble(), 0.01)
+                  * DriveConstants.maxSpeed.in(MetersPerSecond));
+          omegaSpeed.mut_setMagnitude(
+              MathUtil.applyDeadband(omega.getAsDouble(), 0.15)
+                  * DriveConstants.slowAngularSpeed.in(RadiansPerSecond));
 
           drive(xSpeed, ySpeed, omegaSpeed, ReferenceFrame.FIELD);
         })
@@ -262,7 +283,27 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
   private final SysIdRoutine routine =
       new SysIdRoutine(
           new SysIdRoutine.Config(),
-          new SysIdRoutine.Mechanism(this::voltageDrive, null, this));
+          new SysIdRoutine.Mechanism(this::voltageDrive, this::logMotors, this));
+
+  private void logMotors(SysIdRoutineLog s) {
+    s.motor("frontLeft")
+        .linearPosition(Meters.of(io.frontLeft().getPosition().distanceMeters))
+        .linearVelocity(MetersPerSecond.of(io.frontLeft().getState().speedMetersPerSecond))
+        .voltage(appliedSysidVoltage);
+    s.motor("rearLeft")
+        .linearPosition(Meters.of(io.rearLeft().getPosition().distanceMeters))
+        .linearVelocity(MetersPerSecond.of(io.rearLeft().getState().speedMetersPerSecond))
+        .voltage(appliedSysidVoltage);
+    s.motor("frontRight")
+        .linearPosition(Meters.of(io.frontRight().getPosition().distanceMeters))
+        .linearVelocity(MetersPerSecond.of(io.frontRight().getState().speedMetersPerSecond))
+        .voltage(appliedSysidVoltage);
+    s.motor("rearRight")
+        .linearPosition(Meters.of(io.rearRight().getPosition().distanceMeters))
+        .linearVelocity(MetersPerSecond.of(io.rearRight().getState().speedMetersPerSecond))
+        .voltage(appliedSysidVoltage);
+  }
+  private Voltage appliedSysidVoltage = Volts.zero();
 
   private void voltageDrive(Voltage v) {
     io.frontLeft().setVoltageForDrivingMotor(v);
@@ -271,26 +312,51 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
     io.rearRight().setVoltageForDrivingMotor(v);
   }
 
-  public Command sysIdQuasistatic(
+  @SuppressWarnings("unused")
+  public Command sysIdQuasiStatic(
       SysIdRoutine.Direction direction) { // can bind to controller buttons
     return routine.quasistatic(direction);
   }
 
+  @SuppressWarnings("unused")
   public Command sysIdDynamic(SysIdRoutine.Direction direction) { // can bind to controller buttons
     return routine.dynamic(direction);
   }
 
+  public Command autoLeaveArea() {
+    return Commands.waitTime(Seconds.of(10))
+        .andThen(
+            run(
+                () ->
+                    drive(
+                        FeetPerSecond.of(3),
+                        FeetPerSecond.zero(),
+                        RadiansPerSecond.zero(),
+                        ReferenceFrame.FIELD)))
+        .withName("Auto Leave Area");
+  }
+
+  public Command moveBackwardsUntilStopped() {
+    return run(() ->
+            drive(
+                FeetPerSecond.of(1),
+                FeetPerSecond.zero(),
+                RadiansPerSecond.zero(),
+                ReferenceFrame.ROBOT))
+        .until(() -> io.getForwardAcceleration().lte(FeetPerSecondPerSecond.of(-1)));
+  }
+
+  @SuppressWarnings("unused")
   public Command pointForward() {
     return run(this::setForward)
         .until(
-            () -> {
-              return Arrays.stream(getModuleStates())
-                  .allMatch(
-                      state -> {
-                        double angle = state.angle.getDegrees();
-                        return 1.5 >= angle && angle >= -1.5;
-                      });
-            })
+            () ->
+                Arrays.stream(getModuleStates())
+                    .allMatch(
+                        state -> {
+                          double angle = state.angle.getDegrees();
+                          return 1.5 >= angle && angle >= -1.5;
+                        }))
         .withName("Set 0");
   }
 

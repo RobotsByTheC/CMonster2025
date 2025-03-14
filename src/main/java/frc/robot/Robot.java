@@ -10,16 +10,13 @@ import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.epilogue.logging.EpilogueBackend;
 import edu.wpi.first.epilogue.logging.FileBackend;
 import edu.wpi.first.epilogue.logging.NTEpilogueBackend;
-import edu.wpi.first.hal.DriverStationJNI;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
@@ -27,14 +24,15 @@ import frc.robot.sim.SimulationContext;
 import frc.robot.subsystems.algae.Algae;
 import frc.robot.subsystems.algae.RealAlgaeIO;
 import frc.robot.subsystems.algae.SimAlgaeIO;
+import frc.robot.subsystems.coral.Coral;
+import frc.robot.subsystems.coral.RealCoralIO;
+import frc.robot.subsystems.coral.SimCoralIO;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.drive.MAXSwerveIO;
 import frc.robot.subsystems.drive.SimSwerveIO;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.RealElevatorIO;
 import frc.robot.subsystems.elevator.SimElevatorIO;
-
-import java.util.Set;
 
 @Logged
 public class Robot extends TimedRobot {
@@ -44,15 +42,14 @@ public class Robot extends TimedRobot {
   // The robot's subsystems
   private final DriveSubsystem drive;
   private final Elevator elevator;
-  //  private final Coral coral;
+  private final Coral coral;
   private final Algae algae;
   private final Vision vision;
 
   // Driver and operator controls
-  private final CommandXboxController driverController; // NOPMD
-  private final CommandJoystick lStick; // NOPMD
-  private final CommandJoystick rStick; // NOPMD
-  private double loopTime;
+  @NotLogged private final CommandXboxController operatorController; // NOPMD
+  @NotLogged private final CommandJoystick rStick; // NOPMD
+  @NotLogged private final CommandJoystick lStick; // NOPMD
 
   public Robot() {
     // Initialize our subsystems. If our program is running in simulation mode (either from the
@@ -62,21 +59,21 @@ public class Robot extends TimedRobot {
     if (Robot.isSimulation()) {
       drive = new DriveSubsystem(new SimSwerveIO());
       elevator = new Elevator(new SimElevatorIO());
-      //      coral = new Coral(new SimCoralIO());
+      coral = new Coral(new SimCoralIO());
       algae = new Algae(new SimAlgaeIO());
 
     } else {
       // Running on real hardware
       drive = new DriveSubsystem(new MAXSwerveIO());
       elevator = new Elevator(new RealElevatorIO());
-      //      coral = new Coral(new RealCoralIO());
+      coral = new Coral(new RealCoralIO());
       algae = new Algae(new RealAlgaeIO());
     }
     vision = new Vision();
 
-    driverController = new CommandXboxController(Constants.OIConstants.driverControllerPort);
-    lStick = new CommandJoystick(Constants.OIConstants.leftJoystickPort);
-    rStick = new CommandJoystick(Constants.OIConstants.rightJoystickPort);
+    operatorController = new CommandXboxController(Constants.OIConstants.driverControllerPort);
+    rStick = new CommandJoystick(Constants.OIConstants.leftJoystickPort);
+    lStick = new CommandJoystick(Constants.OIConstants.rightJoystickPort);
 
     // Configure the button bindings and automatic bindings
     configureButtonBindings();
@@ -90,9 +87,14 @@ public class Robot extends TimedRobot {
      * xbox and flight sticks. Refer to Constants.java (OIConstants)
      * for the correct Driver Station inputs.
      */
-    drive.setDefaultCommand(driveWithFlightSticks());
+    drive.setDefaultCommand(driveFastWithFlightSticks());
+
+    //    rStick.trigger().whileTrue(driveSlowWithFlightSticks()); // Disabled because William is a
+    // shit driver
+
     elevator.setDefaultCommand(elevator.stop());
-    //    coral.setDefaultCommand(coral.stow());
+    coral.setDefaultCommand(coral.stow());
+    algae.setDefaultCommand(algae.stow());
     // Start data logging
 
     DriverStation.startDataLog(DataLogManager.getLog(), true);
@@ -111,30 +113,38 @@ public class Robot extends TimedRobot {
   @SuppressWarnings("unused")
   private Command driveWithXbox() {
     //noinspection SuspiciousNameCombination
-    return drive.driveWithJoysticks(
-        driverController::getLeftY, driverController::getLeftX, driverController::getRightX);
+    return drive.driveFastWithJoysticks(
+        operatorController::getLeftY, operatorController::getLeftX, operatorController::getRightX);
   }
 
-  private Command driveWithFlightSticks() {
+  private Command driveFastWithFlightSticks() {
     //noinspection SuspiciousNameCombination
-    return drive.driveWithJoysticks(rStick::getY, rStick::getX, lStick::getTwist);
+    return drive.driveFastWithJoysticks(lStick::getY, lStick::getX, rStick::getTwist);
+  }
+
+  @SuppressWarnings("unused")
+  private Command driveSlowWithFlightSticks() {
+    //noinspection SuspiciousNameCombination
+    return drive.driveSlowWithJoysticks(lStick::getY, lStick::getX, rStick::getTwist);
   }
 
   private void configureButtonBindings() {
     /*
-    A: Score L1
-    B: Score L2
-    X: Score L3
-    Y: Score L4
-    LB: Coral Intake
-    RB: Elevator Home
-    LT: Elevator Sysid Routine (Test)
-    RT: Coral Sysid Routine (Test)
-    UA:
-    RA:
-    DA:
-    LA:
+    BA: Score L1
+    BB: Score L2
+    BX: Score L3
+    BY: Score L4
+    LB: Elevator Home
+    RB: Coral Intake
+    LT:
+    RT: [BROKEN]
+    ST:
+    UA: Algae Intake Ground
+    RA: Algae Intake L3
+    DA: Algae Score
+    LA: Algae Intake L2
     */
+
     configureTeleopBindings();
     // configureTestBindings();
   }
@@ -144,68 +154,132 @@ public class Robot extends TimedRobot {
    * for controlling subsystems.
    */
   private void configureTeleopBindings() {
-    //    driverController
-    //        .a()
-    //        .whileTrue(
-    //            elevator
-    //                .goToL1Height()
-    //                .andThen(coral.scoreL1().deadlineFor(elevator.holdCurrentPosition()))
-    //                .andThen(elevator.home().alongWith(coral.stow()))
-    //                .withName("Score L1"));
-    //    driverController
-    //        .b()
-    //        .whileTrue(
-    //            elevator
-    //                .goToL2Height()
-    //                .andThen(coral.scoreL2().deadlineFor(elevator.holdCurrentPosition()))
-    //                .andThen(elevator.home().alongWith(coral.stow()))
-    //                .withName("Score L2"));
-    //    driverController
-    //        .x()
-    //        .whileTrue(
-    //            elevator
-    //                .goToL3Height()
-    //                .andThen(coral.scoreL3().deadlineFor(elevator.holdCurrentPosition()))
-    //                .andThen(elevator.home().alongWith(coral.stow()))
-    //                .withName("Score L3"));
-    //    driverController
-    //        .y()
-    //        .whileTrue(
-    //            elevator
-    //                .goToL4Height()
-    //                .andThen(coral.scoreL4().deadlineFor(elevator.holdCurrentPosition()))
-    //                .andThen(elevator.home().alongWith(coral.stow()))
-    //                .withName("Score L4"));
+    rStick.button(7).onTrue(drive.zeroGyro());
 
-//    driverController.rightBumper().whileTrue(algae.intakeGround());
-//    driverController.rightBumper().onFalse(algae.holdPosition());
-//
+    bindElevator();
 
-    driverController.rightBumper().whileTrue(drive.pointAtTag(vision.getNearestTagId()));
+    bindCoral();
 
-    driverController.leftBumper().whileTrue(algae.scoreProcessor());
-    driverController.leftBumper().onFalse(algae.holdPosition());
-    rStick.trigger().whileTrue(Commands.defer(() -> drive.pointAtTag(vision.getNearestTagId()), Set.of(drive)));
+    bindAlgae();
+  }
+
+  private void bindElevator() {
+    operatorController.leftBumper().whileTrue(elevator.goToBottom());
+  }
+
+  private void bindCoral() {
+    operatorController
+        .rightBumper()
+        .whileTrue(
+            elevator
+                .goToIntakeHeight()
+                .andThen(coral.intake().deadlineFor(elevator.holdTargetPosition()))
+                .andThen(elevator.goToBottom())
+                .withName("Coral Intake"));
+    operatorController
+        .a()
+        .whileTrue(
+            elevator
+                .goToL1Height()
+                .andThen(coral.scoreL1().deadlineFor(elevator.holdTargetPosition()))
+                .withName("Score L1"));
+
+    operatorController.a().onFalse(elevator.goToBottom().alongWith(coral.stow()));
+
+    operatorController
+        .b()
+        .whileTrue(
+            elevator
+                .goToL2Height()
+                .andThen(coral.scoreL2().deadlineFor(elevator.holdTargetPosition()))
+                .withName("Score L2"));
+
+    operatorController.b().onFalse(elevator.goToBottom().alongWith(coral.stow()));
+
+    operatorController
+        .x()
+        .whileTrue(
+            elevator
+                .goToL3Height()
+                .andThen(
+                    coral
+                        .scoreL3()
+                        .deadlineFor(elevator.holdTargetPosition())
+                        .withName("Score L3")));
+
+    operatorController.x().onFalse(elevator.goToBottom().alongWith(coral.stow()));
+
+    operatorController
+        .y()
+        .whileTrue(
+            elevator
+                .goToL4Height()
+                .andThen(
+                    coral
+                        .scoreL4()
+                        .deadlineFor(elevator.holdTargetPosition())
+                        .withName("Score L4")));
+    operatorController.y().onFalse(elevator.goToBottom().alongWith(coral.stow()));
+  }
+
+  private void bindAlgae() {
+    // Score Barge
+    operatorController
+        .start()
+        .whileTrue(
+            elevator
+                .goToBargeHeight()
+                .andThen(algae.scoreBarge().deadlineFor(elevator.holdTargetPosition()))
+                .withName("Score Algae Barge"));
+
+    // Intake Ground
+    operatorController
+        .povUp()
+        .whileTrue(elevator.goToAlgaeIntakeHeight().andThen(algae.intakeGround()));
+
+    operatorController.povUp().onFalse(algae.stowUntilDone().deadlineFor(elevator.goToBottom()));
+
+    // Score Processor
+    operatorController
+        .povDown()
+        .whileTrue(elevator.goToAlgaeScoreHeight().andThen(algae.scoreProcessor()));
+
+    operatorController.povDown().onFalse(algae.stowUntilDone().andThen(elevator.goToBottom()));
+
+    // Algae L2
+    operatorController
+        .povLeft()
+        .whileTrue(elevator.goToAlgaeL2Height().andThen(algae.intakeReef()));
+
+    operatorController.povLeft().onFalse(algae.stowUntilDone().andThen(elevator.goToBottom()));
+
+    // Algae L3
+    operatorController
+        .povRight()
+        .whileTrue(elevator.goToAlgaeL3Height().andThen(algae.intakeReef()));
+
+    operatorController.povRight().onFalse(algae.stowUntilDone().andThen(elevator.goToBottom()));
   }
 
   /**
    * Configures additional controls that are only active in test mode. Primarily used for sysid
    * routines.
    */
+  @SuppressWarnings("unused")
   private void configureTestBindings() {
-    driverController
+    operatorController
+        .leftTrigger()
+        .and(RobotModeTriggers.test())
+        .whileTrue(elevator.findFeedforwardTerms().withName("Run Elevator Sysid Routine"));
+    operatorController
+        .rightBumper()
+        .and(RobotModeTriggers.test())
+        .whileTrue(coral.runSysIdRoutine().withName("Run Coral Sysid Routine"));
+    operatorController
         .leftBumper()
         .and(RobotModeTriggers.test())
-        .whileTrue(elevator.findFeedforwardTerms());
-    //    driverController
-    //        .rightBumper()
-    //        .and(RobotModeTriggers.test())
-    //        .whileTrue(coral.runSysIdRoutine().withName("Run Coral Sysid Routine"));
+        .whileTrue(algae.runSysIdRoutine().withName("Run Algae Sysid Routine"));
   }
-
-//  public Command driveToVision() {
-//    drive.drive();
-//  }
 
   private void configureAutomaticBindings() {
     //    elevator.isStalling.whileTrue(elevator.stop());
@@ -217,8 +291,17 @@ public class Robot extends TimedRobot {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // TODO
-    return Commands.none();
+    //    return drive
+    //        .moveBackwardsUntilStopped()
+    //        .andThen(
+    //            elevator
+    //                .goToL4Height()
+    //                .andThen(
+    //                    coral
+    //                        .scoreL4()
+    //                        .deadlineFor(elevator.holdCurrentPosition())
+    //                        .withName("Score L4")));
+    return drive.autoLeaveArea();
   }
 
   @Logged(name = "Battery Voltage")

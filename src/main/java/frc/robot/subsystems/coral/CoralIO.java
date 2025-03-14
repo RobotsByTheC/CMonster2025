@@ -28,14 +28,6 @@ public interface CoralIO {
 
   Voltage getWristAppliedVoltage();
 
-  boolean hasLeftCoral();
-
-  boolean hasRightCoral();
-
-  default boolean hasAnyCoral() {
-    return hasLeftCoral() || hasRightCoral();
-  }
-
   Angle getWristAngle();
 
   AngularVelocity getWristVelocity();

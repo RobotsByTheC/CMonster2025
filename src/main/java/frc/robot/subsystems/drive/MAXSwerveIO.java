@@ -13,11 +13,13 @@ import static frc.robot.Constants.DriveConstants.rearRightChassisAngularOffset;
 import static frc.robot.Constants.DriveConstants.rearRightDrivingCanId;
 import static frc.robot.Constants.DriveConstants.rearRightTurningCanId;
 
+import com.ctre.phoenix6.hardware.Pigeon2;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
-import com.studica.frc.AHRS;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.units.measure.LinearAcceleration;
+import frc.robot.Constants;
 import frc.robot.subsystems.drive.swerve.MAXSwerveModuleIO;
 import frc.robot.subsystems.drive.swerve.SwerveModule;
 
@@ -53,7 +55,7 @@ public class MAXSwerveIO implements SwerveIO {
           rearRightChassisAngularOffset);
 
   // The gyro sensor
-  private final AHRS gyro = new AHRS(AHRS.NavXComType.kMXP_SPI);
+  private final Pigeon2 gyro = new Pigeon2(Constants.DriveConstants.gyroCanID);
 
   @Override
   public SwerveModule frontLeft() {
@@ -82,11 +84,16 @@ public class MAXSwerveIO implements SwerveIO {
 
   @Override
   public void resetHeading(Rotation2d heading) {
-    gyro.setAngleAdjustment(heading.getDegrees());
+    gyro.setYaw(heading.getDegrees());
   }
 
   @Override
   public void zeroHeading() {
     gyro.reset();
+  }
+
+  @Override
+  public LinearAcceleration getForwardAcceleration() {
+    return gyro.getAccelerationX().getValue();
   }
 }

@@ -1,6 +1,7 @@
 package frc.robot.subsystems.elevator;
 
 import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.InchesPerSecond;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
@@ -14,6 +15,12 @@ import static frc.robot.Constants.ElevatorConstants.KI;
 import static frc.robot.Constants.ElevatorConstants.KP;
 import static frc.robot.Constants.ElevatorConstants.KS;
 import static frc.robot.Constants.ElevatorConstants.KV;
+import static frc.robot.Constants.ElevatorConstants.algaeIntakeHeight;
+import static frc.robot.Constants.ElevatorConstants.algaeL2;
+import static frc.robot.Constants.ElevatorConstants.algaeL3;
+import static frc.robot.Constants.ElevatorConstants.algaeScoreHeight;
+import static frc.robot.Constants.ElevatorConstants.bargeHeight;
+import static frc.robot.Constants.ElevatorConstants.coralIntake;
 import static frc.robot.Constants.ElevatorConstants.l1;
 import static frc.robot.Constants.ElevatorConstants.l2;
 import static frc.robot.Constants.ElevatorConstants.l3;
@@ -66,9 +73,15 @@ public class Elevator extends SubsystemBase {
             new TrapezoidProfile.Constraints(feedforward.maxAchievableVelocity(12.5, 20), 20));
     sysIdRoutine =
         new SysIdRoutine(
-            new SysIdRoutine.Config(Volts.per(Second).of(0.5), Volts.of(6), null),
+            new SysIdRoutine.Config(Volts.per(Second).of(0.5), Volts.of(5), null),
             new SysIdRoutine.Mechanism(
-                io::setVoltage,
+                voltage -> {
+                  if (voltage.magnitude() < 0) {
+                    io.setVoltage(voltage.div(3));
+                  } else {
+                    io.setVoltage(voltage);
+                  }
+                },
                 log ->
                     log.motor("Elevator Motor")
                         .current(io.getCurrentDraw())
@@ -98,7 +111,12 @@ public class Elevator extends SubsystemBase {
 
   public Command home() {
     return run(() -> io.setVoltage(Volts.of(-2)))
-        .until(() -> io.getCurrentDraw().gte(Amps.of(15)))
+        .until(
+            new Trigger(
+                    () ->
+                        io.getCurrentDraw().gte(Amps.of(15))
+                            && (io.getVelocity().abs(InchesPerSecond)) < 0.1)
+                .debounce(0.15))
         .finallyDo(
             (boolean interrupted) -> {
               if (!interrupted) {
@@ -113,9 +131,23 @@ public class Elevator extends SubsystemBase {
             () ->
                 profiledPIDController.reset(
                     io.getHeight().in(Meters), io.getVelocity().in(MetersPerSecond)),
-            () -> io.setVoltage(calculatePIDVoltage(targetHeight)))
+            () -> {
+              Voltage calc = calculatePIDVoltage(targetHeight);
+
+              if (calc.magnitude() < 0) {
+                io.setVoltage(calc.div(2));
+              } else {
+                io.setVoltage(calc);
+              }
+            })
         .until(profiledPIDController::atGoal)
         .withName("Go To Height " + targetHeight.toLongString());
+  }
+
+  public Command goToBottom() {
+    return goToHeight(minHeight.plus(Inches.of(3)))
+        .withName("Dropping to Min height")
+        .andThen(home());
   }
 
   public Command goToL1Height() {
@@ -134,6 +166,31 @@ public class Elevator extends SubsystemBase {
     return goToHeight(l4).withName("Rising to L4");
   }
 
+  public Command goToBargeHeight() {
+    return goToHeight(bargeHeight).withName("Rising to L4");
+  }
+
+  public Command goToIntakeHeight() {
+    return goToHeight(coralIntake).withName("Rising to Intake Coral");
+  }
+
+  public Command goToAlgaeIntakeHeight() {
+    return goToHeight(algaeIntakeHeight).withName("Rising to Algae Intake");
+  }
+
+  public Command goToAlgaeScoreHeight() {
+    return goToHeight(algaeScoreHeight).withName("Rising to Algae Score");
+  }
+
+  public Command goToAlgaeL2Height() {
+    return goToHeight(algaeL2).withName("Rising to Algae L2");
+  }
+
+  public Command goToAlgaeL3Height() {
+    return goToHeight(algaeL3).withName("Rising to Algae L3");
+  }
+
+  @SuppressWarnings("unused")
   public Command holdCurrentPosition() {
     MutDistance startingHeight = Meters.mutable(0);
     return startRun(
@@ -145,6 +202,11 @@ public class Elevator extends SubsystemBase {
         () -> io.setVoltage(calculatePIDVoltage(startingHeight)));
   }
 
+  public Command holdTargetPosition() {
+    return run(() -> goToHeight(Meters.of(profiledPIDController.getSetpoint().position)));
+  }
+
+  @SuppressWarnings("unused")
   public Command runSysIdRoutine() {
     return sysIdRoutine
         .dynamic(SysIdRoutine.Direction.kForward)
@@ -155,6 +217,7 @@ public class Elevator extends SubsystemBase {
         .withName("Elevator Sysid Routine");
   }
 
+  @SuppressWarnings("unused")
   public Command findFeedforwardTerms() {
     MutVoltage appliedVoltage = Volts.mutable(1);
     MutVoltage riseVoltage = Volts.mutable(0);

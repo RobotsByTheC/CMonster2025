@@ -5,6 +5,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.units.measure.LinearAcceleration;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.drive.swerve.SwerveModule;
 
@@ -37,6 +38,7 @@ public interface SwerveIO extends AutoCloseable {
    * Stops driving and halts movement. The robot may skid or continue to coast for a short period
    * after motor outputs are set to zero.
    */
+  @SuppressWarnings("unused")
   default void stop() {
     frontLeft().stop();
     frontRight().stop();
@@ -123,4 +125,6 @@ public interface SwerveIO extends AutoCloseable {
     rearLeft().setDesiredStateWithoutOptimization(desiredStates[2]);
     rearRight().setDesiredStateWithoutOptimization(desiredStates[3]);
   }
+
+  LinearAcceleration getForwardAcceleration();
 }

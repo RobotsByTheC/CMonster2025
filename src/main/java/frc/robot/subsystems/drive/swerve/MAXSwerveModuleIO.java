@@ -71,7 +71,7 @@ public class MAXSwerveModuleIO implements ModuleIO {
 
   @Override
   public void setDesiredState(SwerveModuleState state) {
-    // Command driving and turning SPARKS MAX towards their respective setpoints.
+    // Command driving and turning SPARKS MAX towards their respective setPoints.
     drivingPIDController.setReference(state.speedMetersPerSecond, SparkBase.ControlType.kVelocity);
     turningPIDController.setReference(state.angle.getRadians(), SparkBase.ControlType.kPosition);
   }
