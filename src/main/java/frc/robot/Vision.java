@@ -6,6 +6,7 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import java.util.Comparator;
 import java.util.List;
@@ -31,11 +32,12 @@ public class Vision {
   @Logged
   private Transform3d rightTransform = new Transform3d();
 
-  public final Trigger seesTag = new Trigger(this::seesTag);
+  public final Trigger seesTagTrigger = new Trigger(this::seesTag);
 
   private final PhotonCamera right = new PhotonCamera("OV9281-1");
   private final PhotonCamera left = new PhotonCamera("OV9281-2");
   private final Set<Integer> reefIDs = Set.of(6, 7, 8, 9, 10, 11, 17, 18, 19, 20, 21, 22);
+  private Pose3d lastRealValue = Pose3d.kZero;
 
   public void update() {
     var leftResults = left.getAllUnreadResults();
@@ -44,7 +46,13 @@ public class Vision {
     // Find the ID number of the nearest reef AprilTag
 
     nearestTagId = leftResults.stream()
-        .filter(lr -> rightResults.stream().anyMatch(rr -> rr.getBestTarget().getFiducialId() == lr.getBestTarget().getFiducialId()))
+        .filter(lr -> rightResults.stream().anyMatch(rr -> {
+          if (rr.getBestTarget() != null && lr.getBestTarget() != null) {
+            return rr.getBestTarget().getFiducialId() == lr.getBestTarget().getFiducialId();
+          } else {
+            return false;
+          }
+        }))
         .min(Comparator.comparingDouble(r -> getTransformRelativeToRobot(r.getBestTarget(), leftOffset).getTranslation().getNorm()))
         .map(r -> r.getBestTarget().getFiducialId())
         .orElse(NO_TAG);
@@ -67,14 +75,21 @@ public class Vision {
       bestOverall = bestLeft;
       nearestReefAprilTagTransform = getTransformRelativeToRobot(bestOverall, leftOffset);
     } else {
-      if (getTransformRelativeToRobot(bestLeft, leftOffset).getTranslation().getNorm()
-          < getTransformRelativeToRobot(bestRight, rightOffset).getTranslation().getNorm()) {
-        bestOverall = bestLeft;
-        nearestReefAprilTagTransform = getTransformRelativeToRobot(bestOverall, leftOffset);
-      } else {
-        bestOverall = bestRight;
-        nearestReefAprilTagTransform = getTransformRelativeToRobot(bestOverall, rightOffset);
-      }
+      Pose3d leftPose = getTransformRelativeToRobot(bestLeft, leftOffset);
+      Pose3d rightPose = getTransformRelativeToRobot(bestRight, rightOffset);
+      Rotation3d leftRotation = leftPose.getRotation();
+      Rotation3d rightRotation = rightPose.getRotation();
+
+      nearestReefAprilTagTransform = new Pose3d(
+          (leftPose.getX() + rightPose.getX()) / 2,
+          (leftPose.getY() + rightPose.getY()) / 2,
+          (leftPose.getZ() + rightPose.getZ()) / 2,
+          new Rotation3d(
+              (leftRotation.getX() + rightRotation.getX()) / 2,
+              (leftRotation.getY() + rightRotation.getY()) / 2,
+              (leftRotation.getZ() + rightRotation.getZ()) / 2
+          )
+      );
     }
     nearestReefAprilTag = bestOverall;
     if (bestLeft == null) {
@@ -86,6 +101,12 @@ public class Vision {
       rightTransform = new Transform3d();
     } else {
       rightTransform = bestRight.bestCameraToTarget;
+    }
+
+    if (nearestReefAprilTagTransform != null) {
+      if (nearestReefAprilTagTransform.getX() != 0 && nearestReefAprilTagTransform.getY() != 0 && nearestReefAprilTagTransform.getZ() != 0) {
+        lastRealValue = nearestReefAprilTagTransform;
+      }
     }
   }
 
@@ -121,5 +142,8 @@ public class Vision {
             Comparator.comparingDouble(
                 target -> getTransformRelativeToRobot(target, cameraPosition).getTranslation().getNorm()))
         .orElse(null);
+  }
+  public Pose3d getLastRealValue() {
+    return lastRealValue;
   }
 }

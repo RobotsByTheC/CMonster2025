@@ -11,6 +11,9 @@ import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.RadiansPerSecondPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.Constants.AutoConstants.pThetaController;
 
@@ -18,15 +21,19 @@ import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.struct.Pose2dStruct;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Voltage;
@@ -50,8 +57,16 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
       new PIDController(Constants.AutoConstants.pXController, 0, 0);
   private final PIDController yController =
       new PIDController(Constants.AutoConstants.pYController, 0, 0);
-  private final PIDController thetaController =
-      new PIDController(pThetaController, 0, 0);
+  private final ProfiledPIDController thetaController =
+      new ProfiledPIDController(
+          pThetaController,
+          0,
+          0,
+          new TrapezoidProfile.Constraints(
+              DriveConstants.maxAngularSpeed.in(RadiansPerSecond),
+              RadiansPerSecondPerSecond.convertFrom(10, RotationsPerSecondPerSecond))
+      );
+  private final HolonomicDriveController driveController = new HolonomicDriveController(xController, yController, thetaController);
 
   // Odometry class for tracking robot pose
   @NotLogged private final SwerveDrivePoseEstimator poseEstimator;
@@ -129,6 +144,13 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
           case FIELD -> ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, io.getHeading());
         };
     drive(speeds);
+  }
+
+  public Command driveToPose(Pose2d pose) {
+    return rotateToHeading(pose.getRotation())
+        .andThen(run(() -> {
+          getPose()
+        })).withName("Move to " + pose);
   }
 
   /**

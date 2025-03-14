@@ -10,6 +10,7 @@ import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.epilogue.logging.EpilogueBackend;
 import edu.wpi.first.epilogue.logging.FileBackend;
 import edu.wpi.first.epilogue.logging.NTEpilogueBackend;
+import edu.wpi.first.hal.DriverStationJNI;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -94,6 +95,8 @@ public class Robot extends TimedRobot {
     //    coral.setDefaultCommand(coral.stow());
     // Start data logging
 
+    DriverStation.startDataLog(DataLogManager.getLog(), true);
+
     Epilogue.configure(
         config ->
             config.backend =
@@ -174,8 +177,12 @@ public class Robot extends TimedRobot {
     //                .andThen(elevator.home().alongWith(coral.stow()))
     //                .withName("Score L4"));
 
-    driverController.rightBumper().whileTrue(algae.intakeGround());
-    driverController.rightBumper().onFalse(algae.holdPosition());
+//    driverController.rightBumper().whileTrue(algae.intakeGround());
+//    driverController.rightBumper().onFalse(algae.holdPosition());
+//
+
+    driverController.rightBumper().whileTrue(drive.pointAtTag(vision.getNearestTagId()));
+
     driverController.leftBumper().whileTrue(algae.scoreProcessor());
     driverController.leftBumper().onFalse(algae.holdPosition());
     rStick.trigger().whileTrue(Commands.defer(() -> drive.pointAtTag(vision.getNearestTagId()), Set.of(drive)));
@@ -195,6 +202,10 @@ public class Robot extends TimedRobot {
     //        .and(RobotModeTriggers.test())
     //        .whileTrue(coral.runSysIdRoutine().withName("Run Coral Sysid Routine"));
   }
+
+//  public Command driveToVision() {
+//    drive.drive();
+//  }
 
   private void configureAutomaticBindings() {
     //    elevator.isStalling.whileTrue(elevator.stop());
