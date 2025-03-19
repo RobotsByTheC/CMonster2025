@@ -236,13 +236,13 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
 
     return run(() -> {
           xSpeed.mut_setMagnitude(
-              MathUtil.applyDeadband(x.getAsDouble(), 0.01)
+              MathUtil.applyDeadband(-x.getAsDouble(), 0.01)
                   * DriveConstants.maxSpeed.in(MetersPerSecond));
           ySpeed.mut_setMagnitude(
-              MathUtil.applyDeadband(y.getAsDouble(), 0.01)
+              MathUtil.applyDeadband(-y.getAsDouble(), 0.01)
                   * DriveConstants.maxSpeed.in(MetersPerSecond));
           omegaSpeed.mut_setMagnitude(
-              MathUtil.applyDeadband(omega.getAsDouble(), 0.3)
+              MathUtil.applyDeadband(-omega.getAsDouble(), 0.15)
                   * DriveConstants.maxAngularSpeed.in(RadiansPerSecond));
 
           drive(xSpeed, ySpeed, omegaSpeed, ReferenceFrame.FIELD);
@@ -258,13 +258,13 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
 
     return run(() -> {
           xSpeed.mut_setMagnitude(
-              MathUtil.applyDeadband(x.getAsDouble(), 0.01)
+              MathUtil.applyDeadband(-x.getAsDouble(), 0.01)
                   * DriveConstants.maxSpeed.in(MetersPerSecond));
           ySpeed.mut_setMagnitude(
-              MathUtil.applyDeadband(y.getAsDouble(), 0.01)
+              MathUtil.applyDeadband(-y.getAsDouble(), 0.01)
                   * DriveConstants.maxSpeed.in(MetersPerSecond));
           omegaSpeed.mut_setMagnitude(
-              MathUtil.applyDeadband(omega.getAsDouble(), 0.15)
+              MathUtil.applyDeadband(-omega.getAsDouble(), 0.15)
                   * DriveConstants.slowAngularSpeed.in(RadiansPerSecond));
 
           drive(xSpeed, ySpeed, omegaSpeed, ReferenceFrame.FIELD);

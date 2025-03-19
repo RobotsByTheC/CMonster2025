@@ -25,7 +25,6 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.units.measure.Angle;
@@ -138,7 +137,10 @@ public final class Constants {
       // Note: All unit-based configuration values should use SI units (meters, radians, seconds,
       // etc.) for consistency
 
-      drivingConfig.idleMode(IdleMode.kBrake).smartCurrentLimit((int) drivingCurrentLimit.in(Amps));
+      drivingConfig
+          .idleMode(IdleMode.kBrake)
+          .smartCurrentLimit((int) drivingCurrentLimit.in(Amps))
+          .inverted(true);
       drivingConfig
           .encoder
           .positionConversionFactor(drivingEncoderPositionFactor.in(Meters))
