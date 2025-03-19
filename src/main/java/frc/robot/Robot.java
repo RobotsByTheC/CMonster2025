@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Feet;
+
 import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
@@ -15,8 +17,11 @@ import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
@@ -33,6 +38,7 @@ import frc.robot.subsystems.drive.SimSwerveIO;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.RealElevatorIO;
 import frc.robot.subsystems.elevator.SimElevatorIO;
+import java.util.function.Supplier;
 
 @Logged
 public class Robot extends TimedRobot {
@@ -50,6 +56,8 @@ public class Robot extends TimedRobot {
   @NotLogged private final CommandXboxController operatorController; // NOPMD
   @NotLogged private final CommandJoystick rStick; // NOPMD
   @NotLogged private final CommandJoystick lStick; // NOPMD
+
+  private final SendableChooser<Supplier<Command>> odometryTestChooser = new SendableChooser<>();
 
   public Robot() {
     // Initialize our subsystems. If our program is running in simulation mode (either from the
@@ -70,6 +78,17 @@ public class Robot extends TimedRobot {
       algae = new Algae(new RealAlgaeIO());
     }
     vision = new Vision();
+
+    odometryTestChooser.setDefaultOption("Do Nothing", Commands::none);
+    odometryTestChooser.addOption("Drive 1 Foot", () -> drive.driveDistance(Feet.of(1)));
+    odometryTestChooser.addOption("Drive 2 Feet", () -> drive.driveDistance(Feet.of(2)));
+    odometryTestChooser.addOption("Drive 3 Feet", () -> drive.driveDistance(Feet.of(3)));
+    odometryTestChooser.addOption("Drive 5 Feet", () -> drive.driveDistance(Feet.of(5)));
+    odometryTestChooser.addOption("Drive 8 Feet", () -> drive.driveDistance(Feet.of(8)));
+    odometryTestChooser.addOption("Drive 13 Feet", () -> drive.driveDistance(Feet.of(13)));
+    odometryTestChooser.addOption("Drive 21 Feet", () -> drive.driveDistance(Feet.of(21)));
+
+    Shuffleboard.getTab("Test").add("Drive Distance Selection", odometryTestChooser);
 
     operatorController = new CommandXboxController(Constants.OIConstants.driverControllerPort);
     rStick = new CommandJoystick(Constants.OIConstants.leftJoystickPort);
@@ -146,7 +165,7 @@ public class Robot extends TimedRobot {
     */
 
     configureTeleopBindings();
-    // configureTestBindings();
+    configureTestBindings();
   }
 
   /**
@@ -272,13 +291,17 @@ public class Robot extends TimedRobot {
         .and(RobotModeTriggers.test())
         .whileTrue(elevator.findFeedforwardTerms().withName("Run Elevator Sysid Routine"));
     operatorController
-        .rightBumper()
+        .back()
         .and(RobotModeTriggers.test())
-        .whileTrue(coral.runSysIdRoutine().withName("Run Coral Sysid Routine"));
-    operatorController
-        .leftBumper()
-        .and(RobotModeTriggers.test())
-        .whileTrue(algae.runSysIdRoutine().withName("Run Algae Sysid Routine"));
+        .whileTrue(drive.defer(() -> odometryTestChooser.getSelected().get()));
+    //    operatorController
+    //        .rightBumper()
+    //        .and(RobotModeTriggers.test())
+    //        .whileTrue(coral.runSysIdRoutine().withName("Run Coral Sysid Routine"));
+    //    operatorController
+    //        .leftBumper()
+    //        .and(RobotModeTriggers.test())
+    //        .whileTrue(algae.runSysIdRoutine().withName("Run Algae Sysid Routine"));
   }
 
   private void configureAutomaticBindings() {

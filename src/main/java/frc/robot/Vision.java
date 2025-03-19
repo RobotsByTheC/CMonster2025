@@ -8,11 +8,10 @@ import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
-
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
@@ -21,16 +20,15 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 public class Vision {
   public static final int NO_TAG = 0;
   public static final Pose3d NO_TARGET = Pose3d.kZero;
-  public static final AprilTagFieldLayout fieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
+  public static final AprilTagFieldLayout fieldLayout =
+      AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
 
   private PhotonTrackedTarget nearestReefAprilTag;
   private Pose3d nearestReefAprilTagTransform = NO_TARGET;
   private int nearestTagId = NO_TAG;
 
-  @Logged
-  private Transform3d leftTransform = new Transform3d();
-  @Logged
-  private Transform3d rightTransform = new Transform3d();
+  @Logged private Transform3d leftTransform = new Transform3d();
+  @Logged private Transform3d rightTransform = new Transform3d();
 
   public final Trigger seesTagTrigger = new Trigger(this::seesTag);
 
@@ -45,17 +43,28 @@ public class Vision {
 
     // Find the ID number of the nearest reef AprilTag
 
-    nearestTagId = leftResults.stream()
-        .filter(lr -> rightResults.stream().anyMatch(rr -> {
-          if (rr.getBestTarget() != null && lr.getBestTarget() != null) {
-            return rr.getBestTarget().getFiducialId() == lr.getBestTarget().getFiducialId();
-          } else {
-            return false;
-          }
-        }))
-        .min(Comparator.comparingDouble(r -> getTransformRelativeToRobot(r.getBestTarget(), leftOffset).getTranslation().getNorm()))
-        .map(r -> r.getBestTarget().getFiducialId())
-        .orElse(NO_TAG);
+    nearestTagId =
+        leftResults.stream()
+            .filter(
+                lr ->
+                    rightResults.stream()
+                        .anyMatch(
+                            rr -> {
+                              if (rr.getBestTarget() != null && lr.getBestTarget() != null) {
+                                return rr.getBestTarget().getFiducialId()
+                                    == lr.getBestTarget().getFiducialId();
+                              } else {
+                                return false;
+                              }
+                            }))
+            .min(
+                Comparator.comparingDouble(
+                    r ->
+                        getTransformRelativeToRobot(r.getBestTarget(), leftOffset)
+                            .getTranslation()
+                            .getNorm()))
+            .map(r -> r.getBestTarget().getFiducialId())
+            .orElse(NO_TAG);
 
     // Find the pose of the nearest reef AprilTag, with some debugging logging for the raw
     // transforms from the cameras
@@ -80,16 +89,15 @@ public class Vision {
       Rotation3d leftRotation = leftPose.getRotation();
       Rotation3d rightRotation = rightPose.getRotation();
 
-      nearestReefAprilTagTransform = new Pose3d(
-          (leftPose.getX() + rightPose.getX()) / 2,
-          (leftPose.getY() + rightPose.getY()) / 2,
-          (leftPose.getZ() + rightPose.getZ()) / 2,
-          new Rotation3d(
-              (leftRotation.getX() + rightRotation.getX()) / 2,
-              (leftRotation.getY() + rightRotation.getY()) / 2,
-              (leftRotation.getZ() + rightRotation.getZ()) / 2
-          )
-      );
+      nearestReefAprilTagTransform =
+          new Pose3d(
+              (leftPose.getX() + rightPose.getX()) / 2,
+              (leftPose.getY() + rightPose.getY()) / 2,
+              (leftPose.getZ() + rightPose.getZ()) / 2,
+              new Rotation3d(
+                  (leftRotation.getX() + rightRotation.getX()) / 2,
+                  (leftRotation.getY() + rightRotation.getY()) / 2,
+                  (leftRotation.getZ() + rightRotation.getZ()) / 2));
     }
     nearestReefAprilTag = bestOverall;
     if (bestLeft == null) {
@@ -104,7 +112,9 @@ public class Vision {
     }
 
     if (nearestReefAprilTagTransform != null) {
-      if (nearestReefAprilTagTransform.getX() != 0 && nearestReefAprilTagTransform.getY() != 0 && nearestReefAprilTagTransform.getZ() != 0) {
+      if (nearestReefAprilTagTransform.getX() != 0
+          && nearestReefAprilTagTransform.getY() != 0
+          && nearestReefAprilTagTransform.getZ() != 0) {
         lastRealValue = nearestReefAprilTagTransform;
       }
     }
@@ -114,6 +124,7 @@ public class Vision {
    * Gets the ID of the nearest detected AprilTag seen by both cameras. Returns {@link #NO_TAG} if
    * no AprilTag is detected by both cameras.
    */
+  @SuppressWarnings("unused")
   public int getNearestTagId() {
     return nearestTagId;
   }
@@ -122,10 +133,12 @@ public class Vision {
     return nearestTagId != NO_TAG;
   }
 
+  @SuppressWarnings("unused")
   public Pose3d getRobotTransformNearestToReef() {
     return nearestReefAprilTagTransform;
   }
 
+  @SuppressWarnings("unused")
   public PhotonTrackedTarget getNearestReefAprilTag() {
     return nearestReefAprilTag;
   }
@@ -134,15 +147,19 @@ public class Vision {
     return cameraPosition.transformBy(target.bestCameraToTarget);
   }
 
-  private PhotonTrackedTarget getClosestTarget(List<PhotonPipelineResult> pipelineResults, Pose3d cameraPosition) {
+  private PhotonTrackedTarget getClosestTarget(
+      List<PhotonPipelineResult> pipelineResults, Pose3d cameraPosition) {
     return pipelineResults.stream()
         .flatMap(result -> result.getTargets().stream())
         .filter(target -> reefIDs.contains(target.getFiducialId()))
         .min(
             Comparator.comparingDouble(
-                target -> getTransformRelativeToRobot(target, cameraPosition).getTranslation().getNorm()))
+                target ->
+                    getTransformRelativeToRobot(target, cameraPosition).getTranslation().getNorm()))
         .orElse(null);
   }
+
+  @SuppressWarnings("unused")
   public Pose3d getLastRealValue() {
     return lastRealValue;
   }

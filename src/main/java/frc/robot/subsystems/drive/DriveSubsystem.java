@@ -13,6 +13,8 @@ import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.RadiansPerSecondPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
@@ -20,18 +22,24 @@ import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -41,7 +49,6 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Vision;
-
 import java.util.Arrays;
 import java.util.function.DoubleSupplier;
 
@@ -58,8 +65,17 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
       new PIDController(Constants.AutoConstants.pYController, 0, 0);
 
   @SuppressWarnings("FieldCanBeLocal")
-  private final PIDController thetaController =
-      new PIDController(Constants.AutoConstants.pThetaController, 0, 0);
+  private final ProfiledPIDController thetaController =
+      new ProfiledPIDController(
+          Constants.AutoConstants.pThetaController,
+          0,
+          0,
+          new TrapezoidProfile.Constraints(
+              DriveConstants.maxAngularSpeed.in(RadiansPerSecond),
+              RadiansPerSecondPerSecond.convertFrom(10, RotationsPerSecondPerSecond)));
+
+  private final HolonomicDriveController driveController =
+      new HolonomicDriveController(xController, yController, thetaController);
 
   // Odometry class for tracking robot pose
   @NotLogged private final SwerveDrivePoseEstimator poseEstimator;
@@ -89,6 +105,11 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
             // Use default standard deviations of ±35" and ±52° for vision-derived position data
             VecBuilder.fill(
                 Inches.of(35).in(Meters), Inches.of(35).in(Meters), Degrees.of(52).in(Radians)));
+
+    Shuffleboard.getTab("Drive").add("Field", field);
+    Shuffleboard.getTab("Drive").add("X PID", xController);
+    Shuffleboard.getTab("Drive").add("Y PID", yController);
+    Shuffleboard.getTab("Drive").add("Theta PID", thetaController);
   }
 
   @Override
@@ -119,7 +140,20 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
   }
 
   public Command zeroGyro() {
-    return Commands.runOnce(() -> io.resetHeading(Rotation2d.kZero)).withName("Reset Gyro");
+    return Commands.runOnce(() -> io.resetHeading(Rotation2d.kZero))
+        .ignoringDisable(true)
+        .withName("Reset Gyro");
+  }
+
+  public Command driveDistance(Distance distance) {
+    Pose2d[] pose = new Pose2d[1];
+    return startRun(
+            () ->
+                pose[0] =
+                    getPose()
+                        .transformBy(new Transform2d(distance, Meters.zero(), Rotation2d.kZero)),
+            () -> drive(driveController.calculate(getPose(), pose[0], 0, pose[0].getRotation())))
+        .withName("Driving Distance " + distance);
   }
 
   /**
@@ -145,9 +179,12 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
 
   public Command driveToPose(Pose2d pose) {
     return rotateToHeading(pose.getRotation())
-        .andThen(run(() -> {
-          getPose();
-        })).withName("Move to " + pose);
+        .andThen(
+            run(
+                () -> {
+                  getPose();
+                }))
+        .withName("Move to " + pose);
   }
 
   /**
@@ -303,6 +340,7 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
         .linearVelocity(MetersPerSecond.of(io.rearRight().getState().speedMetersPerSecond))
         .voltage(appliedSysidVoltage);
   }
+
   private Voltage appliedSysidVoltage = Volts.zero();
 
   private void voltageDrive(Voltage v) {
@@ -363,14 +401,18 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
   public Command rotateToHeading(Rotation2d heading) {
     // Use a PID controller to control the heading of the robot
     return run(() -> {
-      AngularVelocity velocity = RadiansPerSecond.of(thetaController.calculate(io.getHeading().getRadians(), heading.getRadians()));
-      drive(MetersPerSecond.zero(), MetersPerSecond.zero(), velocity, ReferenceFrame.ROBOT);
-    }).until(thetaController::atSetpoint).withName("Rotate to " + heading.getDegrees() + " Degrees");
+          AngularVelocity velocity =
+              RadiansPerSecond.of(
+                  thetaController.calculate(io.getHeading().getRadians(), heading.getRadians()));
+          drive(MetersPerSecond.zero(), MetersPerSecond.zero(), velocity, ReferenceFrame.ROBOT);
+        })
+        .until(thetaController::atSetpoint)
+        .withName("Rotate to " + heading.getDegrees() + " Degrees");
   }
 
   /**
-   * Creates a command that points the drive base at the given AprilTag. The returned command
-   * does nothing if no AprilTag with the given ID exists on the game field.
+   * Creates a command that points the drive base at the given AprilTag. The returned command does
+   * nothing if no AprilTag with the given ID exists on the game field.
    *
    * @param tagId the ID of the AprilTag to point at.
    */
