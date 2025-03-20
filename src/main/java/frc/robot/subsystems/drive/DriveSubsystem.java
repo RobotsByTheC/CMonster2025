@@ -90,6 +90,9 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem(SwerveIO io) {
     this.io = io;
+
+    xController.setTolerance(Meters.convertFrom(0.5, Inches));
+    yController.setTolerance(Meters.convertFrom(0.5, Inches));
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
     poseEstimator =
         new SwerveDrivePoseEstimator(
@@ -177,12 +180,19 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
     drive(speeds);
   }
 
-  public Command driveToPose(Pose2d pose) {
-    return rotateToHeading(pose.getRotation())
+  public Command driveToRobotRelativePose(Pose2d pose) {
+    Pose2d[] startingPose = new Pose2d[1];
+    return runOnce(() -> startingPose[0] = getPose())
+        .andThen(rotateToHeading(pose.getRotation()))
         .andThen(
             run(
                 () -> {
-                  getPose();
+                  Pose2d currentPose =
+                      new Pose2d(
+                          getPose().minus(startingPose[0]).getX(),
+                          getPose().minus(startingPose[0]).getY(),
+                          getPose().minus(startingPose[0]).getRotation());
+                  drive(driveController.calculate(currentPose, pose, 0, pose.getRotation()));
                 }))
         .withName("Move to " + pose);
   }

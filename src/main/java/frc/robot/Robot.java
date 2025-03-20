@@ -6,6 +6,7 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.Feet;
 
+import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
@@ -116,6 +117,8 @@ public class Robot extends TimedRobot {
     algae.setDefaultCommand(algae.stow());
     // Start data logging
 
+    SignalLogger.start();
+
     DriverStation.startDataLog(DataLogManager.getLog(), true);
 
     Epilogue.configure(
@@ -174,6 +177,13 @@ public class Robot extends TimedRobot {
    */
   private void configureTeleopBindings() {
     rStick.button(7).onTrue(drive.zeroGyro());
+
+    operatorController
+        .leftTrigger()
+        .whileTrue(
+            drive.defer(
+//                () -> drive.driveToRobotRelativePose(vision.getLastRealValue().toPose2d())));
+                () -> drive.rotateToHeading(vision.getLastRealValue().toPose2d().getRotation())));
 
     bindElevator();
 
@@ -286,14 +296,14 @@ public class Robot extends TimedRobot {
    */
   @SuppressWarnings("unused")
   private void configureTestBindings() {
-    operatorController
-        .leftTrigger()
-        .and(RobotModeTriggers.test())
-        .whileTrue(elevator.findFeedforwardTerms().withName("Run Elevator Sysid Routine"));
-    operatorController
-        .back()
-        .and(RobotModeTriggers.test())
-        .whileTrue(drive.defer(() -> odometryTestChooser.getSelected().get()));
+//    operatorController
+//        .leftTrigger()
+//        .and(RobotModeTriggers.test())
+//        .whileTrue(elevator.findFeedforwardTerms().withName("Run Elevator Sysid Routine"));
+//    operatorController
+//        .back()
+//        .and(RobotModeTriggers.test())
+//        .whileTrue(drive.defer(() -> odometryTestChooser.getSelected().get()));
     //    operatorController
     //        .rightBumper()
     //        .and(RobotModeTriggers.test())
