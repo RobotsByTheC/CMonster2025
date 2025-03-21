@@ -40,6 +40,7 @@ class DriveSubsystemTest {
     assertEquals(0, drivetrain.getPose().getRotation().getDegrees());
     assertEquals(0, drivetrain.getPose().getX());
     assertEquals(0, drivetrain.getPose().getY());
+    tick();
   }
 
   //  @Test
@@ -108,6 +109,7 @@ class DriveSubsystemTest {
   //    assertEquals(45, drivetrain.getModuleStates()[3].angle.getDegrees(), 1);
   //  }
 
+  @SuppressWarnings("unused")
   private void tick() {
     SimulationContext.getDefault().update(0.020);
     drivetrain.periodic();
