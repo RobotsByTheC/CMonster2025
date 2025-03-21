@@ -221,20 +221,20 @@ public class Robot extends TimedRobot {
         .whileTrue(
             elevator
                 .goToL1Height()
-                .andThen(coral.scoreL1().deadlineFor(elevator.holdTargetPosition()))
+                .andThen(coral.scoreL1().alongWith(elevator.holdTargetPosition()))
                 .withName("Score L1"));
 
-    operatorController.a().onFalse(elevator.goToBottom().alongWith(coral.stow()));
+    operatorController.a().onFalse(elevator.goToBottom().alongWith(coral.stow()).withName("Idle"));
 
     operatorController
         .b()
         .whileTrue(
             elevator
                 .goToL2Height()
-                .andThen(coral.scoreL2().deadlineFor(elevator.holdTargetPosition()))
+                .andThen(coral.scoreL2().alongWith(elevator.holdTargetPosition()))
                 .withName("Score L2"));
 
-    operatorController.b().onFalse(elevator.goToBottom().alongWith(coral.stow()));
+    operatorController.b().onFalse(elevator.goToBottom().alongWith(coral.stow()).withName("Idle"));
 
     operatorController
         .x()
@@ -244,10 +244,10 @@ public class Robot extends TimedRobot {
                 .andThen(
                     coral
                         .scoreL3()
-                        .deadlineFor(elevator.holdTargetPosition())
-                        .withName("Score L3")));
+                        .alongWith(elevator.holdTargetPosition())
+                        ).withName("Score L3"));
 
-    operatorController.x().onFalse(elevator.goToBottom().alongWith(coral.stow()));
+    operatorController.x().onFalse(elevator.goToBottom().alongWith(coral.stow()).withName("Idle"));
 
     operatorController
         .y()
@@ -257,9 +257,10 @@ public class Robot extends TimedRobot {
                 .andThen(
                     coral
                         .scoreL4()
-                        .deadlineFor(elevator.holdTargetPosition())
-                        .withName("Score L4")));
-    operatorController.y().onFalse(elevator.goToBottom().alongWith(coral.stow()));
+                        .alongWith(elevator.holdTargetPosition())
+                        ).withName("Score L4"));
+                        
+    operatorController.y().onFalse(elevator.goToBottom().alongWith(coral.stow()).withName("Idle"));
   }
 
   private void bindAlgae() {
