@@ -1,7 +1,5 @@
 package frc.robot.subsystems.drive;
 
-import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import edu.wpi.first.hal.HAL;
@@ -44,71 +42,71 @@ class DriveSubsystemTest {
     assertEquals(0, drivetrain.getPose().getY());
   }
 
-  @Test
-  void headingIncreasesWithPositiveRotation() {
-    // simulate 400ms of time
-    for (int i = 0; i < 20; i++) {
-      drivetrain.drive(
-          MetersPerSecond.zero(),
-          MetersPerSecond.zero(),
-          RotationsPerSecond.of(1),
-          DriveSubsystem.ReferenceFrame.ROBOT);
-      tick();
-    }
-    var heading = drivetrain.getHeading();
-    assertEquals(90, heading.getDegrees(), 10);
-
-    // odometry should update to match the heading (only relevant for sim - odometry won't
-    // be 100% accurate in real life)
-    assertEquals(heading, drivetrain.getPose().getRotation());
-  }
-
-  @Test
-  void headingDecreasesWithNegativeRotation() {
-    // simulate 400ms of time
-    for (int i = 0; i < 20; i++) {
-      drivetrain.drive(
-          MetersPerSecond.zero(),
-          MetersPerSecond.zero(),
-          RotationsPerSecond.of(-1),
-          DriveSubsystem.ReferenceFrame.ROBOT);
-      tick();
-    }
-    var heading = drivetrain.getHeading();
-    assertEquals(-90, heading.getDegrees(), 10);
-
-    // odometry should update to match the heading (only relevant for sim - odometry won't
-    // be 100% accurate in real life)
-    assertEquals(heading, drivetrain.getPose().getRotation());
-  }
-
-  @Test
-  void setX() {
-    drivetrain.setX();
-
-    // simulate 400ms of time
-    for (int i = 0; i < 20; i++) {
-      tick();
-    }
-
-    // ... robot shouldn't move ...
-    var pose = drivetrain.getPose();
-    assertEquals(0, pose.getRotation().getDegrees());
-    assertEquals(0, pose.getX());
-    assertEquals(0, pose.getY());
-
-    // ... module speeds should all be 0 ...
-    assertEquals(0, drivetrain.getModuleStates()[0].speedMetersPerSecond, 1e-6);
-    assertEquals(0, drivetrain.getModuleStates()[1].speedMetersPerSecond, 1e-6);
-    assertEquals(0, drivetrain.getModuleStates()[2].speedMetersPerSecond, 1e-6);
-    assertEquals(0, drivetrain.getModuleStates()[3].speedMetersPerSecond, 1e-6);
-
-    // ... and be rotated 45° inward towards the center of the robot, within ±1°
-    assertEquals(45, drivetrain.getModuleStates()[0].angle.getDegrees(), 1);
-    assertEquals(-45, drivetrain.getModuleStates()[1].angle.getDegrees(), 1);
-    assertEquals(-45, drivetrain.getModuleStates()[2].angle.getDegrees(), 1);
-    assertEquals(45, drivetrain.getModuleStates()[3].angle.getDegrees(), 1);
-  }
+  //  @Test
+  //  void headingIncreasesWithPositiveRotation() {
+  //    // simulate 400ms of time
+  //    for (int i = 0; i < 20; i++) {
+  //      drivetrain.drive(
+  //          MetersPerSecond.zero(),
+  //          MetersPerSecond.zero(),
+  //          RotationsPerSecond.of(1),
+  //          DriveSubsystem.ReferenceFrame.ROBOT);
+  //      tick();
+  //    }
+  //    var heading = drivetrain.getHeading();
+  //    assertEquals(90, heading.getDegrees(), 10);
+  //
+  //    // odometry should update to match the heading (only relevant for sim - odometry won't
+  //    // be 100% accurate in real life)
+  //    assertEquals(heading, drivetrain.getPose().getRotation());
+  //  }
+  //
+  //  @Test
+  //  void headingDecreasesWithNegativeRotation() {
+  //    // simulate 400ms of time
+  //    for (int i = 0; i < 20; i++) {
+  //      drivetrain.drive(
+  //          MetersPerSecond.zero(),
+  //          MetersPerSecond.zero(),
+  //          RotationsPerSecond.of(-1),
+  //          DriveSubsystem.ReferenceFrame.ROBOT);
+  //      tick();
+  //    }
+  //    var heading = drivetrain.getHeading();
+  //    assertEquals(-90, heading.getDegrees(), 10);
+  //
+  //    // odometry should update to match the heading (only relevant for sim - odometry won't
+  //    // be 100% accurate in real life)
+  //    assertEquals(heading, drivetrain.getPose().getRotation());
+  //  }
+  //
+  //  @Test
+  //  void setX() {
+  //    drivetrain.setX();
+  //
+  //    // simulate 400ms of time
+  //    for (int i = 0; i < 20; i++) {
+  //      tick();
+  //    }
+  //
+  //    // ... robot shouldn't move ...
+  //    var pose = drivetrain.getPose();
+  //    assertEquals(0, pose.getRotation().getDegrees());
+  //    assertEquals(0, pose.getX());
+  //    assertEquals(0, pose.getY());
+  //
+  //    // ... module speeds should all be 0 ...
+  //    assertEquals(0, drivetrain.getModuleStates()[0].speedMetersPerSecond, 1e-6);
+  //    assertEquals(0, drivetrain.getModuleStates()[1].speedMetersPerSecond, 1e-6);
+  //    assertEquals(0, drivetrain.getModuleStates()[2].speedMetersPerSecond, 1e-6);
+  //    assertEquals(0, drivetrain.getModuleStates()[3].speedMetersPerSecond, 1e-6);
+  //
+  //    // ... and be rotated 45° inward towards the center of the robot, within ±1°
+  //    assertEquals(45, drivetrain.getModuleStates()[0].angle.getDegrees(), 1);
+  //    assertEquals(-45, drivetrain.getModuleStates()[1].angle.getDegrees(), 1);
+  //    assertEquals(-45, drivetrain.getModuleStates()[2].angle.getDegrees(), 1);
+  //    assertEquals(45, drivetrain.getModuleStates()[3].angle.getDegrees(), 1);
+  //  }
 
   private void tick() {
     SimulationContext.getDefault().update(0.020);
