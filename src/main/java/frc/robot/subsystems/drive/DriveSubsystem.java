@@ -181,6 +181,18 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
     drive(speeds);
   }
 
+  /**
+   * Drives the robot with the given chassis speeds. Note that chassis speeds are relative to the
+   * robot's reference frame.
+   *
+   * @param speeds the speeds at which the robot should move
+   */
+  public void drive(ChassisSpeeds speeds) {
+    var swerveModuleStates = DriveConstants.driveKinematics.toSwerveModuleStates(speeds);
+
+    io.setDesiredModuleStates(swerveModuleStates);
+  }
+
   public Command driveToRobotRelativePose(Pose2d pose) {
     Pose2d[] startingPose = new Pose2d[1];
     return runOnce(() -> startingPose[0] = getPose())
@@ -196,18 +208,6 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
                   drive(driveController.calculate(currentPose, pose, 0, pose.getRotation()));
                 }))
         .withName("Move to " + pose);
-  }
-
-  /**
-   * Drives the robot with the given chassis speeds. Note that chassis speeds are relative to the
-   * robot's reference frame.
-   *
-   * @param speeds the speeds at which the robot should move
-   */
-  public void drive(ChassisSpeeds speeds) {
-    var swerveModuleStates = DriveConstants.driveKinematics.toSwerveModuleStates(speeds);
-
-    io.setDesiredModuleStates(swerveModuleStates);
   }
 
   /** Sets the wheels into an X formation to prevent movement. */

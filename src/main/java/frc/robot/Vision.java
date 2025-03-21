@@ -1,6 +1,7 @@
 package frc.robot;
 
-import static frc.robot.Constants.VisionConstants.*;
+import static frc.robot.Constants.VisionConstants.leftOffset;
+import static frc.robot.Constants.VisionConstants.rightOffset;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;

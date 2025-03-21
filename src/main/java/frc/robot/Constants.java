@@ -208,13 +208,13 @@ public final class Constants {
 
     public static final int currentLimit = 40;
 
-    public static final double KS = .71;
-    public static final double KG = .54;
+    public static final double KS = 0.71;
+    public static final double KG = 0.54;
     public static final double KV = 2.2;
     public static final double KA = 0;
     public static final double KP = 16;
-    public static final double KI = .5;
-    public static final double KD = .25;
+    public static final double KI = 0.5;
+    public static final double KD = 0.25;
   }
 
   public static final class CoralConstants {
