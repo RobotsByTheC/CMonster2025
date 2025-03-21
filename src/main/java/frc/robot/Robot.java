@@ -5,6 +5,7 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.Feet;
+import static edu.wpi.first.units.Units.Inches;
 
 import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.epilogue.Epilogue;
@@ -13,6 +14,9 @@ import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.epilogue.logging.EpilogueBackend;
 import edu.wpi.first.epilogue.logging.FileBackend;
 import edu.wpi.first.epilogue.logging.NTEpilogueBackend;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -25,7 +29,6 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.sim.SimulationContext;
 import frc.robot.subsystems.algae.Algae;
 import frc.robot.subsystems.algae.RealAlgaeIO;
@@ -181,9 +184,17 @@ public class Robot extends TimedRobot {
     operatorController
         .leftTrigger()
         .whileTrue(
-            drive.defer(
-//                () -> drive.driveToRobotRelativePose(vision.getLastRealValue().toPose2d())));
-                () -> drive.rotateToHeading(vision.getLastRealValue().toPose2d().getRotation())));
+            drive
+                .defer(
+                    () -> drive.rotateToHeading(vision.getLastRealValue().toPose2d().getRotation().rotateBy(Rotation2d.k180deg.minus(Rotation2d.fromDegrees(30))))));
+//                .andThen(
+//                    () -> drive.driveToRobotRelativePose(vision.getLastRealValue().toPose2d()
+//                            .plus(new Transform2d(
+//                                Inches.of(-10),
+//                                Inches.of(0),
+//                                Rotation2d.k180deg
+//                                ))
+//                        )));
 
     bindElevator();
 
@@ -296,14 +307,14 @@ public class Robot extends TimedRobot {
    */
   @SuppressWarnings("unused")
   private void configureTestBindings() {
-//    operatorController
-//        .leftTrigger()
-//        .and(RobotModeTriggers.test())
-//        .whileTrue(elevator.findFeedforwardTerms().withName("Run Elevator Sysid Routine"));
-//    operatorController
-//        .back()
-//        .and(RobotModeTriggers.test())
-//        .whileTrue(drive.defer(() -> odometryTestChooser.getSelected().get()));
+    //    operatorController
+    //        .leftTrigger()
+    //        .and(RobotModeTriggers.test())
+    //        .whileTrue(elevator.findFeedforwardTerms().withName("Run Elevator Sysid Routine"));
+    //    operatorController
+    //        .back()
+    //        .and(RobotModeTriggers.test())
+    //        .whileTrue(drive.defer(() -> odometryTestChooser.getSelected().get()));
     //    operatorController
     //        .rightBumper()
     //        .and(RobotModeTriggers.test())
