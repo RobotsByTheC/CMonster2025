@@ -13,6 +13,8 @@ import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.RadiansPerSecondPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
@@ -20,16 +22,24 @@ import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -38,11 +48,13 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Vision;
 import java.util.Arrays;
 import java.util.function.DoubleSupplier;
 
 @Logged
 public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
+  private final Voltage appliedSysidVoltage = Volts.zero();
   private final SwerveIO io;
 
   @SuppressWarnings("unused")
@@ -54,8 +66,17 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
       new PIDController(Constants.AutoConstants.pYController, 0, 0);
 
   @SuppressWarnings("FieldCanBeLocal")
-  private final PIDController thetaController =
-      new PIDController(Constants.AutoConstants.pThetaController, 0, 0);
+  private final ProfiledPIDController thetaController =
+      new ProfiledPIDController(
+          Constants.AutoConstants.pThetaController,
+          0,
+          0,
+          new TrapezoidProfile.Constraints(
+              DriveConstants.maxAngularSpeed.in(RadiansPerSecond),
+              RadiansPerSecondPerSecond.convertFrom(10, RotationsPerSecondPerSecond)));
+
+  private final HolonomicDriveController driveController =
+      new HolonomicDriveController(xController, yController, thetaController);
 
   // Odometry class for tracking robot pose
   @NotLogged private final SwerveDrivePoseEstimator poseEstimator;
@@ -70,6 +91,9 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem(SwerveIO io) {
     this.io = io;
+
+    xController.setTolerance(Meters.convertFrom(0.5, Inches));
+    yController.setTolerance(Meters.convertFrom(0.5, Inches));
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
     poseEstimator =
         new SwerveDrivePoseEstimator(
@@ -85,6 +109,11 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
             // Use default standard deviations of ±35" and ±52° for vision-derived position data
             VecBuilder.fill(
                 Inches.of(35).in(Meters), Inches.of(35).in(Meters), Degrees.of(52).in(Radians)));
+
+    Shuffleboard.getTab("Drive").add("Field", field);
+    Shuffleboard.getTab("Drive").add("X PID", xController);
+    Shuffleboard.getTab("Drive").add("Y PID", yController);
+    Shuffleboard.getTab("Drive").add("Theta PID", thetaController);
   }
 
   @Override
@@ -115,7 +144,20 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
   }
 
   public Command zeroGyro() {
-    return Commands.runOnce(() -> io.resetHeading(Rotation2d.kZero)).withName("Reset Gyro");
+    return Commands.runOnce(() -> io.resetHeading(Rotation2d.kZero))
+        .ignoringDisable(true)
+        .withName("Reset Gyro");
+  }
+
+  public Command driveDistance(Distance distance) {
+    Pose2d[] pose = new Pose2d[1];
+    return startRun(
+            () ->
+                pose[0] =
+                    getPose()
+                        .transformBy(new Transform2d(distance, Meters.zero(), Rotation2d.kZero)),
+            () -> drive(driveController.calculate(getPose(), pose[0], 0, pose[0].getRotation())))
+        .withName("Driving Distance " + distance);
   }
 
   /**
@@ -149,6 +191,23 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
     var swerveModuleStates = DriveConstants.driveKinematics.toSwerveModuleStates(speeds);
 
     io.setDesiredModuleStates(swerveModuleStates);
+  }
+
+  public Command driveToRobotRelativePose(Pose2d pose) {
+    Pose2d[] startingPose = new Pose2d[1];
+    return runOnce(() -> startingPose[0] = getPose())
+        .andThen(rotateToHeading(pose.getRotation()))
+        .andThen(
+            run(
+                () -> {
+                  Pose2d currentPose =
+                      new Pose2d(
+                          getPose().minus(startingPose[0]).getX(),
+                          getPose().minus(startingPose[0]).getY(),
+                          getPose().minus(startingPose[0]).getRotation());
+                  drive(driveController.calculate(currentPose, pose, 0, pose.getRotation()));
+                }))
+        .withName("Move to " + pose);
   }
 
   /** Sets the wheels into an X formation to prevent movement. */
@@ -225,13 +284,13 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
 
     return run(() -> {
           xSpeed.mut_setMagnitude(
-              MathUtil.applyDeadband(x.getAsDouble(), 0.01)
+              MathUtil.applyDeadband(-x.getAsDouble(), 0.01)
                   * DriveConstants.maxSpeed.in(MetersPerSecond));
           ySpeed.mut_setMagnitude(
-              MathUtil.applyDeadband(y.getAsDouble(), 0.01)
+              MathUtil.applyDeadband(-y.getAsDouble(), 0.01)
                   * DriveConstants.maxSpeed.in(MetersPerSecond));
           omegaSpeed.mut_setMagnitude(
-              MathUtil.applyDeadband(omega.getAsDouble(), 0.3)
+              MathUtil.applyDeadband(-omega.getAsDouble(), 0.15)
                   * DriveConstants.maxAngularSpeed.in(RadiansPerSecond));
 
           drive(xSpeed, ySpeed, omegaSpeed, ReferenceFrame.FIELD);
@@ -247,13 +306,13 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
 
     return run(() -> {
           xSpeed.mut_setMagnitude(
-              MathUtil.applyDeadband(x.getAsDouble(), 0.01)
+              MathUtil.applyDeadband(-x.getAsDouble(), 0.01)
                   * DriveConstants.maxSpeed.in(MetersPerSecond));
           ySpeed.mut_setMagnitude(
-              MathUtil.applyDeadband(y.getAsDouble(), 0.01)
+              MathUtil.applyDeadband(-y.getAsDouble(), 0.01)
                   * DriveConstants.maxSpeed.in(MetersPerSecond));
           omegaSpeed.mut_setMagnitude(
-              MathUtil.applyDeadband(omega.getAsDouble(), 0.15)
+              MathUtil.applyDeadband(-omega.getAsDouble(), 0.15)
                   * DriveConstants.slowAngularSpeed.in(RadiansPerSecond));
 
           drive(xSpeed, ySpeed, omegaSpeed, ReferenceFrame.FIELD);
@@ -274,16 +333,6 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
           new SysIdRoutine.Config(),
           new SysIdRoutine.Mechanism(this::voltageDrive, this::logMotors, this));
 
-  private Voltage appliedSysidVoltage = Volts.zero();
-
-  private void voltageDrive(Voltage v) {
-    io.frontLeft().setVoltageForDrivingMotor(v);
-    io.frontRight().setVoltageForDrivingMotor(v);
-    io.rearLeft().setVoltageForDrivingMotor(v);
-    io.rearRight().setVoltageForDrivingMotor(v);
-    appliedSysidVoltage = v;
-  }
-
   private void logMotors(SysIdRoutineLog s) {
     s.motor("frontLeft")
         .linearPosition(Meters.of(io.frontLeft().getPosition().distanceMeters))
@@ -301,6 +350,13 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
         .linearPosition(Meters.of(io.rearRight().getPosition().distanceMeters))
         .linearVelocity(MetersPerSecond.of(io.rearRight().getState().speedMetersPerSecond))
         .voltage(appliedSysidVoltage);
+  }
+
+  private void voltageDrive(Voltage v) {
+    io.frontLeft().setVoltageForDrivingMotor(v);
+    io.frontRight().setVoltageForDrivingMotor(v);
+    io.rearLeft().setVoltageForDrivingMotor(v);
+    io.rearRight().setVoltageForDrivingMotor(v);
   }
 
   @SuppressWarnings("unused")
@@ -349,6 +405,34 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
                           return 1.5 >= angle && angle >= -1.5;
                         }))
         .withName("Set 0");
+  }
+
+  public Command rotateToHeading(Rotation2d heading) {
+    // Use a PID controller to control the heading of the robot
+    return run(() -> {
+          AngularVelocity velocity =
+              RadiansPerSecond.of(
+                  thetaController.calculate(io.getHeading().getRadians(), heading.getRadians()));
+          drive(MetersPerSecond.zero(), MetersPerSecond.zero(), velocity, ReferenceFrame.ROBOT);
+        })
+        .until(thetaController::atSetpoint)
+        .withName("Rotate to " + heading.getDegrees() + " Degrees");
+  }
+
+  /**
+   * Creates a command that points the drive base at the given AprilTag. The returned command does
+   * nothing if no AprilTag with the given ID exists on the game field.
+   *
+   * @param tagId the ID of the AprilTag to point at.
+   */
+  public Command pointAtTag(int tagId) {
+    return Vision.fieldLayout
+        .getTagPose(tagId)
+        .map(Pose3d::getRotation)
+        .map(Rotation3d::toRotation2d)
+        .map(this::rotateToHeading)
+        .orElseGet(Commands::none)
+        .withName("Point At Tag " + tagId);
   }
 
   private void setForward() {

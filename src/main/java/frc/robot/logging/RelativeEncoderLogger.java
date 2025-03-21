@@ -13,7 +13,7 @@ public class RelativeEncoderLogger extends ClassSpecificLogger<RelativeEncoder> 
 
   @Override
   protected void update(EpilogueBackend epilogueBackend, RelativeEncoder relativeEncoder) {
-    epilogueBackend.log("position", relativeEncoder.getPosition());
-    epilogueBackend.log("velocity", relativeEncoder.getVelocity());
+    //    epilogueBackend.log("position", relativeEncoder.getPosition());
+    //    epilogueBackend.log("velocity", relativeEncoder.getVelocity());
   }
 }
