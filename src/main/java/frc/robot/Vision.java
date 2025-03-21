@@ -111,12 +111,9 @@ public class Vision {
       rightTransform = bestRight.bestCameraToTarget;
     }
 
-    if (nearestReefAprilTagTransform != null) {
-      if (nearestReefAprilTagTransform.getX() != 0
-          && nearestReefAprilTagTransform.getY() != 0
-          && nearestReefAprilTagTransform.getZ() != 0) {
-        lastRealValue = nearestReefAprilTagTransform;
-      }
+    if (nearestReefAprilTagTransform != null
+        && !nearestReefAprilTagTransform.equals(Pose3d.kZero)) {
+      lastRealValue = nearestReefAprilTagTransform;
     }
   }
 

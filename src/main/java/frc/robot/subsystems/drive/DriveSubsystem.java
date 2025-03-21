@@ -54,6 +54,7 @@ import java.util.function.DoubleSupplier;
 
 @Logged
 public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
+  private final Voltage appliedSysidVoltage = Volts.zero();
   private final SwerveIO io;
 
   @SuppressWarnings("unused")
@@ -350,8 +351,6 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
         .linearVelocity(MetersPerSecond.of(io.rearRight().getState().speedMetersPerSecond))
         .voltage(appliedSysidVoltage);
   }
-
-  private Voltage appliedSysidVoltage = Volts.zero();
 
   private void voltageDrive(Voltage v) {
     io.frontLeft().setVoltageForDrivingMotor(v);

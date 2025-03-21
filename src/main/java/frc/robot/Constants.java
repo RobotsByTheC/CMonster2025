@@ -201,8 +201,8 @@ public final class Constants {
     // Raw: 21.3689 rotations from bottom to top
     // Actual extension = 67.5"
     // 67.5 / 21.3689 = 3.1588
-    //11.875
-    //1.612
+    // 11.875
+    // 1.612
     public static final double positionConversionFactor = 1.612;
     public static final double velocityConversionFactor = positionConversionFactor / 60;
 

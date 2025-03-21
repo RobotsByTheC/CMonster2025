@@ -5,7 +5,6 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.Feet;
-import static edu.wpi.first.units.Units.Inches;
 
 import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.epilogue.Epilogue;
@@ -14,9 +13,7 @@ import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.epilogue.logging.EpilogueBackend;
 import edu.wpi.first.epilogue.logging.FileBackend;
 import edu.wpi.first.epilogue.logging.NTEpilogueBackend;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -184,17 +181,22 @@ public class Robot extends TimedRobot {
     operatorController
         .leftTrigger()
         .whileTrue(
-            drive
-                .defer(
-                    () -> drive.rotateToHeading(vision.getLastRealValue().toPose2d().getRotation().rotateBy(Rotation2d.k180deg.minus(Rotation2d.fromDegrees(30))))));
-//                .andThen(
-//                    () -> drive.driveToRobotRelativePose(vision.getLastRealValue().toPose2d()
-//                            .plus(new Transform2d(
-//                                Inches.of(-10),
-//                                Inches.of(0),
-//                                Rotation2d.k180deg
-//                                ))
-//                        )));
+            drive.defer(
+                () ->
+                    drive.rotateToHeading(
+                        vision
+                            .getLastRealValue()
+                            .toPose2d()
+                            .getRotation()
+                            .rotateBy(Rotation2d.k180deg.minus(Rotation2d.fromDegrees(30))))));
+    //                .andThen(
+    //                    () -> drive.driveToRobotRelativePose(vision.getLastRealValue().toPose2d()
+    //                            .plus(new Transform2d(
+    //                                Inches.of(-10),
+    //                                Inches.of(0),
+    //                                Rotation2d.k180deg
+    //                                ))
+    //                        )));
 
     bindElevator();
 
@@ -241,11 +243,8 @@ public class Robot extends TimedRobot {
         .whileTrue(
             elevator
                 .goToL3Height()
-                .andThen(
-                    coral
-                        .scoreL3()
-                        .alongWith(elevator.holdTargetPosition())
-                        ).withName("Score L3"));
+                .andThen(coral.scoreL3().alongWith(elevator.holdTargetPosition()))
+                .withName("Score L3"));
 
     operatorController.x().onFalse(elevator.goToBottom().alongWith(coral.stow()).withName("Idle"));
 
@@ -254,12 +253,9 @@ public class Robot extends TimedRobot {
         .whileTrue(
             elevator
                 .goToL4Height()
-                .andThen(
-                    coral
-                        .scoreL4()
-                        .alongWith(elevator.holdTargetPosition())
-                        ).withName("Score L4"));
-                        
+                .andThen(coral.scoreL4().alongWith(elevator.holdTargetPosition()))
+                .withName("Score L4"));
+
     operatorController.y().onFalse(elevator.goToBottom().alongWith(coral.stow()).withName("Idle"));
   }
 
