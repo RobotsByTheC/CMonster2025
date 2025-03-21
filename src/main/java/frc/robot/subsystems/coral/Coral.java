@@ -125,7 +125,7 @@ public class Coral extends SubsystemBase {
   }
 
   public Command intake() {
-    return coordinatedControl(intakeAngle, grabIntakeVoltage, isGrabberStalling)
+    return coordinatedControl(intakeAngle, grabIntakeVoltage, () -> false)
         .withName("Intake coral");
   }
 

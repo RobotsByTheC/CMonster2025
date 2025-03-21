@@ -175,9 +175,9 @@ public final class Constants {
     // Top face of the carriage rail to the carpet
     public static final Distance zeroOffset = Inches.of(2.625 + 12.125);
     public static final Distance l1 = zeroOffset; // 22
-    public static final Distance l2 = zeroOffset.plus(Inches.of(11)); // 36
-    public static final Distance l3 = zeroOffset.plus(Inches.of(25.5));
-    public static final Distance l4 = zeroOffset.plus(Inches.of(57));
+    public static final Distance l2 = zeroOffset.plus(Inches.of(9.25)); // 36
+    public static final Distance l3 = zeroOffset.plus(Inches.of(27.5));
+    public static final Distance l4 = zeroOffset.plus(Inches.of(52));
     public static final Distance bargeHeight = Inches.of(74.5);
     public static final Distance coralIntake = zeroOffset.plus(Inches.of(2));
     public static final Distance algaeIntakeHeight = zeroOffset.plus(Inches.of(6));
@@ -185,7 +185,7 @@ public final class Constants {
     public static final Distance algaeL2 = zeroOffset.plus(Inches.of(37.5));
     public static final Distance algaeL3 = zeroOffset.plus(Inches.of(54));
 
-    public static final Current stallThreshold = Amps.of(70);
+    public static final Current stallThreshold = Amps.of(75);
     public static final Time stallDuration = Milliseconds.of(500);
 
     public static final Distance minHeight = Inches.of(14);
@@ -196,23 +196,25 @@ public final class Constants {
     public static final int rightCanID = 9;
 
     @SuppressWarnings("unused")
-    public static final double gearboxReduction = 4.86; // 4.86:1
+    public static final double gearboxReduction = 9.5238; // 4.86:1
 
     // Raw: 21.3689 rotations from bottom to top
     // Actual extension = 67.5"
     // 67.5 / 21.3689 = 3.1588
-    public static final double positionConversionFactor = 2.871;
+    //11.875
+    //1.612
+    public static final double positionConversionFactor = 1.612;
     public static final double velocityConversionFactor = positionConversionFactor / 60;
 
     public static final int currentLimit = 40;
 
-    public static final double KS = 2;
-    public static final double KG = 3;
-    public static final double KV = 2.2604;
+    public static final double KS = .71;
+    public static final double KG = .54;
+    public static final double KV = 2.2;
     public static final double KA = 0;
-    public static final double KP = 17.5;
-    public static final double KI = 7.5;
-    public static final double KD = 3.5;
+    public static final double KP = 16;
+    public static final double KI = .5;
+    public static final double KD = .25;
   }
 
   public static final class CoralConstants {
