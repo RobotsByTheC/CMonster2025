@@ -96,7 +96,7 @@ public final class Constants {
     public static final boolean turningEncoderInverted = true;
 
     // Calculations required for driving motor conversion factors and feed forward
-    public static final Distance wheelDiameter = Inches.of(3);
+    public static final Distance wheelDiameter = Inches.of(3 / 1.08);
     public static final Distance wheelCircumference = wheelDiameter.times(Math.PI);
     // 45 teeth on the wheel's bevel gear, 22 teeth on the first-stage spur gear, 15 teeth on the
     // bevel pinion
