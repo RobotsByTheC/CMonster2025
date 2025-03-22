@@ -173,7 +173,7 @@ public final class Constants {
     // Elevator minimum falling voltage: 0.7 volts
 
     // Top face of the carriage rail to the carpet
-    public static final Distance zeroOffset = Inches.of(2.625 + 12.125);
+    public static final Distance zeroOffset = Inches.of(14.5);
     public static final Distance l1 = zeroOffset; // 22
     public static final Distance l2 = zeroOffset.plus(Inches.of(9.25)); // 36
     public static final Distance l3 = zeroOffset.plus(Inches.of(27.5));
@@ -188,9 +188,9 @@ public final class Constants {
     public static final Current stallThreshold = Amps.of(75);
     public static final Time stallDuration = Milliseconds.of(500);
 
-    public static final Distance minHeight = Inches.of(14);
+    public static final Distance minHeight = zeroOffset;
     // Slightly less than max elevator extension
-    public static final Distance maxHeight = Inches.of(74);
+    public static final Distance maxHeight = Inches.of(74.625);
 
     public static final int leftCanID = 10;
     public static final int rightCanID = 9;
@@ -203,17 +203,18 @@ public final class Constants {
     // 67.5 / 21.3689 = 3.1588
     // 11.875
     // 1.612
-    public static final double positionConversionFactor = 1.612;
+    public static final double positionConversionFactor =
+        (maxHeight.minus(zeroOffset).in(Inches)) / 34.417;
     public static final double velocityConversionFactor = positionConversionFactor / 60;
 
     public static final int currentLimit = 40;
 
-    public static final double KS = 0.71;
-    public static final double KG = 0.54;
+    public static final double KS = 0.745;
+    public static final double KG = 0.4;
     public static final double KV = 2.2;
     public static final double KA = 0;
-    public static final double KP = 16;
-    public static final double KI = 0.5;
+    public static final double KP = 32;
+    public static final double KI = 0;
     public static final double KD = 0.25;
   }
 
