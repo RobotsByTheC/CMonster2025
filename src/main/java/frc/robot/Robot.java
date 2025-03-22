@@ -296,16 +296,30 @@ public class Robot extends TimedRobot {
     // Algae L2
     operatorController
         .povLeft()
-        .whileTrue(elevator.goToAlgaeL2Height().andThen(algae.intakeReef()));
+        .debounce(0.2)
+        .whileTrue(
+            elevator
+                .goToAlgaeL2Height()
+                .andThen(algae.intakeReef().deadlineFor(elevator.goToAlgaeL2Height())));
 
-    operatorController.povLeft().onFalse(algae.stowUntilDone().andThen(elevator.goToBottom()));
+    operatorController
+        .povLeft()
+        .debounce(0.2)
+        .onFalse(algae.stowUntilDone().andThen(elevator.goToBottom()));
 
     // Algae L3
     operatorController
         .povRight()
-        .whileTrue(elevator.goToAlgaeL3Height().andThen(algae.intakeReef()));
+        .debounce(0.2)
+        .whileTrue(
+            elevator
+                .goToAlgaeL3Height()
+                .andThen(algae.intakeReef().deadlineFor(elevator.holdTargetPosition())));
 
-    operatorController.povRight().onFalse(algae.stowUntilDone().andThen(elevator.goToBottom()));
+    operatorController
+        .povRight()
+        .debounce(0.2)
+        .onFalse(algae.stowUntilDone().andThen(elevator.goToBottom()));
   }
 
   /**
