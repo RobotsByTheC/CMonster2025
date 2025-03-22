@@ -231,6 +231,7 @@ public final class Constants {
 
     public static final Voltage grabIntakeVoltage = Volts.of(-6);
     public static final Voltage grabScoreVoltage = Volts.of(6);
+    public static final Voltage coralHoldVoltage = Volts.of(-1);
 
     public static final Angle intakeAngle = Degrees.of(40);
     public static final Angle troughScoreAngle = Degrees.of(-15);
@@ -313,6 +314,14 @@ public final class Constants {
                 Degrees.of(30), // Pitch, up
                 Degrees.of(15) // Yaw, left
                 ));
+  }
+
+  public enum CoralLevel {
+    L1,
+    L2,
+    L3,
+    L4,
+    INTAKE
   }
 
   public static final class OIConstants {

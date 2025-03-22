@@ -61,6 +61,7 @@ public class Elevator extends SubsystemBase {
       new Trigger(() -> stallingDebouncer.calculate(getCurrentDraw().gte(stallThreshold)));
 
   @NotLogged private final SysIdRoutine sysIdRoutine;
+  private Trigger elevatorHomeStalling;
 
   public Elevator(ElevatorIO io) {
     this.io = io;
@@ -89,6 +90,13 @@ public class Elevator extends SubsystemBase {
                         .linearPosition(io.getHeight())
                         .linearVelocity(io.getVelocity()),
                 this));
+    elevatorHomeStalling =
+        new Trigger(
+                () ->
+                    io.getCurrentDraw().gte(Amps.of(15))
+                        && io.getVelocity().abs(InchesPerSecond) < 1)
+            .debounce(0.15);
+    profiledPIDController.setTolerance(Meters.convertFrom(0.5, Inches));
     io.resetEncoders();
   }
 
@@ -110,18 +118,14 @@ public class Elevator extends SubsystemBase {
   }
 
   public Command home() {
-    return run(() -> io.setVoltage(Volts.of(-2)))
-        .until(
-            new Trigger(
-                    () ->
-                        io.getCurrentDraw().gte(Amps.of(15))
-                            && (io.getVelocity().abs(InchesPerSecond)) < 0.1)
-                .debounce(0.15))
+    return run(() -> io.setVoltage(Volts.of(-1.25)))
+        .until(elevatorHomeStalling)
         .finallyDo(
             (boolean interrupted) -> {
               if (!interrupted) {
                 io.resetEncoders();
               }
+              io.setVoltage(Volts.of(0));
             })
         .withName("Home");
   }
@@ -203,7 +207,21 @@ public class Elevator extends SubsystemBase {
   }
 
   public Command holdTargetPosition() {
-    return run(() -> goToHeight(Meters.of(profiledPIDController.getSetpoint().position)));
+    return startRun(
+            () ->
+                profiledPIDController.reset(
+                    io.getHeight().in(Meters), io.getVelocity().in(MetersPerSecond)),
+            () -> {
+              Voltage calc =
+                  calculatePIDVoltage(Meters.of(profiledPIDController.getSetpoint().position));
+
+              if (calc.magnitude() < 0) {
+                io.setVoltage(calc.div(2));
+              } else {
+                io.setVoltage(calc);
+              }
+            })
+        .withName("Holding Target Position");
   }
 
   @SuppressWarnings("unused")

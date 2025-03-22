@@ -5,6 +5,7 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.Feet;
+import static frc.robot.Constants.CoralLevel.*;
 
 import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.epilogue.Epilogue;
@@ -26,6 +27,8 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
+import frc.robot.Constants.CoralLevel;
 import frc.robot.sim.SimulationContext;
 import frc.robot.subsystems.algae.Algae;
 import frc.robot.subsystems.algae.RealAlgaeIO;
@@ -58,6 +61,7 @@ public class Robot extends TimedRobot {
   @NotLogged private final CommandJoystick rStick; // NOPMD
   @NotLogged private final CommandJoystick lStick; // NOPMD
 
+  @SuppressWarnings("FieldCanBeLocal")
   private final SendableChooser<Supplier<Command>> odometryTestChooser = new SendableChooser<>();
 
   public Robot() {
@@ -180,6 +184,14 @@ public class Robot extends TimedRobot {
 
     bindVision();
 
+    bindElevator();
+
+    bindCoral();
+
+    bindAlgae();
+  }
+
+  private void bindVision() {
     operatorController
         .leftTrigger()
         .whileTrue(
@@ -200,12 +212,6 @@ public class Robot extends TimedRobot {
     //                                Rotation2d.k180deg
     //                                ))
     //                        )));
-
-    bindElevator();
-
-    bindCoral();
-
-    bindAlgae();
   }
 
   private void bindElevator() {
@@ -213,53 +219,54 @@ public class Robot extends TimedRobot {
   }
 
   private void bindCoral() {
-    operatorController
-        .rightBumper()
-        .whileTrue(
-            elevator
-                .goToIntakeHeight()
-                .andThen(coral.intake().deadlineFor(elevator.holdTargetPosition()))
-                .andThen(elevator.goToBottom())
-                .withName("Coral Intake"));
-    operatorController
-        .a()
-        .whileTrue(
-            elevator
-                .goToL1Height()
-                .andThen(coral.scoreL1().alongWith(elevator.holdTargetPosition()))
-                .withName("Score L1"));
+    operatorController.rightBumper().whileTrue(controlCoralAtLevel(INTAKE));
+    operatorController.rightBumper().onFalse(finishControlCoral());
 
-    operatorController.a().onFalse(elevator.goToBottom().alongWith(coral.stow()).withName("Idle"));
+    operatorController.a().whileTrue(controlCoralAtLevel(L1));
+    operatorController.a().onFalse(finishControlCoral());
 
-    operatorController
-        .b()
-        .whileTrue(
-            elevator
-                .goToL2Height()
-                .andThen(coral.scoreL2().alongWith(elevator.holdTargetPosition()))
-                .withName("Score L2"));
+    operatorController.b().whileTrue(controlCoralAtLevel(L2));
+    operatorController.b().onFalse(finishControlCoral());
 
-    operatorController.b().onFalse(elevator.goToBottom().alongWith(coral.stow()).withName("Idle"));
+    operatorController.x().whileTrue(controlCoralAtLevel(L3));
+    operatorController.x().onFalse(finishControlCoral());
 
-    operatorController
-        .x()
-        .whileTrue(
-            elevator
-                .goToL3Height()
-                .andThen(coral.scoreL3().alongWith(elevator.holdTargetPosition()))
-                .withName("Score L3"));
+    operatorController.y().whileTrue(controlCoralAtLevel(L4));
+    operatorController.y().onFalse(finishControlCoral());
+  }
 
-    operatorController.x().onFalse(elevator.goToBottom().alongWith(coral.stow()).withName("Idle"));
+  private Command controlCoralAtLevel(CoralLevel level) {
+    return switch (level) {
+      case L1 ->
+          elevator
+              .goToL1Height()
+              .andThen(coral.scoreL1().alongWith(elevator.holdTargetPosition()))
+              .withName("Score L1");
+      case L2 ->
+          elevator
+              .goToL2Height()
+              .andThen(coral.scoreL2().alongWith(elevator.holdTargetPosition()))
+              .withName("Score L2");
+      case L3 ->
+          elevator
+              .goToL3Height()
+              .andThen(coral.scoreL3().alongWith(elevator.holdTargetPosition()))
+              .withName("Score L3");
+      case L4 ->
+          elevator
+              .goToL4Height()
+              .andThen(coral.scoreL4().alongWith(elevator.holdTargetPosition()))
+              .withName("Score L4");
+      case INTAKE ->
+          elevator
+              .goToIntakeHeight()
+              .andThen(coral.intake().alongWith(elevator.holdTargetPosition()))
+              .withName("Coral Intake");
+    };
+  }
 
-    operatorController
-        .y()
-        .whileTrue(
-            elevator
-                .goToL4Height()
-                .andThen(coral.scoreL4().alongWith(elevator.holdTargetPosition()))
-                .withName("Score L4"));
-
-    operatorController.y().onFalse(elevator.goToBottom().alongWith(coral.stow()).withName("Idle"));
+  private Command finishControlCoral() {
+    return elevator.goToBottom().alongWith(coral.stowUntilDone()).withName("Return to bottom");
   }
 
   private void bindAlgae() {

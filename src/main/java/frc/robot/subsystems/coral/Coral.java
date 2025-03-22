@@ -14,6 +14,7 @@ import static frc.robot.Constants.CoralConstants.KP;
 import static frc.robot.Constants.CoralConstants.KS;
 import static frc.robot.Constants.CoralConstants.KV;
 import static frc.robot.Constants.CoralConstants.branchScoreAngle;
+import static frc.robot.Constants.CoralConstants.coralHoldVoltage;
 import static frc.robot.Constants.CoralConstants.grabDoneLimit;
 import static frc.robot.Constants.CoralConstants.grabIntakeVoltage;
 import static frc.robot.Constants.CoralConstants.grabScoreVoltage;
@@ -111,6 +112,14 @@ public class Coral extends SubsystemBase {
     return coordinatedControl(tipScoreAngle, grabScoreVoltage, () -> false).withName("Score L4");
   }
 
+  public Command holdCoral() {
+    return controlGrabber(coralHoldVoltage);
+  }
+
+  public Command stowUntilDone() {
+    return moveWrist(stowAngle).until(profiledPIDController::atGoal);
+  }
+
   @SuppressWarnings("unused")
   public Command stop() {
     return run(() -> {
@@ -154,6 +163,7 @@ public class Coral extends SubsystemBase {
       Angle angle, Voltage grabVoltage, BooleanSupplier endCondition) {
     Command command =
         moveWrist(angle)
+            .alongWith(holdCoral())
             .until(profiledPIDController::atSetpoint)
             .andThen(moveWrist(angle).alongWith(controlGrabber(grabVoltage)).until(endCondition));
     command.addRequirements(this);
