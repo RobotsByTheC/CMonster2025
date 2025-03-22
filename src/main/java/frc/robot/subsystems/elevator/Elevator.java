@@ -61,7 +61,7 @@ public class Elevator extends SubsystemBase {
       new Trigger(() -> stallingDebouncer.calculate(getCurrentDraw().gte(stallThreshold)));
 
   @NotLogged private final SysIdRoutine sysIdRoutine;
-  private Trigger elevatorHomeStalling;
+  private final Trigger elevatorHomeStalling;
 
   public Elevator(ElevatorIO io) {
     this.io = io;

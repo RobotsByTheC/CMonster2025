@@ -27,7 +27,6 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.Constants.CoralLevel;
 import frc.robot.sim.SimulationContext;
 import frc.robot.subsystems.algae.Algae;
