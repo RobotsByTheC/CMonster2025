@@ -157,8 +157,7 @@ public class Algae extends SubsystemBase {
     Command command =
         moveWrist(angle)
             .until(profiledPIDController::atGoal)
-            .andThen(moveWrist(angle).alongWith(controlGrabber(grabVoltage)))
-            .until(endCondition);
+            .andThen(moveWrist(angle).alongWith(controlGrabber(grabVoltage)));
     command.addRequirements(this);
     return command;
   }
@@ -172,7 +171,7 @@ public class Algae extends SubsystemBase {
   }
 
   private Command controlGrabber(Voltage voltage) {
-    return Commands.run(() -> io.setGrabVoltage(voltage));
+    return Commands.run(() -> io.setGrabVoltage(voltage)).until(() -> false);
   }
 
   private Voltage calculatePIDVoltage(Angle targetAngle) {

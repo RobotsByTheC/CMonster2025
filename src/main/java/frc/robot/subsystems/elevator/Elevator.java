@@ -207,20 +207,16 @@ public class Elevator extends SubsystemBase {
   }
 
   public Command holdTargetPosition() {
-    return startRun(
-            () ->
-                profiledPIDController.reset(
-                    io.getHeight().in(Meters), io.getVelocity().in(MetersPerSecond)),
-            () -> {
-              Voltage calc =
-                  calculatePIDVoltage(Meters.of(profiledPIDController.getSetpoint().position));
+    return run(() -> {
+          Voltage calc =
+              calculatePIDVoltage(Meters.of(profiledPIDController.getSetpoint().position));
 
-              if (calc.magnitude() < 0) {
-                io.setVoltage(calc.div(2));
-              } else {
-                io.setVoltage(calc);
-              }
-            })
+          if (calc.magnitude() < 0) {
+            io.setVoltage(calc.div(2));
+          } else {
+            io.setVoltage(calc);
+          }
+        })
         .withName("Holding Target Position");
   }
 

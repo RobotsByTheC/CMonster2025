@@ -55,6 +55,8 @@ public class Robot extends TimedRobot {
   private final Algae algae;
   private final Vision vision;
 
+  private int turnMultiplier = 1;
+
   // Driver and operator controls
   @NotLogged private final CommandXboxController operatorController; // NOPMD
   @NotLogged private final CommandJoystick rStick; // NOPMD
@@ -144,7 +146,8 @@ public class Robot extends TimedRobot {
 
   private Command driveFastWithFlightSticks() {
     //noinspection SuspiciousNameCombination
-    return drive.driveFastWithJoysticks(lStick::getY, lStick::getX, rStick::getTwist);
+    return drive.driveFastWithJoysticks(
+        lStick::getY, lStick::getX, () -> rStick.getTwist() * turnMultiplier);
   }
 
   @SuppressWarnings("unused")
@@ -191,26 +194,22 @@ public class Robot extends TimedRobot {
   }
 
   private void bindVision() {
-    operatorController
-        .leftTrigger()
+    rStick
+        .button(2)
         .whileTrue(
-            drive.defer(
-                () ->
-                    drive.rotateToHeading(
-                        vision
-                            .getLastRealValue()
-                            .toPose2d()
-                            .getRotation()
-                            .rotateBy(Rotation2d.k180deg)
-                            .plus(drive.getHeading()))));
-    //                .andThen(
-    //                    () -> drive.driveToRobotRelativePose(vision.getLastRealValue().toPose2d()
-    //                            .plus(new Transform2d(
-    //                                Inches.of(-10),
-    //                                Inches.of(0),
-    //                                Rotation2d.k180deg
-    //                                ))
-    //                        )));
+            drive
+                .defer(
+                    () -> {
+                      turnMultiplier = 0;
+                      return drive.rotateToHeading(
+                          vision
+                              .getLastRealValue()
+                              .toPose2d()
+                              .getRotation()
+                              .rotateBy(Rotation2d.k180deg)
+                              .plus(drive.getHeading()));
+                    })
+                .finallyDo(() -> turnMultiplier = 1));
   }
 
   private void bindElevator() {
@@ -335,10 +334,10 @@ public class Robot extends TimedRobot {
     //        .back()
     //        .and(RobotModeTriggers.test())
     //        .whileTrue(drive.defer(() -> odometryTestChooser.getSelected().get()));
-    //    operatorController
-    //        .rightBumper()
-    //        .and(RobotModeTriggers.test())
-    //        .whileTrue(coral.runSysIdRoutine().withName("Run Coral Sysid Routine"));
+    //        operatorController
+    //            .rightBumper()
+    //            .and(RobotModeTriggers.test())
+    //            .whileTrue(coral.runSysIdRoutine().withName("Run Coral Sysid Routine"));
     //    operatorController
     //        .leftBumper()
     //        .and(RobotModeTriggers.test())
