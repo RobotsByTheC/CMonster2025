@@ -324,7 +324,7 @@ public final class Constants {
   public static final class AutoConstants {
     public static final double pXController = 4;
     public static final double pYController = 4;
-    public static final double pThetaController = 2;
+    public static final double pThetaController = 4;
   }
 
   public static final class NeoMotorConstants {

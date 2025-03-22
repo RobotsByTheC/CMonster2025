@@ -178,6 +178,8 @@ public class Robot extends TimedRobot {
   private void configureTeleopBindings() {
     rStick.button(7).onTrue(drive.zeroGyro());
 
+    bindVision();
+
     operatorController
         .leftTrigger()
         .whileTrue(
@@ -188,7 +190,8 @@ public class Robot extends TimedRobot {
                             .getLastRealValue()
                             .toPose2d()
                             .getRotation()
-                            .rotateBy(Rotation2d.k180deg.minus(Rotation2d.fromDegrees(30))))));
+                            .rotateBy(Rotation2d.k180deg)
+                            .plus(drive.getHeading()))));
     //                .andThen(
     //                    () -> drive.driveToRobotRelativePose(vision.getLastRealValue().toPose2d()
     //                            .plus(new Transform2d(

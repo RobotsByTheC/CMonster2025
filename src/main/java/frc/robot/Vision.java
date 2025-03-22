@@ -7,6 +7,7 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -37,6 +38,7 @@ public class Vision {
   private final PhotonCamera left = new PhotonCamera("OV9281-2");
   private final Set<Integer> reefIDs = Set.of(6, 7, 8, 9, 10, 11, 17, 18, 19, 20, 21, 22);
   private Pose3d lastRealValue = Pose3d.kZero;
+  private Rotation2d lastRealRotation = Rotation2d.kZero;
 
   public void update() {
     var leftResults = left.getAllUnreadResults();
@@ -115,6 +117,7 @@ public class Vision {
     if (nearestReefAprilTagTransform != null
         && !nearestReefAprilTagTransform.equals(Pose3d.kZero)) {
       lastRealValue = nearestReefAprilTagTransform;
+      lastRealRotation = lastRealValue.getRotation().toRotation2d().plus(Rotation2d.k180deg);
     }
   }
 

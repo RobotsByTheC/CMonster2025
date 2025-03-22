@@ -27,9 +27,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -48,7 +46,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
-import frc.robot.Vision;
 import java.util.Arrays;
 import java.util.function.DoubleSupplier;
 
@@ -417,22 +414,6 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
         })
         .until(thetaController::atSetpoint)
         .withName("Rotate to " + heading.getDegrees() + " Degrees");
-  }
-
-  /**
-   * Creates a command that points the drive base at the given AprilTag. The returned command does
-   * nothing if no AprilTag with the given ID exists on the game field.
-   *
-   * @param tagId the ID of the AprilTag to point at.
-   */
-  public Command pointAtTag(int tagId) {
-    return Vision.fieldLayout
-        .getTagPose(tagId)
-        .map(Pose3d::getRotation)
-        .map(Rotation3d::toRotation2d)
-        .map(this::rotateToHeading)
-        .orElseGet(Commands::none)
-        .withName("Point At Tag " + tagId);
   }
 
   private void setForward() {
