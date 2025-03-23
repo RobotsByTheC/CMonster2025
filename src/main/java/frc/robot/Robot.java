@@ -5,7 +5,11 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.Feet;
-import static frc.robot.Constants.CoralLevel.*;
+import static frc.robot.Constants.CoralLevel.INTAKE;
+import static frc.robot.Constants.CoralLevel.L1;
+import static frc.robot.Constants.CoralLevel.L2;
+import static frc.robot.Constants.CoralLevel.L3;
+import static frc.robot.Constants.CoralLevel.L4;
 
 import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.epilogue.Epilogue;
