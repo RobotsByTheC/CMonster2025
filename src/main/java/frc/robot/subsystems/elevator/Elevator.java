@@ -127,7 +127,7 @@ public class Elevator extends SubsystemBase {
               }
               io.setVoltage(Volts.of(0));
             })
-        .withName("Home");
+        .withName("Elevator Home");
   }
 
   public Command goToHeight(Distance targetHeight) {

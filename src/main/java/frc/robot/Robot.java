@@ -197,19 +197,19 @@ public class Robot extends TimedRobot {
     rStick
         .button(2)
         .whileTrue(
-            drive
-                .defer(
-                    () -> {
-                      turnMultiplier = 0;
-                      return drive.rotateToHeading(
-                          vision
-                              .getLastRealValue()
-                              .toPose2d()
-                              .getRotation()
-                              .rotateBy(Rotation2d.k180deg)
-                              .plus(drive.getHeading()));
-                    })
-                .finallyDo(() -> turnMultiplier = 1));
+            drive.defer(
+                () -> {
+                  turnMultiplier = 0;
+                  return drive.rotateToHeading(
+                      vision
+                          .getLastRealValue()
+                          .toPose2d()
+                          .getRotation()
+                          .rotateBy(Rotation2d.k180deg)
+                          .plus(drive.getHeading()));
+                }));
+
+    rStick.button(2).onFalse(Commands.runOnce(() -> turnMultiplier = 1));
   }
 
   private void bindElevator() {
@@ -238,27 +238,32 @@ public class Robot extends TimedRobot {
       case L1 ->
           elevator
               .goToL1Height()
+              .deadlineFor(coral.stow())
               .andThen(coral.scoreL1().alongWith(elevator.holdTargetPosition()))
               .withName("Score L1");
       case L2 ->
           elevator
               .goToL2Height()
+              .deadlineFor(coral.stow())
               .andThen(coral.scoreL2().alongWith(elevator.holdTargetPosition()))
               .withName("Score L2");
       case L3 ->
           elevator
               .goToL3Height()
+              .deadlineFor(coral.stow())
               .andThen(coral.scoreL3().alongWith(elevator.holdTargetPosition()))
               .withName("Score L3");
       case L4 ->
           elevator
               .goToL4Height()
+              .deadlineFor(coral.stowAndHold())
               .andThen(coral.scoreL4().alongWith(elevator.holdTargetPosition()))
               .withName("Score L4");
       case INTAKE ->
           elevator
-              .goToIntakeHeight()
-              .andThen(coral.intake().alongWith(elevator.holdTargetPosition()))
+              .home()
+              .deadlineFor(coral.stow())
+              .andThen(coral.intake())
               .withName("Coral Intake");
     };
   }
@@ -268,28 +273,37 @@ public class Robot extends TimedRobot {
   }
 
   private void bindAlgae() {
-    // Score Barge
-    operatorController
-        .start()
-        .whileTrue(
-            elevator
-                .goToBargeHeight()
-                .andThen(algae.scoreBarge().deadlineFor(elevator.holdTargetPosition()))
-                .withName("Score Algae Barge"));
 
     // Intake Ground
     operatorController
         .povUp()
-        .whileTrue(elevator.goToAlgaeIntakeHeight().andThen(algae.intakeGround()));
+        .whileTrue(
+            elevator
+                .goToAlgaeIntakeHeight()
+                .andThen(algae.intakeGround())
+                .withName("Algae Intake Ground"));
 
-    operatorController.povUp().onFalse(algae.stowUntilDone().deadlineFor(elevator.goToBottom()));
+    operatorController
+        .povUp()
+        .onFalse(
+            algae
+                .stowUntilDone()
+                .deadlineFor(elevator.goToBottom())
+                .withName("Finish Algae Ground Intake"));
 
     // Score Processor
     operatorController
         .povDown()
-        .whileTrue(elevator.goToAlgaeScoreHeight().andThen(algae.scoreProcessor()));
+        .whileTrue(
+            elevator
+                .goToAlgaeScoreHeight()
+                .andThen(algae.scoreProcessor())
+                .withName("Score Algae"));
 
-    operatorController.povDown().onFalse(algae.stowUntilDone().andThen(elevator.goToBottom()));
+    operatorController
+        .povDown()
+        .onFalse(
+            algae.stowUntilDone().andThen(elevator.goToBottom()).withName("Finish Algae Score"));
 
     // Algae L2
     operatorController
@@ -298,12 +312,17 @@ public class Robot extends TimedRobot {
         .whileTrue(
             elevator
                 .goToAlgaeL2Height()
-                .andThen(algae.intakeReef().deadlineFor(elevator.goToAlgaeL2Height())));
+                .andThen(algae.intakeReef().deadlineFor(elevator.goToAlgaeL2Height()))
+                .withName("Intake Algae L2"));
 
     operatorController
         .povLeft()
         .debounce(0.2)
-        .onFalse(algae.stowUntilDone().andThen(elevator.goToBottom()));
+        .onFalse(
+            algae
+                .stowUntilDone()
+                .andThen(elevator.goToBottom())
+                .withName("Finish Algae Intake L2"));
 
     // Algae L3
     operatorController
@@ -312,12 +331,17 @@ public class Robot extends TimedRobot {
         .whileTrue(
             elevator
                 .goToAlgaeL3Height()
-                .andThen(algae.intakeReef().deadlineFor(elevator.holdTargetPosition())));
+                .andThen(algae.intakeReef().deadlineFor(elevator.holdTargetPosition()))
+                .withName("Intake Algae L3"));
 
     operatorController
         .povRight()
         .debounce(0.2)
-        .onFalse(algae.stowUntilDone().andThen(elevator.goToBottom()));
+        .onFalse(
+            algae
+                .stowUntilDone()
+                .andThen(elevator.goToBottom())
+                .withName("Finish Algae Intake L3"));
   }
 
   /**

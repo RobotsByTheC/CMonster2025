@@ -373,7 +373,7 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
             run(
                 () ->
                     drive(
-                        FeetPerSecond.of(3),
+                        FeetPerSecond.of(-3),
                         FeetPerSecond.zero(),
                         RadiansPerSecond.zero(),
                         ReferenceFrame.FIELD)))

@@ -49,7 +49,7 @@ public class Algae extends SubsystemBase {
   private final AlgaeIO io;
   private final ProfiledPIDController profiledPIDController;
   private final ArmFeedforward feedForward;
-  @NotLogged private final MovingAverage movingAverage = new MovingAverage(9);
+  @NotLogged private final MovingAverage movingAverage = new MovingAverage(15);
 
   @SuppressWarnings("FieldCanBeLocal")
   private double pidVoltage; // NOPMD
@@ -85,7 +85,6 @@ public class Algae extends SubsystemBase {
         new SysIdRoutine(
             new SysIdRoutine.Config(Volts.per(Second).of(0.5), Volts.of(3), null),
             new SysIdRoutine.Mechanism(io::setWristVoltage, null, this));
-    isGrabberStalling.onTrue(stop());
   }
 
   @Override
@@ -138,6 +137,14 @@ public class Algae extends SubsystemBase {
         .withName("Stop Algae Grabber");
   }
 
+  public Command stopGrabber() {
+    return runOnce(
+            () -> {
+              io.setGrabVoltage(Volts.of(0));
+            })
+        .withName("Stop Algae Grabber");
+  }
+
   public Command runSysIdRoutine() {
     return sysIdRoutine
         .dynamic(SysIdRoutine.Direction.kForward)
@@ -157,7 +164,8 @@ public class Algae extends SubsystemBase {
     Command command =
         moveWrist(angle)
             .until(profiledPIDController::atGoal)
-            .andThen(moveWrist(angle).alongWith(controlGrabber(grabVoltage)));
+            .andThen(moveWrist(angle).alongWith(controlGrabber(grabVoltage)))
+            .until(endCondition);
     command.addRequirements(this);
     return command;
   }

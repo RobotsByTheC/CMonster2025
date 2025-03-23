@@ -45,6 +45,7 @@ public class RealCoralIO implements CoralIO {
 
     grabMotorConfig = new SparkMaxConfig();
     grabMotorConfig.secondaryCurrentLimit(grabCurrentLimit.in(Amps));
+    grabMotorConfig.inverted(true);
 
     wristConfig = new SparkMaxConfig();
     wristConfig.secondaryCurrentLimit(wristCurrentLimit.in(Amps));

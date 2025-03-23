@@ -175,8 +175,8 @@ public final class Constants {
     // Top face of the carriage rail to the carpet
     public static final Distance zeroOffset = Inches.of(14.5);
     public static final Distance l1 = zeroOffset; // 22
-    public static final Distance l2 = zeroOffset.plus(Inches.of(8)); // 36
-    public static final Distance l3 = zeroOffset.plus(Inches.of(25));
+    public static final Distance l2 = zeroOffset.plus(Inches.of(7.5)); // 36
+    public static final Distance l3 = zeroOffset.plus(Inches.of(23.5));
     public static final Distance l4 = zeroOffset.plus(Inches.of(55));
     public static final Distance bargeHeight = Inches.of(74.5);
     public static final Distance coralIntake = zeroOffset;
@@ -231,25 +231,25 @@ public final class Constants {
 
     public static final Voltage grabIntakeVoltage = Volts.of(-9);
     public static final Voltage grabScoreVoltage = Volts.of(9);
-    public static final Voltage coralHoldVoltage = Volts.of(-6);
+    public static final Voltage coralHoldVoltage = Volts.of(-3);
 
-    public static final Angle intakeAngle = Degrees.of(33);
+    public static final Angle intakeAngle = Degrees.of(30);
     public static final Angle troughScoreAngle = Degrees.of(-15);
-    public static final Angle branchScoreAngle = Degrees.of(-35);
-    public static final Angle tipScoreAngle = Degrees.of(-53); // -33.5
-    public static final Angle stowAngle = Degrees.of(40);
+    public static final Angle branchScoreAngle = Degrees.of(-38);
+    public static final Angle tipScoreAngle = Degrees.of(-63); // -33.5
+    public static final Angle stowAngle = Degrees.of(30);
 
     public static final double wristGearing = 60;
 
     public static final Angle minWristAngle = Degrees.of(-35); // -75
     public static final Angle maxWristAngle = Degrees.of(80); // 50
-    public static final Angle wristTolerance = Degrees.of(5);
+    public static final Angle wristTolerance = Degrees.of(2);
 
-    public static final double KS = 0.42088; // 0.34646
+    public static final double KS = 2; // 0.34646
     public static final double KG = 0.25; // 0.1159 or 0.13 or 0.30995
     public static final double KV = 46.18; // 52.183
     public static final double KA = 5.4707; // 4.3241
-    public static final double KP = 2.5; // 12 / 1.6
+    public static final double KP = 3; // 12 / 1.6
     public static final double KI = 0;
     public static final double KD = 0.05;
   }
