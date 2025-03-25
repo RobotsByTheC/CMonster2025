@@ -372,6 +372,10 @@ public class Robot extends TimedRobot {
     //        .whileTrue(algae.runSysIdRoutine().withName("Run Algae Sysid Routine"));
   }
 
+  public Command autoScoreL4() {
+    return drive.moveBackwardsUntilStopped().andThen(controlCoralAtLevel(L4));
+  }
+
   private void configureAutomaticBindings() {
     //    elevator.isStalling.whileTrue(elevator.stop());
   }
