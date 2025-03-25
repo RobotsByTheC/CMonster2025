@@ -373,7 +373,7 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
             run(
                 () ->
                     drive(
-                        FeetPerSecond.of(3),
+                        FeetPerSecond.of(-3),
                         FeetPerSecond.zero(),
                         RadiansPerSecond.zero(),
                         ReferenceFrame.FIELD)))
@@ -383,11 +383,11 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
   public Command moveBackwardsUntilStopped() {
     return run(() ->
             drive(
-                FeetPerSecond.of(1),
+                FeetPerSecond.of(3),
                 FeetPerSecond.zero(),
                 RadiansPerSecond.zero(),
                 ReferenceFrame.ROBOT))
-        .until(() -> io.getForwardAcceleration().lte(FeetPerSecondPerSecond.of(-1)));
+        .until(() -> io.getForwardAcceleration().lte(FeetPerSecondPerSecond.of(-2)));
   }
 
   @SuppressWarnings("unused")
