@@ -383,23 +383,19 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
         .withName("Auto Leave Area");
   }
 
-  public Command moveBackwardsUntilStopped() {
+  public Command moveForwardsUntilStopped() {
     return startRun(
             timer::restart,
             () ->
                 drive(
-                    FeetPerSecond.of(-3),
+                    FeetPerSecond.of(3),
                     FeetPerSecond.zero(),
                     RadiansPerSecond.zero(),
                     ReferenceFrame.ROBOT))
         .until(
             () ->
-                (io.getForwardAcceleration().lte(FeetPerSecondPerSecond.of(-5)))
-                    && timer.get() > 0.5)
-        .andThen(
-            () -> {
-              System.out.println("finished");
-            });
+                (io.getForwardAcceleration().lte(FeetPerSecondPerSecond.of(-6)))
+                    && timer.get() > 0.5);
   }
 
   @SuppressWarnings("unused")

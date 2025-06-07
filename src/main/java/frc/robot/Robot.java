@@ -187,7 +187,6 @@ public class Robot extends TimedRobot {
    */
   private void configureTeleopBindings() {
     rStick.button(7).onTrue(drive.zeroGyro());
-    operatorController.leftTrigger().onTrue(drive.moveBackwardsUntilStopped());
 
     bindVision();
 
@@ -374,7 +373,12 @@ public class Robot extends TimedRobot {
   }
 
   public Command autoScoreL4() {
-    return drive.moveBackwardsUntilStopped().andThen(controlCoralAtLevel(L4));
+    return drive
+        .moveForwardsUntilStopped()
+        .andThen(controlCoralAtLevel(CoralLevel.L4))
+        .withTimeout(5)
+        .andThen(coral.stowUntilDone())
+        .andThen(finishControlCoral());
   }
 
   private void configureAutomaticBindings() {
@@ -387,17 +391,8 @@ public class Robot extends TimedRobot {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    //    return drive
-    //        .moveBackwardsUntilStopped()
-    //        .andThen(
-    //            elevator
-    //                .goToL4Height()
-    //                .andThen(
-    //                    coral
-    //                        .scoreL4()
-    //                        .deadlineFor(elevator.holdCurrentPosition())
-    //                        .withName("Score L4")));
-    return drive.autoLeaveArea();
+    return autoScoreL4();
+//    return drive.autoLeaveArea();
   }
 
   @Logged(name = "Battery Voltage")

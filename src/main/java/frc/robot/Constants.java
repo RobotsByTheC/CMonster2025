@@ -273,7 +273,7 @@ public final class Constants {
     public static final Angle reefIntakeAngle = Degrees.of(-35);
     public static final Angle processorScoreAngle = Degrees.of(0);
     public static final Angle bargeScoreAngle = Degrees.of(55);
-    public static final Angle stowAngle = Degrees.of(75);
+    public static final Angle stowAngle = Degrees.of(85);
 
     @SuppressWarnings("unused")
     public static final Angle holdAngle = Degrees.of(50);
