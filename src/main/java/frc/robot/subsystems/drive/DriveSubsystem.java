@@ -37,6 +37,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
@@ -51,6 +52,8 @@ import java.util.function.DoubleSupplier;
 
 @Logged
 public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
+  private final Timer timer = new Timer();
+
   private final Voltage appliedSysidVoltage = Volts.zero();
   private final SwerveIO io;
 
@@ -381,13 +384,22 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
   }
 
   public Command moveBackwardsUntilStopped() {
-    return run(() ->
-            drive(
-                FeetPerSecond.of(3),
-                FeetPerSecond.zero(),
-                RadiansPerSecond.zero(),
-                ReferenceFrame.ROBOT))
-        .until(() -> io.getForwardAcceleration().lte(FeetPerSecondPerSecond.of(-2)));
+    return startRun(
+            timer::restart,
+            () ->
+                drive(
+                    FeetPerSecond.of(-3),
+                    FeetPerSecond.zero(),
+                    RadiansPerSecond.zero(),
+                    ReferenceFrame.ROBOT))
+        .until(
+            () ->
+                (io.getForwardAcceleration().lte(FeetPerSecondPerSecond.of(-5)))
+                    && timer.get() > 0.5)
+        .andThen(
+            () -> {
+              System.out.println("finished");
+            });
   }
 
   @SuppressWarnings("unused")

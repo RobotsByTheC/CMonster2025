@@ -187,6 +187,7 @@ public class Robot extends TimedRobot {
    */
   private void configureTeleopBindings() {
     rStick.button(7).onTrue(drive.zeroGyro());
+    operatorController.leftTrigger().onTrue(drive.moveBackwardsUntilStopped());
 
     bindVision();
 
