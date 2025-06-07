@@ -5,6 +5,7 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.Feet;
+import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.Constants.CoralLevel.INTAKE;
 import static frc.robot.Constants.CoralLevel.L1;
 import static frc.robot.Constants.CoralLevel.L2;
@@ -187,6 +188,8 @@ public class Robot extends TimedRobot {
    */
   private void configureTeleopBindings() {
     rStick.button(7).onTrue(drive.zeroGyro());
+//    operatorController.leftTrigger().whileTrue(drive.setXCommand());
+    operatorController.start().whileTrue(drive.setXCommand());
 
     bindVision();
 
@@ -221,6 +224,9 @@ public class Robot extends TimedRobot {
   }
 
   private void bindCoral() {
+    operatorController.leftTrigger().onTrue(coral.setDynamicGrabberVoltage(Constants.CoralConstants.grabScoreVoltage.in(Volts)));
+    operatorController.leftTrigger().onFalse(coral.zeroDynamicGrabberVoltage());
+
     operatorController.rightBumper().whileTrue(controlCoralAtLevel(INTAKE));
     operatorController.rightBumper().onFalse(finishControlCoral());
 

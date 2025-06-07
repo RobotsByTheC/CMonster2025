@@ -33,8 +33,10 @@ import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.units.measure.MutVoltage;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -49,6 +51,8 @@ public class Coral extends SubsystemBase {
   private CoralIO io; // NOPMD
   private final ProfiledPIDController profiledPIDController;
   private final ArmFeedforward feedforward;
+  public final MutVoltage dynamicGrabberVoltage = Volts.mutable(0);
+
   @NotLogged private final SysIdRoutine sysIdRoutine;
 
   @SuppressWarnings("FieldCanBeLocal")
@@ -120,6 +124,13 @@ public class Coral extends SubsystemBase {
     return moveWrist(stowAngle).until(profiledPIDController::atGoal);
   }
 
+  public Command setDynamicGrabberVoltage(double voltage) {
+    return Commands.runOnce(() -> dynamicGrabberVoltage.mut_setMagnitude(voltage));
+  }
+  public Command zeroDynamicGrabberVoltage() {
+    return Commands.runOnce(() -> dynamicGrabberVoltage.mut_setMagnitude(0));
+  }
+
   @SuppressWarnings("unused")
   public Command stop() {
     return run(() -> {
@@ -169,7 +180,7 @@ public class Coral extends SubsystemBase {
         moveWrist(angle)
             .alongWith(holdCoral())
             .until(profiledPIDController::atSetpoint)
-            .andThen(moveWrist(angle).alongWith(controlGrabber(grabVoltage)).until(endCondition));
+            .andThen(moveWrist(angle).alongWith(controlGrabber(dynamicGrabberVoltage)).until(endCondition));
     command.addRequirements(this);
     return command;
   }
