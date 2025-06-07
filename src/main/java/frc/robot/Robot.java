@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -69,6 +70,7 @@ public class Robot extends TimedRobot {
 
   @SuppressWarnings("FieldCanBeLocal")
   private final SendableChooser<Supplier<Command>> odometryTestChooser = new SendableChooser<>();
+  private final SendableChooser<Supplier<Command>> autoChooser = new SendableChooser<>();
 
   public Robot() {
     // Initialize our subsystems. If our program is running in simulation mode (either from the
@@ -99,7 +101,12 @@ public class Robot extends TimedRobot {
     odometryTestChooser.addOption("Drive 13 Feet", () -> drive.driveDistance(Feet.of(13)));
     odometryTestChooser.addOption("Drive 21 Feet", () -> drive.driveDistance(Feet.of(21)));
 
+    autoChooser.setDefaultOption("Do Nothing", Commands::none);
+    autoChooser.addOption("Score L4", this::autoScoreL4);
+    autoChooser.addOption("10s Leave", drive::autoLeaveArea);
+
     Shuffleboard.getTab("Test").add("Drive Distance Selection", odometryTestChooser);
+    SmartDashboard.putData("Auto Chooser", autoChooser);
 
     operatorController = new CommandXboxController(Constants.OIConstants.driverControllerPort);
     rStick = new CommandJoystick(Constants.OIConstants.leftJoystickPort);
@@ -397,8 +404,7 @@ public class Robot extends TimedRobot {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return autoScoreL4();
-//    return drive.autoLeaveArea();
+    return autoChooser.getSelected().get();
   }
 
   @Logged(name = "Battery Voltage")
