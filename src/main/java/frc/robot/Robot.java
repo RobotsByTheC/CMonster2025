@@ -316,7 +316,7 @@ public class Robot extends TimedRobot {
         .whileTrue(
             elevator
                 .goToAlgaeL2Height()
-                .andThen(algae.intakeReef().deadlineFor(elevator.goToAlgaeL2Height()))
+                .andThen(algae.intakeReef().deadlineFor(elevator.holdTargetPosition()))
                 .withName("Intake Algae L2"));
 
     operatorController

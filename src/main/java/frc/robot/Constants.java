@@ -215,7 +215,7 @@ public final class Constants {
     public static final double KA = 0;
     public static final double KP = 32;
     public static final double KI = 0;
-    public static final double KD = 0.35;
+    public static final double KD = 0.3;
   }
 
   public static final class CoralConstants {
