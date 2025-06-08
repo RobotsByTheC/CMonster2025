@@ -71,7 +71,7 @@ public class Elevator extends SubsystemBase {
             KP,
             KI,
             KD,
-            new TrapezoidProfile.Constraints(feedforward.maxAchievableVelocity(12.5, 20), 20));
+            new TrapezoidProfile.Constraints(feedforward.maxAchievableVelocity(11, 10), 10));
     sysIdRoutine =
         new SysIdRoutine(
             new SysIdRoutine.Config(Volts.per(Second).of(0.5), Volts.of(5), null),
@@ -275,6 +275,10 @@ public class Elevator extends SubsystemBase {
               System.out.printf("kS = %.3f%n", ks);
             })
         .withName("Find Elevator Feedforward Terms");
+  }
+
+  public double getHeightVariance() {
+    return 100 - Math.round(Math.abs((profiledPIDController.getGoal().position - io.getHeight().in(Meters)) / io.getHeight().in(Meters)) * 100);
   }
 
   private Voltage calculatePIDVoltage(Distance targetHeight) {

@@ -19,7 +19,6 @@ import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.LinearAcceleration;
-import edu.wpi.first.units.measure.LinearVelocity;
 import frc.robot.Constants;
 import frc.robot.subsystems.drive.swerve.MAXSwerveModuleIO;
 import frc.robot.subsystems.drive.swerve.SwerveModule;

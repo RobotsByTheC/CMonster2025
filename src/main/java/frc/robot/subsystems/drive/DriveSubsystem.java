@@ -440,11 +440,13 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
         io.frontLeft().getState(),
         io.frontRight().getState(),
         io.rearLeft().getState(),
-        io.rearLeft().getState()
-    );
+        io.rearLeft().getState());
   }
 
   public LinearVelocity getAverageVelocity() {
-    return MetersPerSecond.of(Math.sqrt(Math.pow(getSwerveChassisSpeeds().vxMetersPerSecond, 2) + Math.pow(getSwerveChassisSpeeds().vyMetersPerSecond, 2)));
+    return MetersPerSecond.of(
+        Math.sqrt(
+            Math.pow(getSwerveChassisSpeeds().vxMetersPerSecond, 2)
+                + Math.pow(getSwerveChassisSpeeds().vyMetersPerSecond, 2)));
   }
 }

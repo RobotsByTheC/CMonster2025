@@ -13,6 +13,7 @@ import static frc.robot.Constants.CoralLevel.L3;
 import static frc.robot.Constants.CoralLevel.L4;
 
 import com.ctre.phoenix6.SignalLogger;
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
@@ -70,6 +71,7 @@ public class Robot extends TimedRobot {
 
   @SuppressWarnings("FieldCanBeLocal")
   private final SendableChooser<Supplier<Command>> odometryTestChooser = new SendableChooser<>();
+
   private final SendableChooser<Supplier<Command>> autoChooser = new SendableChooser<>();
 
   public Robot() {
@@ -195,7 +197,7 @@ public class Robot extends TimedRobot {
    */
   private void configureTeleopBindings() {
     rStick.button(7).onTrue(drive.zeroGyro());
-//    operatorController.leftTrigger().whileTrue(drive.setXCommand());
+    //    operatorController.leftTrigger().whileTrue(drive.setXCommand());
     operatorController.start().whileTrue(drive.setXCommand());
 
     bindVision();
@@ -231,12 +233,20 @@ public class Robot extends TimedRobot {
   }
 
   private void bindCoral() {
-    operatorController.leftTrigger().onTrue(coral.setDynamicGrabberVoltage(Constants.CoralConstants.grabScoreVoltage.in(Volts)));
+    operatorController
+        .leftTrigger()
+        .onTrue(
+            coral.setDynamicGrabberVoltage(Constants.CoralConstants.grabScoreVoltage.in(Volts)));
     operatorController.leftTrigger().onFalse(coral.zeroDynamicGrabberVoltage());
 
-    operatorController.rightBumper().onTrue(coral.setDynamicGrabberVoltage(Constants.CoralConstants.grabIntakeVoltage.in(Volts)));
+    operatorController
+        .rightBumper()
+        .onTrue(
+            coral.setDynamicGrabberVoltage(Constants.CoralConstants.grabIntakeVoltage.in(Volts)));
     operatorController.rightBumper().whileTrue(controlCoralAtLevel(INTAKE));
-    operatorController.rightBumper().onFalse(coral.zeroDynamicGrabberVoltage().andThen(finishControlCoral()));
+    operatorController
+        .rightBumper()
+        .onFalse(coral.zeroDynamicGrabberVoltage().andThen(finishControlCoral()));
 
     operatorController.a().whileTrue(controlCoralAtLevel(L1));
     operatorController.a().onFalse(finishControlCoral());
@@ -256,25 +266,29 @@ public class Robot extends TimedRobot {
       case L1 ->
           elevator
               .goToL1Height()
-              .deadlineFor(coral.stow())
+              .deadlineFor(coral.stowAndHold())
+              .andThen(coral.zeroDynamicGrabberVoltage())
               .andThen(coral.scoreL1().alongWith(elevator.holdTargetPosition()))
               .withName("Score L1");
       case L2 ->
           elevator
               .goToL2Height()
-              .deadlineFor(coral.stow())
+              .deadlineFor(coral.stowAndHold())
+              .andThen(coral.zeroDynamicGrabberVoltage())
               .andThen(coral.scoreL2().alongWith(elevator.holdTargetPosition()))
               .withName("Score L2");
       case L3 ->
           elevator
               .goToL3Height()
-              .deadlineFor(coral.stow())
+              .deadlineFor(coral.stowAndHold())
+              .andThen(coral.zeroDynamicGrabberVoltage())
               .andThen(coral.scoreL3().alongWith(elevator.holdTargetPosition()))
               .withName("Score L3");
       case L4 ->
           elevator
               .goToL4Height()
               .deadlineFor(coral.stowAndHold())
+              .andThen(coral.zeroDynamicGrabberVoltage())
               .andThen(coral.scoreL4().alongWith(elevator.holdTargetPosition()))
               .withName("Score L4");
       case INTAKE ->
@@ -390,7 +404,10 @@ public class Robot extends TimedRobot {
     return drive
         .moveForwardsUntilStopped()
         .andThen(controlCoralAtLevel(CoralLevel.L4))
-        .withTimeout(5)
+        .withTimeout(3)
+        .andThen(
+            coral.setDynamicGrabberVoltage(Constants.CoralConstants.grabScoreVoltage.in(Volts)))
+        .withTimeout(3)
         .andThen(coral.stowUntilDone())
         .andThen(finishControlCoral());
   }
@@ -441,6 +458,7 @@ public class Robot extends TimedRobot {
     CommandScheduler.getInstance().run();
 
     Epilogue.update(this);
+    SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
   }
 
   @Override

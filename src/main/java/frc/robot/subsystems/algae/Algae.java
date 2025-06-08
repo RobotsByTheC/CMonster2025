@@ -182,6 +182,10 @@ public class Algae extends SubsystemBase {
     return Commands.run(() -> io.setGrabVoltage(voltage)).until(() -> false);
   }
 
+  public double getRotationVariance() {
+    return 100 - Math.round(Math.abs((profiledPIDController.getGoal().position - io.getWristAngle().in(Radians)) / io.getWristAngle().in(Radians)) * 100);
+  }
+
   private Voltage calculatePIDVoltage(Angle targetAngle) {
     pidVoltage =
         profiledPIDController.calculate(io.getWristAngle().in(Radians), targetAngle.in(Radians));

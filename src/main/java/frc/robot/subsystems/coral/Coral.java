@@ -1,6 +1,7 @@
 package frc.robot.subsystems.coral;
 
 import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Second;
@@ -33,7 +34,6 @@ import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.MutVoltage;
@@ -127,6 +127,7 @@ public class Coral extends SubsystemBase {
   public Command setDynamicGrabberVoltage(double voltage) {
     return Commands.runOnce(() -> dynamicGrabberVoltage.mut_setMagnitude(voltage));
   }
+
   public Command zeroDynamicGrabberVoltage() {
     return Commands.runOnce(() -> dynamicGrabberVoltage.mut_setMagnitude(0));
   }
@@ -141,7 +142,9 @@ public class Coral extends SubsystemBase {
   }
 
   public Command stowAndHold() {
-    return coordinatedControl(stowAngle, coralHoldVoltage, () -> false);
+    return setDynamicGrabberVoltage(coralHoldVoltage.in(Volts)).andThen(
+        coordinatedControl(stowAngle, coralHoldVoltage, () -> false)
+    );
   }
 
   public Command stow() {
@@ -180,9 +183,16 @@ public class Coral extends SubsystemBase {
         moveWrist(angle)
             .alongWith(holdCoral())
             .until(profiledPIDController::atSetpoint)
-            .andThen(moveWrist(angle).alongWith(controlGrabber(dynamicGrabberVoltage)).until(endCondition));
+            .andThen(
+                moveWrist(angle)
+                    .alongWith(controlGrabber(dynamicGrabberVoltage))
+                    .until(endCondition));
     command.addRequirements(this);
     return command;
+  }
+
+  public double getRotationVariance() {
+    return 100 - Math.round(Math.abs((profiledPIDController.getGoal().position - io.getWristAngle().in(Radians)) / io.getWristAngle().in(Radians)) * 100);
   }
 
   private Voltage calculatePIDVoltage(Angle targetAngle) {

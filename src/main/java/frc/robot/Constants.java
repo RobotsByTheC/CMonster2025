@@ -215,7 +215,7 @@ public final class Constants {
     public static final double KA = 0;
     public static final double KP = 32;
     public static final double KI = 0;
-    public static final double KD = 0.3;
+    public static final double KD = 0.35;
   }
 
   public static final class CoralConstants {
@@ -231,7 +231,7 @@ public final class Constants {
 
     public static final Voltage grabIntakeVoltage = Volts.of(-9);
     public static final Voltage grabScoreVoltage = Volts.of(9);
-    public static final Voltage coralHoldVoltage = Volts.of(-3);
+    public static final Voltage coralHoldVoltage = Volts.of(-2);
 
     public static final Angle intakeAngle = Degrees.of(30);
     public static final Angle troughScoreAngle = Degrees.of(-15);
