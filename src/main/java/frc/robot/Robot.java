@@ -234,8 +234,9 @@ public class Robot extends TimedRobot {
     operatorController.leftTrigger().onTrue(coral.setDynamicGrabberVoltage(Constants.CoralConstants.grabScoreVoltage.in(Volts)));
     operatorController.leftTrigger().onFalse(coral.zeroDynamicGrabberVoltage());
 
+    operatorController.rightBumper().onTrue(coral.setDynamicGrabberVoltage(Constants.CoralConstants.grabIntakeVoltage.in(Volts)));
     operatorController.rightBumper().whileTrue(controlCoralAtLevel(INTAKE));
-    operatorController.rightBumper().onFalse(finishControlCoral());
+    operatorController.rightBumper().onFalse(coral.zeroDynamicGrabberVoltage().andThen(finishControlCoral()));
 
     operatorController.a().whileTrue(controlCoralAtLevel(L1));
     operatorController.a().onFalse(finishControlCoral());

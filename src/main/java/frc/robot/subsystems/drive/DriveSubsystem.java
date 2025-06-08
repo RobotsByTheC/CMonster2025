@@ -17,6 +17,7 @@ import static edu.wpi.first.units.Units.RadiansPerSecondPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
+import static frc.robot.Constants.DriveConstants.driveKinematics;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
@@ -97,7 +98,7 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
     poseEstimator =
         new SwerveDrivePoseEstimator(
-            DriveConstants.driveKinematics,
+            driveKinematics,
             Rotation2d.fromDegrees(0),
             io.getModulePositions(),
             new Pose2d(Feet.zero(), Feet.zero(), new Rotation2d(Degrees.zero())),
@@ -188,7 +189,7 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
    * @param speeds the speeds at which the robot should move
    */
   public void drive(ChassisSpeeds speeds) {
-    var swerveModuleStates = DriveConstants.driveKinematics.toSwerveModuleStates(speeds);
+    var swerveModuleStates = driveKinematics.toSwerveModuleStates(speeds);
 
     io.setDesiredModuleStates(swerveModuleStates);
   }
@@ -432,5 +433,18 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
           new SwerveModuleState(0, Rotation2d.fromDegrees(0)),
           new SwerveModuleState(0, Rotation2d.fromDegrees(0))
         });
+  }
+
+  private ChassisSpeeds getSwerveChassisSpeeds() {
+    return driveKinematics.toChassisSpeeds(
+        io.frontLeft().getState(),
+        io.frontRight().getState(),
+        io.rearLeft().getState(),
+        io.rearLeft().getState()
+    );
+  }
+
+  public LinearVelocity getAverageVelocity() {
+    return MetersPerSecond.of(Math.sqrt(Math.pow(getSwerveChassisSpeeds().vxMetersPerSecond, 2) + Math.pow(getSwerveChassisSpeeds().vyMetersPerSecond, 2)));
   }
 }

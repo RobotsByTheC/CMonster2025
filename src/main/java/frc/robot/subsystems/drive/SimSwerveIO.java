@@ -1,5 +1,6 @@
 package frc.robot.subsystems.drive;
 
+import static edu.wpi.first.units.Units.MetersPerSecond;
 import static frc.robot.Constants.DriveConstants.driveKinematics;
 import static frc.robot.Constants.DriveConstants.frontLeftChassisAngularOffset;
 import static frc.robot.Constants.DriveConstants.frontRightChassisAngularOffset;
@@ -10,6 +11,7 @@ import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.LinearAcceleration;
+import edu.wpi.first.units.measure.LinearVelocity;
 import frc.robot.sim.Simulation;
 import frc.robot.sim.SimulationContext;
 import frc.robot.subsystems.drive.swerve.SimModuleIO;

@@ -6,6 +6,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.units.measure.LinearAcceleration;
+import edu.wpi.first.units.measure.LinearVelocity;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.drive.swerve.SwerveModule;
 
