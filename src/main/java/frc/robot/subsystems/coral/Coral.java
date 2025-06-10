@@ -1,7 +1,6 @@
 package frc.robot.subsystems.coral;
 
 import static edu.wpi.first.units.Units.Amps;
-import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Second;
@@ -142,9 +141,8 @@ public class Coral extends SubsystemBase {
   }
 
   public Command stowAndHold() {
-    return setDynamicGrabberVoltage(coralHoldVoltage.in(Volts)).andThen(
-        coordinatedControl(stowAngle, coralHoldVoltage, () -> false)
-    );
+    return setDynamicGrabberVoltage(coralHoldVoltage.in(Volts))
+        .andThen(coordinatedControl(stowAngle, coralHoldVoltage, () -> false));
   }
 
   public Command stow() {
@@ -185,6 +183,7 @@ public class Coral extends SubsystemBase {
             .until(profiledPIDController::atSetpoint)
             .andThen(
                 moveWrist(angle)
+                    .andThen(setDynamicGrabberVoltage(grabVoltage.in(Volts)))
                     .alongWith(controlGrabber(dynamicGrabberVoltage))
                     .until(endCondition));
     command.addRequirements(this);
@@ -192,7 +191,12 @@ public class Coral extends SubsystemBase {
   }
 
   public double getRotationVariance() {
-    return 100 - Math.round(Math.abs((profiledPIDController.getGoal().position - io.getWristAngle().in(Radians)) / io.getWristAngle().in(Radians)) * 100);
+    return 100
+        - Math.round(
+            Math.abs(
+                    (profiledPIDController.getGoal().position - io.getWristAngle().in(Radians))
+                        / io.getWristAngle().in(Radians))
+                * 100);
   }
 
   private Voltage calculatePIDVoltage(Angle targetAngle) {

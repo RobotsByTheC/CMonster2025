@@ -278,7 +278,12 @@ public class Elevator extends SubsystemBase {
   }
 
   public double getHeightVariance() {
-    return 100 - Math.round(Math.abs((profiledPIDController.getGoal().position - io.getHeight().in(Meters)) / io.getHeight().in(Meters)) * 100);
+    return 100
+        - Math.round(
+            Math.abs(
+                    (profiledPIDController.getGoal().position - io.getHeight().in(Meters))
+                        / io.getHeight().in(Meters))
+                * 100);
   }
 
   private Voltage calculatePIDVoltage(Distance targetHeight) {

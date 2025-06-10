@@ -13,7 +13,6 @@ import static frc.robot.Constants.CoralLevel.L3;
 import static frc.robot.Constants.CoralLevel.L4;
 
 import com.ctre.phoenix6.SignalLogger;
-import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
@@ -21,6 +20,7 @@ import edu.wpi.first.epilogue.logging.EpilogueBackend;
 import edu.wpi.first.epilogue.logging.FileBackend;
 import edu.wpi.first.epilogue.logging.NTEpilogueBackend;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -225,7 +225,17 @@ public class Robot extends TimedRobot {
                           .plus(drive.getHeading()));
                 }));
 
-    rStick.button(2).onFalse(Commands.runOnce(() -> turnMultiplier = 1));
+    rStick
+        .button(2)
+        .onFalse(
+            Commands.runOnce(() -> turnMultiplier = 1)
+                .andThen(
+                    drive.driveToRobotRelativePose(
+                        vision
+                            .getLastRealValue()
+                            .toPose2d()
+                            .plus(new Transform2d(-0.5, 0, Rotation2d.kZero))
+                            .times(-1))));
   }
 
   private void bindElevator() {
