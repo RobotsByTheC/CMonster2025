@@ -14,6 +14,8 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+
+import frc.robot.filter.RepetitiveDebouncer;
 import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
@@ -28,6 +30,8 @@ public class Vision {
   private PhotonTrackedTarget nearestReefAprilTag;
   private Pose3d nearestReefAprilTagTransform = NO_TARGET;
   private int nearestTagId = NO_TAG;
+
+  private final RepetitiveDebouncer seesTagDebouncer = new RepetitiveDebouncer(8, false);
 
   @Logged private Transform3d leftTransform = new Transform3d();
   @Logged private Transform3d rightTransform = new Transform3d();
@@ -119,6 +123,7 @@ public class Vision {
       lastRealValue = nearestReefAprilTagTransform;
       lastRealRotation = lastRealValue.getRotation().toRotation2d().plus(Rotation2d.k180deg);
     }
+    seesTagDebouncer.addValue(seesTag());
   }
 
   /**
@@ -163,5 +168,9 @@ public class Vision {
   @SuppressWarnings("unused")
   public Pose3d getLastRealValue() {
     return lastRealValue;
+  }
+
+  public boolean canSeeFilteredTag() {
+    return !seesTagDebouncer.getBoolean();
   }
 }
